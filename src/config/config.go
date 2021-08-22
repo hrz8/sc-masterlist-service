@@ -4,18 +4,19 @@ import (
 	"github.com/spf13/viper"
 )
 
-type appConfig struct {
+type AppConfig struct {
 	SERVICE_PORT int    `mapstructure:"SERVICE_PORT"`
 	DB_HOST      string `mapstructure:"DB_HOST"`
 	DB_PORT      int    `mapstructure:"DB_PORT"`
 	DB_USER      string `mapstructure:"DB_USER"`
 	DB_PASSWORD  string `mapstructure:"DB_PASSWORD"`
+	DB_NAME      string `mapstructure:"DB_NAME"`
 }
 
-var config appConfig
+var appConfig AppConfig
 
 // NewConfig return configurations implementation
-func NewConfig() (*appConfig, error) {
+func NewConfig() (*AppConfig, error) {
 	v := viper.New()
 
 	v.AddConfigPath("..")
@@ -26,6 +27,6 @@ func NewConfig() (*appConfig, error) {
 		return nil, err
 	}
 
-	v.Unmarshal(&config)
-	return &config, nil
+	v.Unmarshal(&appConfig)
+	return &appConfig, nil
 }
