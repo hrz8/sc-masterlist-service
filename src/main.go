@@ -11,6 +11,9 @@ import (
 
 func main() {
 	e := echo.New()
+
+	// appContainer := container.DefaultContainer()
+
 	appConfig, err := Config.NewConfig()
 	if err != nil {
 		fmt.Println(err)
