@@ -5,7 +5,7 @@ import (
 
 	"github.com/fgrosse/goldi"
 	Config "github.com/hrz8/sc-masterlist-service/src/config"
-	"github.com/hrz8/sc-masterlist-service/src/database"
+	Database "github.com/hrz8/sc-masterlist-service/src/database"
 )
 
 func NewContainer() *goldi.Container {
@@ -19,7 +19,7 @@ func NewContainer() *goldi.Container {
 	}
 
 	container.InjectInstance("shared.config", appConfig)
-	container.RegisterType("shared.mysql", database.NewMysql, "@shared.config")
+	container.RegisterType("shared.mysql", Database.NewMysql, "@shared.config")
 
 	return container
 }

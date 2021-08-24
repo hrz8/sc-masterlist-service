@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	Config "github.com/hrz8/sc-masterlist-service/src/config"
+	Container "github.com/hrz8/sc-masterlist-service/src/container"
 	Database "github.com/hrz8/sc-masterlist-service/src/database"
 	"github.com/labstack/echo/v4"
 )
@@ -12,14 +13,11 @@ import (
 func main() {
 	e := echo.New()
 
-	// appContainer := container.DefaultContainer()
+	appContainer := Container.NewContainer()
+	appConfig := appContainer.MustGet("shared.config").(*Config.AppConfig)
+	mysql := appContainer.MustGet("shared.mysql").(Database.MysqlInterface)
 
-	appConfig, err := Config.NewConfig()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	mysqlSess, err := Database.NewMysql(appConfig).Connect()
+	mysqlSess, _ := mysql.Connect()
 	fmt.Println(mysqlSess)
 
 	e.GET("/", func(c echo.Context) error {
