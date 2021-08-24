@@ -16,7 +16,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	mysqlSess := Database.NewMysql(appConfig).Connect()
+	mysqlSess, err := Database.NewMysql(appConfig).Connect()
 	fmt.Println(mysqlSess)
 
 	e.GET("/", func(c echo.Context) error {
