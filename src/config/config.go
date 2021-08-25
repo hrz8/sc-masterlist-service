@@ -1,32 +1,42 @@
 package config
 
 import (
+	"log"
+	"sync"
+
 	"github.com/spf13/viper"
 )
 
-type AppConfig struct {
-	SERVICE_PORT int    `mapstructure:"SERVICE_PORT"`
-	DB_HOST      string `mapstructure:"DB_HOST"`
-	DB_PORT      int    `mapstructure:"DB_PORT"`
-	DB_USER      string `mapstructure:"DB_USER"`
-	DB_PASSWORD  string `mapstructure:"DB_PASSWORD"`
-	DB_NAME      string `mapstructure:"DB_NAME"`
-}
+type (
+	AppConfig struct {
+		SERVICE_PORT int    `mapstructure:"SERVICE_PORT"`
+		DB_HOST      string `mapstructure:"DB_HOST"`
+		DB_PORT      int    `mapstructure:"DB_PORT"`
+		DB_USER      string `mapstructure:"DB_USER"`
+		DB_PASSWORD  string `mapstructure:"DB_PASSWORD"`
+		DB_NAME      string `mapstructure:"DB_NAME"`
+	}
+)
 
-var appConfig AppConfig
+var (
+	once      sync.Once
+	appConfig AppConfig
+)
 
 // NewConfig return configurations implementation
-func NewConfig() (*AppConfig, error) {
-	v := viper.New()
+func NewConfig() *AppConfig {
+	once.Do(func() {
+		v := viper.New()
 
-	v.AddConfigPath("..")
-	v.SetConfigName("config")
-	v.SetConfigType("yml")
+		v.AddConfigPath("..")
+		v.SetConfigName("config")
+		v.SetConfigType("yml")
 
-	if err := v.ReadInConfig(); err != nil {
-		return nil, err
-	}
+		if err := v.ReadInConfig(); err != nil {
+			log.Fatal("[SYSINIT-CONFIG]: Failed to read configuration file")
+		}
 
-	v.Unmarshal(&appConfig)
-	return &appConfig, nil
+		v.Unmarshal(&appConfig)
+	})
+	return &appConfig
 }
