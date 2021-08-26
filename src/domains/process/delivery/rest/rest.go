@@ -19,11 +19,20 @@ type (
 )
 
 func (i *impl) Create(c echo.Context) error {
-	payload := &models.ProcessCreatePayload{
-		Name:        "ASSY",
-		Description: "assembly process",
+	payload := new(models.ProcessCreatePayload)
+	if err := c.Bind(payload); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"status": http.StatusBadRequest,
+			"error":  err.Error(),
+		})
 	}
-	result, _ := i.usecase.Create(payload)
+	result, err := i.usecase.Create(payload)
+	if err != nil {
+		return c.JSON(http.StatusOK, echo.Map{
+			"status": http.StatusBadRequest,
+			"data":   err.Error(),
+		})
+	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"status": http.StatusOK,
 		"data":   result,
@@ -31,8 +40,7 @@ func (i *impl) Create(c echo.Context) error {
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
-	handler := &impl{
+	return &impl{
 		usecase: u,
 	}
-	return handler
 }

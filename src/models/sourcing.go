@@ -8,9 +8,9 @@ import (
 // Project represents Process object for DB
 type (
 	Sourcing struct {
-		gorm.Model
 		ID          uuid.UUID `gorm:"column:id;primaryKey" json:"id"`
-		Name        string    `gorm:"column:name;index:idx_name,unique" json:"name"`
+		Name        string    `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
 		Description string    `gorm:"column:description" json:"description"`
+		gorm.Model  `json:"-"`
 	}
 )

@@ -23,8 +23,8 @@ func (i *impl) Create(process *models.ProcessCreatePayload) (*models.Process, er
 		Name:        process.Name,
 		Description: process.Description,
 	}
-	result, _ := i.repository.Create(payload)
-	return result, nil
+	result, err := i.repository.Create(payload)
+	return result, err
 }
 
 func NewUsecase(r repository.RepositoryInterface) UsecaseInterface {
