@@ -33,5 +33,5 @@ func main() {
 	// endpoints
 	e.POST("/api/v1/process", processRest.Create)
 
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE_PORT)))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
 }

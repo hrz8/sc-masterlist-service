@@ -21,11 +21,11 @@ type (
 
 func (m *mysql) Connect() *gorm.DB {
 	DSN := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
-		m.appConfig.DB_USER,
-		m.appConfig.DB_PASSWORD,
-		m.appConfig.DB_HOST,
-		m.appConfig.DB_PORT,
-		m.appConfig.DB_NAME,
+		m.appConfig.DATABASE.USER,
+		m.appConfig.DATABASE.PASSWORD,
+		m.appConfig.DATABASE.PASSWORD,
+		m.appConfig.DATABASE.PORT,
+		m.appConfig.DATABASE.NAME,
 	)
 	db, err := gorm.Open(MysqlDriver.Open(DSN), &gorm.Config{})
 	if err != nil {

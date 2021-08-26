@@ -8,13 +8,19 @@ import (
 )
 
 type (
+	SERVICE struct {
+		PORT int `mapstructure:"PORT"`
+	}
+	DATABASE struct {
+		HOST     string `mapstructure:"HOST"`
+		PORT     int    `mapstructure:"PORT"`
+		USER     string `mapstructure:"USER"`
+		PASSWORD string `mapstructure:"PASSWORD"`
+		NAME     string `mapstructure:"NAME"`
+	}
 	AppConfig struct {
-		SERVICE_PORT int    `mapstructure:"SERVICE_PORT"`
-		DB_HOST      string `mapstructure:"DB_HOST"`
-		DB_PORT      int    `mapstructure:"DB_PORT"`
-		DB_USER      string `mapstructure:"DB_USER"`
-		DB_PASSWORD  string `mapstructure:"DB_PASSWORD"`
-		DB_NAME      string `mapstructure:"DB_NAME"`
+		SERVICE  SERVICE  `mapstructure:"SERVICE"`
+		DATABASE DATABASE `mapstructure:"DATABASE"`
 	}
 )
 
