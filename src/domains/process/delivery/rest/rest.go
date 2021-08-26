@@ -8,13 +8,31 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewService(e *echo.Echo, usecase usecase.UsecaseInterface) {
+type (
+	RestInterface interface {
+		Create(c echo.Context) error
+	}
+
+	impl struct {
+		usecase usecase.UsecaseInterface
+	}
+)
+
+func (i *impl) Create(c echo.Context) error {
 	payload := &models.ProcessCreatePayload{
 		Name:        "ASSY",
-		Description: "",
+		Description: "assembly process",
 	}
-	usecase.Create(payload)
-	e.POST("/api/v1/process", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
+	result, _ := i.usecase.Create(payload)
+	return c.JSON(http.StatusOK, echo.Map{
+		"status": http.StatusOK,
+		"data":   result,
 	})
+}
+
+func NewRest(u usecase.UsecaseInterface) RestInterface {
+	handler := &impl{
+		usecase: u,
+	}
+	return handler
 }

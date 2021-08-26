@@ -2,8 +2,8 @@ package container
 
 import (
 	"github.com/fgrosse/goldi"
-	Config "github.com/hrz8/sc-masterlist-service/src/config"
-	Database "github.com/hrz8/sc-masterlist-service/src/database"
+	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
+	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
 )
 
 func NewAppContainer() *goldi.Container {

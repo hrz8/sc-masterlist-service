@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
-	Config "github.com/hrz8/sc-masterlist-service/src/config"
-	Container "github.com/hrz8/sc-masterlist-service/src/container"
-	Database "github.com/hrz8/sc-masterlist-service/src/database"
 	ProcessRest "github.com/hrz8/sc-masterlist-service/src/domains/process/delivery/rest"
 	ProcessRepository "github.com/hrz8/sc-masterlist-service/src/domains/process/repository"
 	ProcessUsecase "github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
+	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
+	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
+	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
 	"github.com/labstack/echo/v4"
 )
 
@@ -22,13 +21,15 @@ func main() {
 
 	mysqlSess := mysql.Connect()
 
+	// services loader
 	processRepo := ProcessRepository.NewRepository(mysqlSess)
 	processUsecase := ProcessUsecase.NewUsecase(processRepo)
 
-	ProcessRest.NewService(e, processUsecase)
+	// rest loader
+	processRest := ProcessRest.NewRest(processUsecase)
 
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	// endpoints
+	e.POST("/api/v1/process", processRest.Create)
+
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE_PORT)))
 }

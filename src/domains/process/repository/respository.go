@@ -16,10 +16,14 @@ type (
 )
 
 func (i *impl) Create(process *models.Process) (*models.Process, error) {
-	return &models.Process{}, nil
+	if err := i.db.Create(&process).Error; err != nil {
+		return nil, err
+	}
+	return process, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {
+	db.AutoMigrate(&models.Process{})
 	return &impl{
 		db: db,
 	}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/hrz8/sc-masterlist-service/src/config"
+	"github.com/hrz8/sc-masterlist-service/src/shared/config"
 	MysqlDriver "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

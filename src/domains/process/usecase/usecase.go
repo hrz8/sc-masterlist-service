@@ -12,7 +12,7 @@ type (
 	}
 
 	impl struct {
-		repo repository.RepositoryInterface
+		repository repository.RepositoryInterface
 	}
 )
 
@@ -23,12 +23,12 @@ func (i *impl) Create(process *models.ProcessCreatePayload) (*models.Process, er
 		Name:        process.Name,
 		Description: process.Description,
 	}
-	result, _ := i.repo.Create(payload)
+	result, _ := i.repository.Create(payload)
 	return result, nil
 }
 
-func NewUsecase(repo repository.RepositoryInterface) UsecaseInterface {
+func NewUsecase(r repository.RepositoryInterface) UsecaseInterface {
 	return &impl{
-		repo: repo,
+		repository: r,
 	}
 }
