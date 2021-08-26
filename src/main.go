@@ -9,11 +9,13 @@ import (
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
 	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
+	"github.com/hrz8/sc-masterlist-service/src/utils"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
 	e := echo.New()
+	e.Validator = utils.NewValidator()
 
 	appContainer := Container.NewAppContainer()
 	appConfig := appContainer.MustGet("shared.config").(*Config.AppConfig)
