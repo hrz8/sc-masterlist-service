@@ -26,9 +26,12 @@ func (i *impl) Create(c echo.Context) error {
 			"error":  err.Error(),
 		})
 	}
+	if err := c.Validate(payload); err != nil {
+		return err
+	}
 	result, err := i.usecase.Create(payload)
 	if err != nil {
-		return c.JSON(http.StatusOK, echo.Map{
+		return c.JSON(http.StatusBadRequest, echo.Map{
 			"status": http.StatusBadRequest,
 			"data":   err.Error(),
 		})
