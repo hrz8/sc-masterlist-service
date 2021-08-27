@@ -36,18 +36,16 @@ func NewValidator() echo.Validator {
 
 func (v *ValidatorMiddleware) Handler(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx := c.(*CustomContext)
 		payload := v.models
-		if err := c.Bind(payload); err != nil {
-			return err
+		if err := ctx.Bind(payload); err != nil {
+			return ctx.ErrorResponse(nil, "Internal Server Error", http.StatusInternalServerError, "SCM-VALIDATOR-001", nil)
 		}
-		if err := c.Validate(payload); err != nil {
-			return err
+		if err := ctx.Validate(payload); err != nil {
+			return ctx.ErrorResponse(nil, err.Error(), http.StatusBadRequest, "SCM-VALIDATOR-002", nil)
 		}
-		cc := &CustomContext{
-			Context: c,
-			Payload: payload,
-		}
-		return next(cc)
+		ctx.Payload = payload
+		return next(ctx)
 	}
 }
 

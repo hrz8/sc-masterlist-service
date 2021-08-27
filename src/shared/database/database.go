@@ -29,7 +29,7 @@ func (m *mysql) Connect() *gorm.DB {
 	)
 	db, err := gorm.Open(MysqlDriver.Open(DSN), &gorm.Config{})
 	if err != nil {
-		log.Fatal("[SYSINIT-DATABASE]: Failed to open connection to database")
+		log.Fatal("[SYSINIT-DBCONNECT]: Failed to open connection to database")
 	}
 
 	return db

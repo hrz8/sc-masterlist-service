@@ -32,9 +32,9 @@ func main() {
 	e := echo.New()
 	e.Validator = utils.NewValidator()
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
+		return func(ctx echo.Context) error {
 			cc := &utils.CustomContext{
-				Context:   c,
+				Context:   ctx,
 				MysqlSess: mysqlSess,
 			}
 			return next(cc)

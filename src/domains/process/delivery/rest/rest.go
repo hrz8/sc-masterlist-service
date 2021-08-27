@@ -20,19 +20,13 @@ type (
 )
 
 func (i *impl) Create(c echo.Context) error {
-	cc := c.(*utils.CustomContext)
-	payload := cc.Payload.(*models.ProcessCreatePayload)
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.ProcessCreatePayload)
 	result, err := i.usecase.Create(payload)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"status": http.StatusBadRequest,
-			"data":   err.Error(),
-		})
+		return ctx.ErrorResponse(nil, err.Error(), http.StatusBadRequest, "SCM-PROCESS-001", nil)
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"status": http.StatusOK,
-		"data":   result,
-	})
+	return ctx.SuccessResponse(result, "success create process", http.StatusOK, nil)
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
