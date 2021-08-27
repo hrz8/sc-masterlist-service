@@ -6,6 +6,7 @@ import (
 	ProcessRest "github.com/hrz8/sc-masterlist-service/src/domains/process/delivery/rest"
 	ProcessRepository "github.com/hrz8/sc-masterlist-service/src/domains/process/repository"
 	ProcessUsecase "github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
+	"github.com/hrz8/sc-masterlist-service/src/models"
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
 	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
@@ -14,9 +15,6 @@ import (
 )
 
 func main() {
-	e := echo.New()
-	e.Validator = utils.NewValidator()
-
 	appContainer := Container.NewAppContainer()
 	appConfig := appContainer.MustGet("shared.config").(*Config.AppConfig)
 	mysql := appContainer.MustGet("shared.mysql").(Database.MysqlInterface)
@@ -30,8 +28,21 @@ func main() {
 	// rest loader
 	processRest := ProcessRest.NewRest(processUsecase)
 
+	// rest server
+	e := echo.New()
+	e.Validator = utils.NewValidator()
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cc := &utils.CustomContext{
+				Context:   c,
+				MysqlSess: mysqlSess,
+			}
+			return next(cc)
+		}
+	})
+
 	// endpoints
-	e.POST("/api/v1/process", processRest.Create)
+	e.POST("/api/v1/process", processRest.Create, utils.NewValidatorMiddleware(new(models.ProcessCreatePayload)).Handler)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
 }

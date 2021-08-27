@@ -23,7 +23,7 @@ func (m *mysql) Connect() *gorm.DB {
 	DSN := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
 		m.appConfig.DATABASE.USER,
 		m.appConfig.DATABASE.PASSWORD,
-		m.appConfig.DATABASE.PASSWORD,
+		m.appConfig.DATABASE.HOST,
 		m.appConfig.DATABASE.PORT,
 		m.appConfig.DATABASE.NAME,
 	)
