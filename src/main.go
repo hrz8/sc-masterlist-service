@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 
 	ProcessRest "github.com/hrz8/sc-masterlist-service/src/domains/process/delivery/rest"
 	ProcessRepository "github.com/hrz8/sc-masterlist-service/src/domains/process/repository"
@@ -42,7 +43,7 @@ func main() {
 	})
 
 	// endpoints
-	e.POST("/api/v1/process", processRest.Create, utils.NewValidatorMiddleware(new(models.ProcessCreatePayload)).Handler)
+	e.POST("/api/v1/process", processRest.Create, utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessCreatePayload{})))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
 }
