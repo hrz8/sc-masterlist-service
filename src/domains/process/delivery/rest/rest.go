@@ -15,7 +15,8 @@ type (
 	}
 
 	impl struct {
-		usecase usecase.UsecaseInterface
+		usecase  usecase.UsecaseInterface
+		errorLib ProcessErrorInterface
 	}
 )
 
@@ -24,13 +25,15 @@ func (i *impl) Create(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessCreatePayload)
 	result, err := i.usecase.Create(payload)
 	if err != nil {
-		return ctx.ErrorResponse(nil, err.Error(), http.StatusBadRequest, "SCM-PROCESS-001", nil)
+		return i.errorLib.ProcessErrorCreate(ctx, err.Error())
 	}
 	return ctx.SuccessResponse(result, "success create process", http.StatusOK, nil)
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
+	errLib := NewProcessError()
 	return &impl{
-		usecase: u,
+		usecase:  u,
+		errorLib: errLib,
 	}
 }
