@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
@@ -12,6 +13,7 @@ import (
 type (
 	RestInterface interface {
 		Create(echo.Context) error
+		GetAll(echo.Context) error
 	}
 
 	impl struct {
@@ -22,12 +24,23 @@ type (
 
 func (i *impl) Create(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
-	payload := ctx.Payload.(*models.ProcessCreatePayload)
+	payload := ctx.Payload.(*models.ProcessPayloadCreate)
 	result, err := i.usecase.Create(payload)
 	if err != nil {
 		return i.errorLib.ProcessErrorCreate(ctx, err.Error())
 	}
 	return ctx.SuccessResponse(result, "success create process", http.StatusOK, nil)
+}
+
+func (i *impl) GetAll(c echo.Context) error {
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.ProcessPayloadGetAll)
+	fmt.Println(payload)
+	result, err := i.usecase.GetAll()
+	if err != nil {
+		return i.errorLib.ProcessErrorCreate(ctx, err.Error())
+	}
+	return ctx.SuccessResponse(result, "success fetch all process", http.StatusOK, nil)
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
