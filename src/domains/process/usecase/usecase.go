@@ -8,7 +8,8 @@ import (
 
 type (
 	UsecaseInterface interface {
-		Create(*models.ProcessCreatePayload) (*models.Process, error)
+		Create(*models.ProcessPayloadCreate) (*models.Process, error)
+		GetAll() (*[]models.Process, error)
 	}
 
 	impl struct {
@@ -16,7 +17,7 @@ type (
 	}
 )
 
-func (i *impl) Create(process *models.ProcessCreatePayload) (*models.Process, error) {
+func (i *impl) Create(process *models.ProcessPayloadCreate) (*models.Process, error) {
 	id, _ := uuid.NewV4()
 	payload := &models.Process{
 		ID:          id,
@@ -24,6 +25,11 @@ func (i *impl) Create(process *models.ProcessCreatePayload) (*models.Process, er
 		Description: process.Description,
 	}
 	result, err := i.repository.Create(payload)
+	return result, err
+}
+
+func (i *impl) GetAll() (*[]models.Process, error) {
+	result, err := i.repository.GetAll()
 	return result, err
 }
 

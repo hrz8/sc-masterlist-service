@@ -8,6 +8,7 @@ import (
 type (
 	RepositoryInterface interface {
 		Create(*models.Process) (*models.Process, error)
+		GetAll() (*[]models.Process, error)
 	}
 
 	impl struct {
@@ -20,6 +21,14 @@ func (i *impl) Create(process *models.Process) (*models.Process, error) {
 		return nil, err
 	}
 	return process, nil
+}
+
+func (i *impl) GetAll() (*[]models.Process, error) {
+	result := []models.Process{}
+	if err := i.db.Find(&result).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {
