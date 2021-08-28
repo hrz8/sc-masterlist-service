@@ -3,8 +3,11 @@ package utils
 import (
 	"net/http"
 	"reflect"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/hrz8/sc-masterlist-service/src/helpers"
+	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/labstack/echo/v4"
 )
 
@@ -27,16 +30,127 @@ func NewValidator() echo.Validator {
 	}
 }
 
-func ValidatorMiddleware(models reflect.Type) func(echo.HandlerFunc) echo.HandlerFunc {
+// FIXME: look for better way
+func QueryParamsBind(destination interface{}, c echo.Context) (err error) {
+	queryParams := c.QueryParams()
+	if destination == nil || len(queryParams) == 0 {
+		return nil
+	}
+	typ := reflect.TypeOf(destination).Elem()
+	val := reflect.ValueOf(destination).Elem()
+
+	for i := 0; i < typ.NumField(); i++ {
+		structField := typ.Field(i)
+		queryTag := structField.Tag.Get("query")
+
+		found := false
+		switch queryTag {
+		case "_pagination":
+			{
+				page, pageExist := queryParams["pagination[page]"]
+				limit, limitExists := queryParams["pagination[limit]"]
+
+				if !pageExist || !limitExists {
+					continue
+				}
+
+				val.Field(i).Set(reflect.ValueOf(models.PagingQueryParams{
+					Page:  helpers.ParseStringToInt(page[0]),
+					Limit: helpers.ParseStringToInt(limit[0]),
+				}))
+			}
+		case "_sort":
+			{
+				sortBy, sortByExists := queryParams["sort[by]"]
+				sortMode, sortModeExists := queryParams["sort[mode]"]
+
+				_, modeValid := helpers.Contains([]string{"asc", "desc"}, sortMode[0])
+				if !sortByExists || !sortModeExists || !modeValid {
+					continue
+				}
+
+				val.Field(i).Set(reflect.ValueOf(models.SortQueryParams{
+					By:   sortBy[0],
+					Mode: sortMode[0],
+				}))
+			}
+		default:
+			{
+				field := models.FilteringQueryParams{}
+				for key, v := range queryParams {
+					preservedKeys := strings.HasPrefix(key, "pagination") ||
+						strings.HasPrefix(key, "sort")
+					val := v[0]
+					if !preservedKeys {
+						switch key {
+						case queryTag + "[eq]":
+							{
+								field.Eq = val
+								break
+							}
+						case queryTag + "[like]":
+							{
+								field.Like = val
+								break
+							}
+						case queryTag + "[gte]":
+							{
+								field.Gte = val
+								break
+							}
+						case queryTag + "[lte]":
+							{
+								field.Lte = val
+								break
+							}
+						default:
+							found = false
+						}
+					}
+				}
+				val.Field(i).Set(reflect.ValueOf(field))
+			}
+		}
+
+		if !found {
+			continue
+		}
+	}
+	return nil
+}
+
+func BinderError(c *CustomContext) error {
+	return c.ErrorResponse(
+		nil,
+		"Internal Server Error",
+		http.StatusInternalServerError,
+		"SCM-VALIDATOR-001",
+		nil,
+	)
+}
+
+func ValidatorMiddleware(models reflect.Type, queryParamsBinder bool) func(echo.HandlerFunc) echo.HandlerFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			ctx := c.(*CustomContext)
 			payload := reflect.New(models).Interface()
-			if err := ctx.Bind(payload); err != nil {
-				return ctx.ErrorResponse(nil, "Internal Server Error", http.StatusInternalServerError, "SCM-VALIDATOR-001", nil)
+			if queryParamsBinder {
+				if err := QueryParamsBind(payload, ctx); err != nil {
+					return BinderError(ctx)
+				}
+			} else {
+				if err := ctx.Bind(payload); err != nil {
+					return BinderError(ctx)
+				}
 			}
 			if err := ctx.Validate(payload); err != nil {
-				return ctx.ErrorResponse(nil, err.Error(), http.StatusBadRequest, "SCM-VALIDATOR-002", nil)
+				return ctx.ErrorResponse(
+					nil,
+					err.Error(),
+					http.StatusBadRequest,
+					"SCM-VALIDATOR-002",
+					nil,
+				)
 			}
 			ctx.Payload = payload
 			return next(ctx)

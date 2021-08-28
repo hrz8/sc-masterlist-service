@@ -14,8 +14,17 @@ type (
 		gorm.Model  `json:"-"`
 	}
 
-	ProcessCreatePayload struct {
+	ProcessPayloadCreate struct {
 		Name        string `json:"name" validate:"required"`
 		Description string `json:"description"`
+	}
+
+	ProcessPayloadGetAll struct {
+		// column
+		Name        FilteringQueryParams `query:"name"`
+		Description FilteringQueryParams `query:"description"`
+		// built-in
+		Pagination PagingQueryParams `query:"_pagination"`
+		Sort       SortQueryParams   `query:"_sort"`
 	}
 )
