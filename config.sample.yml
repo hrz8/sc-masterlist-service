@@ -1,0 +1,8 @@
+SERVICE:
+  PORT: 5000
+DATABASE: 
+  HOST: localhost
+  PORT: 3306
+  USER: root
+  PASSWORD: root
+  NAME: db_name
