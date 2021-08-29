@@ -31,7 +31,6 @@ func (m *mysql) Connect() *gorm.DB {
 	if err != nil {
 		log.Fatal("[SYSINIT-DBCONNECT]: Failed to open connection to database")
 	}
-
 	return db
 }
 
