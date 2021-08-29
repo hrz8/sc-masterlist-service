@@ -2,8 +2,8 @@ package models
 
 type (
 	FilteringQueryParams struct {
-		Eq   interface{}
-		Like interface{}
+		Eq   string
+		Like string
 		Gte  interface{}
 		Lte  interface{}
 	}
