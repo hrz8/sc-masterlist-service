@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
@@ -35,8 +34,7 @@ func (i *impl) Create(c echo.Context) error {
 func (i *impl) GetAll(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProcessPayloadGetAll)
-	fmt.Println(payload)
-	result, err := i.usecase.GetAll()
+	result, err := i.usecase.GetAll(payload)
 	if err != nil {
 		return i.errorLib.ProcessErrorCreate(ctx, err.Error())
 	}

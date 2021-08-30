@@ -64,8 +64,12 @@ func QueryParamsBind(destination interface{}, c echo.Context) (err error) {
 				sortBy, sortByExists := queryParams["sort[by]"]
 				sortMode, sortModeExists := queryParams["sort[mode]"]
 
+				if !sortByExists || !sortModeExists {
+					continue
+				}
+
 				_, modeValid := helpers.Contains([]string{"asc", "desc"}, sortMode[0])
-				if !sortByExists || !sortModeExists || !modeValid {
+				if !modeValid {
 					continue
 				}
 

@@ -14,7 +14,7 @@ type (
 	}
 
 	SortQueryParams struct {
-		By   interface{}
-		Mode interface{}
+		By   string
+		Mode string
 	}
 )

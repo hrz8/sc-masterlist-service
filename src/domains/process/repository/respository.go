@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
 )
@@ -8,7 +9,7 @@ import (
 type (
 	RepositoryInterface interface {
 		Create(*models.Process) (*models.Process, error)
-		GetAll() (*[]models.Process, error)
+		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, error)
 	}
 
 	impl struct {
@@ -23,9 +24,29 @@ func (i *impl) Create(process *models.Process) (*models.Process, error) {
 	return process, nil
 }
 
-func (i *impl) GetAll() (*[]models.Process, error) {
+func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error) {
 	result := []models.Process{}
-	if err := i.db.Find(&result).Error; err != nil {
+	executor := i.db.
+		Where("name LIKE ?", "%"+c.Name.Like+"%").
+		Where("description LIKE ?", "%"+c.Description.Like+"%")
+
+	if c.Name.Eq != "" {
+		executor = executor.Where("name = ?", c.Name.Eq)
+	}
+	if c.Description.Eq != "" {
+		executor = executor.Where("description = ?", c.Description.Eq)
+	}
+	if c.Sort.By != "" && c.Sort.Mode != "" {
+		executor = executor.Order(c.Sort.By + " " + c.Sort.Mode)
+	}
+	if c.Pagination.Limit != nil {
+		executor = executor.Limit(c.Pagination.Limit.(int))
+	}
+	if c.Pagination.Limit != nil && c.Pagination.Page != nil {
+		executor = executor.Offset(helpers.GetOffset(c.Pagination.Limit.(int), c.Pagination.Limit.(int)))
+	}
+
+	if err := executor.Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil

@@ -9,7 +9,7 @@ import (
 type (
 	UsecaseInterface interface {
 		Create(*models.ProcessPayloadCreate) (*models.Process, error)
-		GetAll() (*[]models.Process, error)
+		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, error)
 	}
 
 	impl struct {
@@ -28,8 +28,8 @@ func (i *impl) Create(process *models.ProcessPayloadCreate) (*models.Process, er
 	return result, err
 }
 
-func (i *impl) GetAll() (*[]models.Process, error) {
-	result, err := i.repository.GetAll()
+func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error) {
+	result, err := i.repository.GetAll(c)
 	return result, err
 }
 
