@@ -18,3 +18,11 @@ func Contains(slice []string, val string) (int, bool) {
 	}
 	return -1, false
 }
+
+func GetOffset(page int, limit int) int {
+	offset := (page - 1) * limit
+	if offset < 0 {
+		return 0
+	}
+	return offset
+}
