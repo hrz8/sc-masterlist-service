@@ -10,6 +10,7 @@ type (
 	RepositoryInterface interface {
 		Create(*models.Process) (*models.Process, error)
 		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, error)
+		Get(*string) (*models.Process, error)
 	}
 
 	impl struct {
@@ -36,6 +37,12 @@ func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error)
 	if c.Description.Eq != "" {
 		executor = executor.Where("description = ?", c.Description.Eq)
 	}
+	if c.CreatedAt.Gte != nil && c.CreatedAt.Lte != nil {
+		executor = executor.Where("created_at BETWEEN ? AND ?", c.CreatedAt.Gte, c.CreatedAt.Lte)
+	}
+	if c.UpdatedAt.Gte != nil && c.UpdatedAt.Lte != nil {
+		executor = executor.Where("updated_at BETWEEN ? AND ?", c.UpdatedAt.Gte, c.UpdatedAt.Lte)
+	}
 	if c.Sort.By != "" && c.Sort.Mode != "" {
 		executor = executor.Order(c.Sort.By + " " + c.Sort.Mode)
 	}
@@ -47,6 +54,14 @@ func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error)
 	}
 
 	if err := executor.Find(&result).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (i *impl) Get(id *string) (*models.Process, error) {
+	result := models.Process{}
+	if err := i.db.First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil

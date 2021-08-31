@@ -45,6 +45,7 @@ func main() {
 	// endpoints
 	e.POST("/api/v1/process", processRest.Create, utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadCreate{}), false))
 	e.GET("/api/v1/process", processRest.GetAll, utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadGetAll{}), true))
+	e.GET("/api/v1/process/:id", processRest.Get, utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadGet{}), false))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
 }

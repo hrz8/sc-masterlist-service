@@ -13,6 +13,7 @@ type (
 	RestInterface interface {
 		Create(echo.Context) error
 		GetAll(echo.Context) error
+		Get(echo.Context) error
 	}
 
 	impl struct {
@@ -36,9 +37,19 @@ func (i *impl) GetAll(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadGetAll)
 	result, err := i.usecase.GetAll(payload)
 	if err != nil {
-		return i.errorLib.ProcessErrorCreate(ctx, err.Error())
+		return i.errorLib.ProcessErrorGetAll(ctx, err.Error())
 	}
 	return ctx.SuccessResponse(result, "success fetch all process", http.StatusOK, nil)
+}
+
+func (i *impl) Get(c echo.Context) error {
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.ProcessPayloadGet)
+	result, err := i.usecase.Get(&payload.ID)
+	if err != nil {
+		return i.errorLib.ProcessErrorGet(ctx, err.Error())
+	}
+	return ctx.SuccessResponse(result, "success get process", http.StatusOK, nil)
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
