@@ -26,3 +26,18 @@ func GetOffset(page int, limit int) int {
 	}
 	return offset
 }
+
+func NilToEmptyMap(d *interface{}) interface{} {
+	data := *d
+	if *d == nil {
+		data = make(map[string]interface{})
+	}
+	return data
+}
+
+func ParseStatusResponse(m *string, s *uint16) uint16 {
+	if *m == "record not found" {
+		return 404
+	}
+	return *s
+}
