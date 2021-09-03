@@ -38,4 +38,10 @@ type (
 		// column
 		ID string `param:"id"`
 	}
+
+	// ProcessPayloadDelete represents payload to get process by identifier
+	ProcessPayloadDelete struct {
+		// column
+		ID string `param:"id"`
+	}
 )

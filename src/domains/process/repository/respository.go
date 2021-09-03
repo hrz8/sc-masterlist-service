@@ -11,6 +11,7 @@ type (
 		Create(*models.Process) (*models.Process, error)
 		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, error)
 		Get(*string) (*models.Process, error)
+		Delete(*string) (*models.Process, error)
 	}
 
 	impl struct {
@@ -65,6 +66,18 @@ func (i *impl) Get(id *string) (*models.Process, error) {
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (i *impl) Delete(id *string) (*models.Process, error) {
+	process, err := i.Get(id)
+	if err != nil {
+		return nil, err
+	}
+	result := models.Process{}
+	if err := i.db.Delete(&result, id).Error; err != nil {
+		return nil, err
+	}
+	return process, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {

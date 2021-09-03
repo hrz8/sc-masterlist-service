@@ -11,6 +11,7 @@ type (
 		Create(*models.ProcessPayloadCreate) (*models.Process, error)
 		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, error)
 		Get(*string) (*models.Process, error)
+		Delete(*string) (*models.Process, error)
 	}
 
 	impl struct {
@@ -36,6 +37,11 @@ func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error)
 
 func (i *impl) Get(id *string) (*models.Process, error) {
 	result, err := i.repository.Get(id)
+	return result, err
+}
+
+func (i *impl) Delete(id *string) (*models.Process, error) {
+	result, err := i.repository.Delete(id)
 	return result, err
 }
 
