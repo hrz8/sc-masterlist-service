@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 
 	ProcessRest "github.com/hrz8/sc-masterlist-service/src/domains/process/delivery/rest"
 	ProcessRepository "github.com/hrz8/sc-masterlist-service/src/domains/process/repository"
 	ProcessUsecase "github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
-	"github.com/hrz8/sc-masterlist-service/src/models"
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
 	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
@@ -42,10 +40,8 @@ func main() {
 		}
 	})
 
-	// endpoints
-	e.POST("/api/v1/process", processRest.Create, utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadCreate{}), false))
-	e.GET("/api/v1/process", processRest.GetAll, utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadGetAll{}), true))
-	e.GET("/api/v1/process/:id", processRest.Get, utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadGet{}), false))
+	// delivery endpoint implementation
+	ProcessRest.AddProcessEndpoints(e, processRest)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
 }
