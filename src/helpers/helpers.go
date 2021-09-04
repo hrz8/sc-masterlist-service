@@ -1,6 +1,9 @@
 package helpers
 
-import "strconv"
+import (
+	"net/http"
+	"strconv"
+)
 
 func ParseStringToInt(str string) int {
 	result, err := strconv.Atoi(str)
@@ -37,7 +40,7 @@ func NilToEmptyMap(d *interface{}) interface{} {
 
 func ParseStatusResponse(m *string, s *uint16) uint16 {
 	if *m == "record not found" {
-		return 404
+		return http.StatusNotFound
 	}
 	return *s
 }
