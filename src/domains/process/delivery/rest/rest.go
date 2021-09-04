@@ -14,8 +14,9 @@ type (
 	RestInterface interface {
 		Create(echo.Context) error
 		GetAll(echo.Context) error
-		Get(echo.Context) error
-		Delete(echo.Context) error
+		GetById(echo.Context) error
+		DeleteById(echo.Context) error
+		UpdateById(echo.Context) error
 	}
 
 	impl struct {
@@ -48,10 +49,10 @@ func (i *impl) GetAll(c echo.Context) error {
 	return ctx.SuccessResponse(result, "success fetch all process", http.StatusOK, nil)
 }
 
-func (i *impl) Get(c echo.Context) error {
+func (i *impl) GetById(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProcessPayloadGet)
-	result, err := i.usecase.Get(&payload.ID)
+	result, err := i.usecase.GetById(&payload.ID)
 	if err != nil {
 		errMessage := err.Error()
 		_errStatus := uint16(http.StatusBadRequest)
@@ -61,17 +62,30 @@ func (i *impl) Get(c echo.Context) error {
 	return ctx.SuccessResponse(result, "success get process", http.StatusOK, nil)
 }
 
-func (i *impl) Delete(c echo.Context) error {
+func (i *impl) DeleteById(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
-	payload := ctx.Payload.(*models.ProcessPayloadDelete)
-	result, err := i.usecase.Delete(&payload.ID)
+	payload := ctx.Payload.(*models.ProcessPayloadDeleteById)
+	result, err := i.usecase.DeleteById(&payload.ID)
 	if err != nil {
 		errMessage := err.Error()
-		_errStatus := uint16(http.StatusBadRequest)
-		errStatus := helpers.ParseStatusResponse(&errMessage, &_errStatus)
+		status := uint16(http.StatusBadRequest)
+		errStatus := helpers.ParseStatusResponse(&errMessage, &status)
 		return i.errorLib.ProcessErrorGet(ctx, &errMessage, &errStatus)
 	}
 	return ctx.SuccessResponse(result, "success delete process", http.StatusOK, nil)
+}
+
+func (i *impl) UpdateById(c echo.Context) error {
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.ProcessPayloadUpdateById)
+	result, err := i.usecase.UpdateById(&payload.ID, payload)
+	if err != nil {
+		errMessage := err.Error()
+		status := uint16(http.StatusBadRequest)
+		errStatus := helpers.ParseStatusResponse(&errMessage, &status)
+		return i.errorLib.ProcessErrorGet(ctx, &errMessage, &errStatus)
+	}
+	return ctx.SuccessResponse(result, "success update process", http.StatusOK, nil)
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {

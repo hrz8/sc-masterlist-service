@@ -11,6 +11,7 @@ import (
 func AddProcessEndpoints(e *echo.Echo, rest RestInterface) {
 	e.POST("/api/v1/process", rest.Create, Utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadCreate{}), false))
 	e.GET("/api/v1/process", rest.GetAll, Utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadGetAll{}), true))
-	e.GET("/api/v1/process/:id", rest.Get, Utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadGet{}), false))
-	e.DELETE("/api/v1/process/:id", rest.Delete, Utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadDelete{}), false))
+	e.GET("/api/v1/process/:id", rest.GetById, Utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadGet{}), false))
+	e.DELETE("/api/v1/process/:id", rest.DeleteById, Utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadDeleteById{}), false))
+	e.PUT("/api/v1/process/:id", rest.UpdateById, Utils.ValidatorMiddleware(reflect.TypeOf(models.ProcessPayloadUpdateById{}), false))
 }

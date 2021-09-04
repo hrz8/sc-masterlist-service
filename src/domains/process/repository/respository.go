@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
@@ -10,8 +11,9 @@ type (
 	RepositoryInterface interface {
 		Create(*models.Process) (*models.Process, error)
 		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, error)
-		Get(*string) (*models.Process, error)
-		Delete(*string) (*models.Process, error)
+		GetById(*uuid.UUID) (*models.Process, error)
+		DeleteById(*uuid.UUID) error
+		Update(*models.Process, *models.ProcessPayloadUpdateById) (*models.Process, error)
 	}
 
 	impl struct {
@@ -19,11 +21,11 @@ type (
 	}
 )
 
-func (i *impl) Create(process *models.Process) (*models.Process, error) {
-	if err := i.db.Create(&process).Error; err != nil {
+func (i *impl) Create(p *models.Process) (*models.Process, error) {
+	if err := i.db.Debug().Create(&p).Error; err != nil {
 		return nil, err
 	}
-	return process, nil
+	return p, nil
 }
 
 func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error) {
@@ -54,30 +56,36 @@ func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error)
 		executor = executor.Offset(helpers.GetOffset(c.Pagination.Limit.(int), c.Pagination.Limit.(int)))
 	}
 
-	if err := executor.Find(&result).Error; err != nil {
+	if err := executor.Debug().Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil
 }
 
-func (i *impl) Get(id *string) (*models.Process, error) {
+func (i *impl) GetById(id *uuid.UUID) (*models.Process, error) {
 	result := models.Process{}
-	if err := i.db.First(&result, id).Error; err != nil {
+	if err := i.db.Debug().First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil
 }
 
-func (i *impl) Delete(id *string) (*models.Process, error) {
-	process, err := i.Get(id)
-	if err != nil {
-		return nil, err
-	}
+func (i *impl) DeleteById(id *uuid.UUID) error {
 	result := models.Process{}
-	if err := i.db.Delete(&result, id).Error; err != nil {
+	if err := i.db.Debug().Delete(&result, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (i *impl) Update(ip *models.Process, p *models.ProcessPayloadUpdateById) (*models.Process, error) {
+	if err := i.db.Debug().Model(ip).Updates(models.Process{
+		Name:        (*p).Name,
+		Description: (*p).Description,
+	}).Error; err != nil {
 		return nil, err
 	}
-	return process, nil
+	return ip, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {
