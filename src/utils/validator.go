@@ -144,6 +144,15 @@ func ValidatorMiddleware(models reflect.Type, queryParamsBinder bool) func(echo.
 				}
 			} else {
 				if err := ctx.Bind(payload); err != nil {
+					if strings.Contains(err.Error(), "uuid") {
+						return ctx.ErrorResponse(
+							nil,
+							"invalid id",
+							http.StatusNotFound,
+							"SCM-VALIDATOR-002",
+							nil,
+						)
+					}
 					return BinderError(ctx)
 				}
 			}
