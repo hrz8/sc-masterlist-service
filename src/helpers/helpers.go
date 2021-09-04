@@ -1,7 +1,11 @@
 package helpers
 
-import "strconv"
+import (
+	"net/http"
+	"strconv"
+)
 
+// ParseStringToInt is a helper function to convert string to integer
 func ParseStringToInt(str string) int {
 	result, err := strconv.Atoi(str)
 	if err != nil {
@@ -10,7 +14,8 @@ func ParseStringToInt(str string) int {
 	return result
 }
 
-func Contains(slice []string, val string) (int, bool) {
+// SliceStringContains is a helper function to check if slice of string contains string
+func SliceStringContains(slice []string, val string) (int, bool) {
 	for i, item := range slice {
 		if item == val {
 			return i, true
@@ -19,6 +24,7 @@ func Contains(slice []string, val string) (int, bool) {
 	return -1, false
 }
 
+// GetOffset is a helper function to get sql offset value from page and limit args
 func GetOffset(page int, limit int) int {
 	offset := (page - 1) * limit
 	if offset < 0 {
@@ -27,6 +33,7 @@ func GetOffset(page int, limit int) int {
 	return offset
 }
 
+// NilToEmptyMap is a helper function to convert nil value to {}
 func NilToEmptyMap(d *interface{}) interface{} {
 	data := *d
 	if *d == nil {
@@ -35,9 +42,10 @@ func NilToEmptyMap(d *interface{}) interface{} {
 	return data
 }
 
+// ParseStatusResponse is a helper function to get http status from error message
 func ParseStatusResponse(m *string, s *uint16) uint16 {
 	if *m == "record not found" {
-		return 404
+		return http.StatusNotFound
 	}
 	return *s
 }

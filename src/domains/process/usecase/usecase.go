@@ -10,8 +10,9 @@ type (
 	UsecaseInterface interface {
 		Create(*models.ProcessPayloadCreate) (*models.Process, error)
 		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, error)
-		Get(*string) (*models.Process, error)
-		Delete(*string) (*models.Process, error)
+		GetById(*uuid.UUID) (*models.Process, error)
+		DeleteById(*uuid.UUID) (*models.Process, error)
+		UpdateById(*uuid.UUID, *models.ProcessPayloadUpdateById) (*models.Process, error)
 	}
 
 	impl struct {
@@ -30,18 +31,33 @@ func (i *impl) Create(process *models.ProcessPayloadCreate) (*models.Process, er
 	return result, err
 }
 
-func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error) {
-	result, err := i.repository.GetAll(c)
+func (i *impl) GetAll(conditions *models.ProcessPayloadGetAll) (*[]models.Process, error) {
+	result, err := i.repository.GetAll(conditions)
 	return result, err
 }
 
-func (i *impl) Get(id *string) (*models.Process, error) {
-	result, err := i.repository.Get(id)
+func (i *impl) GetById(id *uuid.UUID) (*models.Process, error) {
+	result, err := i.repository.GetById(id)
 	return result, err
 }
 
-func (i *impl) Delete(id *string) (*models.Process, error) {
-	result, err := i.repository.Delete(id)
+func (i *impl) DeleteById(id *uuid.UUID) (*models.Process, error) {
+	instance, err := i.repository.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+	if err := i.repository.DeleteById(id); err != nil {
+		return nil, err
+	}
+	return instance, nil
+}
+
+func (i *impl) UpdateById(id *uuid.UUID, payload *models.ProcessPayloadUpdateById) (*models.Process, error) {
+	instance, err := i.repository.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+	result, err := i.repository.Update(instance, payload)
 	return result, err
 }
 

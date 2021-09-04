@@ -68,7 +68,7 @@ func QueryParamsBind(destination interface{}, c echo.Context) (err error) {
 					continue
 				}
 
-				_, modeValid := helpers.Contains([]string{"asc", "desc"}, sortMode[0])
+				_, modeValid := helpers.SliceStringContains([]string{"asc", "desc"}, sortMode[0])
 				if !modeValid {
 					continue
 				}
@@ -144,6 +144,15 @@ func ValidatorMiddleware(models reflect.Type, queryParamsBinder bool) func(echo.
 				}
 			} else {
 				if err := ctx.Bind(payload); err != nil {
+					if strings.Contains(err.Error(), "uuid") {
+						return ctx.ErrorResponse(
+							nil,
+							"invalid id",
+							http.StatusNotFound,
+							"SCM-VALIDATOR-002",
+							nil,
+						)
+					}
 					return BinderError(ctx)
 				}
 			}

@@ -11,6 +11,7 @@ import (
 	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -30,6 +31,7 @@ func main() {
 	// rest server
 	e := echo.New()
 	e.Validator = utils.NewValidator()
+	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			cc := &utils.CustomContext{
