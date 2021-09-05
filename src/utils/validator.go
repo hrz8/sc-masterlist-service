@@ -3,6 +3,7 @@ package utils
 import (
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -30,6 +31,17 @@ func NewValidator() echo.Validator {
 	}
 }
 
+func strToBool(val string) bool {
+	if val == "" {
+		val = "false"
+	}
+	boolVal, err := strconv.ParseBool(val)
+	if err != nil {
+		boolVal = false
+	}
+	return boolVal
+}
+
 // FIXME: look for better way
 func QueryParamsBind(destination interface{}, c echo.Context) (err error) {
 	queryParams := c.QueryParams()
@@ -40,8 +52,9 @@ func QueryParamsBind(destination interface{}, c echo.Context) (err error) {
 	val := reflect.ValueOf(destination).Elem()
 
 	for i := 0; i < typ.NumField(); i++ {
-		structField := typ.Field(i)
-		queryTag := structField.Tag.Get("query")
+		typeField := typ.Field(i)
+		// structField := val.Field(i)
+		queryTag := typeField.Tag.Get("query")
 
 		found := false
 		switch queryTag {
@@ -76,6 +89,27 @@ func QueryParamsBind(destination interface{}, c echo.Context) (err error) {
 				val.Field(i).Set(reflect.ValueOf(models.SortQueryParams{
 					By:   sortBy[0],
 					Mode: sortMode[0],
+				}))
+			}
+		case "_deleted":
+			{
+				deletedInclude, deletedIncludeExists := queryParams["deleted[include]"]
+				deletedOnly, deletedOnlyExists := queryParams["deleted[only]"]
+
+				include := false
+				only := false
+
+				if deletedIncludeExists {
+					include = strToBool(deletedInclude[0])
+				}
+
+				if deletedOnlyExists {
+					only = strToBool(deletedOnly[0])
+				}
+
+				val.Field(i).Set(reflect.ValueOf(models.DeleteQueryParams{
+					Include: include,
+					Only:    only,
 				}))
 			}
 		default:

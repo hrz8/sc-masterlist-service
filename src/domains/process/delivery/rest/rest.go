@@ -34,7 +34,11 @@ func (i *impl) Create(c echo.Context) error {
 		errStatus := uint16(http.StatusBadRequest)
 		return i.errorLib.ProcessErrorCreate(ctx, &errMessage, &errStatus)
 	}
-	return ctx.SuccessResponse(result, "success create process", http.StatusOK, nil)
+	return ctx.SuccessResponse(
+		result,
+		"success create process",
+		nil,
+	)
 }
 
 func (i *impl) GetAll(c echo.Context) error {
@@ -46,7 +50,13 @@ func (i *impl) GetAll(c echo.Context) error {
 		errStatus := uint16(http.StatusBadRequest)
 		return i.errorLib.ProcessErrorGetAll(ctx, &errMessage, &errStatus)
 	}
-	return ctx.SuccessResponse(result, "success fetch all process", http.StatusOK, nil)
+	return ctx.SuccessResponse(
+		result,
+		"success fetch all process",
+		utils.ListMetaResponse{
+			Total: len(*result),
+		},
+	)
 }
 
 func (i *impl) GetById(c echo.Context) error {
@@ -55,11 +65,14 @@ func (i *impl) GetById(c echo.Context) error {
 	result, err := i.usecase.GetById(&payload.ID)
 	if err != nil {
 		errMessage := err.Error()
-		_errStatus := uint16(http.StatusBadRequest)
-		errStatus := helpers.ParseStatusResponse(&errMessage, &_errStatus)
+		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
 		return i.errorLib.ProcessErrorGet(ctx, &errMessage, &errStatus)
 	}
-	return ctx.SuccessResponse(result, "success get process", http.StatusOK, nil)
+	return ctx.SuccessResponse(
+		result,
+		"success get process",
+		nil,
+	)
 }
 
 func (i *impl) DeleteById(c echo.Context) error {
@@ -68,11 +81,14 @@ func (i *impl) DeleteById(c echo.Context) error {
 	result, err := i.usecase.DeleteById(&payload.ID)
 	if err != nil {
 		errMessage := err.Error()
-		status := uint16(http.StatusBadRequest)
-		errStatus := helpers.ParseStatusResponse(&errMessage, &status)
+		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
 		return i.errorLib.ProcessErrorGet(ctx, &errMessage, &errStatus)
 	}
-	return ctx.SuccessResponse(result, "success delete process", http.StatusOK, nil)
+	return ctx.SuccessResponse(
+		result,
+		"success delete process",
+		nil,
+	)
 }
 
 func (i *impl) UpdateById(c echo.Context) error {
@@ -81,11 +97,14 @@ func (i *impl) UpdateById(c echo.Context) error {
 	result, err := i.usecase.UpdateById(&payload.ID, payload)
 	if err != nil {
 		errMessage := err.Error()
-		status := uint16(http.StatusBadRequest)
-		errStatus := helpers.ParseStatusResponse(&errMessage, &status)
+		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
 		return i.errorLib.ProcessErrorGet(ctx, &errMessage, &errStatus)
 	}
-	return ctx.SuccessResponse(result, "success update process", http.StatusOK, nil)
+	return ctx.SuccessResponse(
+		result,
+		"success update process",
+		nil,
+	)
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {

@@ -34,6 +34,12 @@ func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error)
 		Where("name LIKE ?", "%"+c.Name.Like+"%").
 		Where("description LIKE ?", "%"+c.Description.Like+"%")
 
+	if c.Deleted.Only {
+		executor = executor.Unscoped().Where("deleted_at IS NOT NULL")
+	}
+	if c.Deleted.Include {
+		executor = executor.Unscoped()
+	}
 	if c.Name.Eq != "" {
 		executor = executor.Where("name = ?", c.Name.Eq)
 	}
@@ -53,7 +59,7 @@ func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error)
 		executor = executor.Limit(c.Pagination.Limit.(int))
 	}
 	if c.Pagination.Limit != nil && c.Pagination.Page != nil {
-		executor = executor.Offset(helpers.GetOffset(c.Pagination.Limit.(int), c.Pagination.Limit.(int)))
+		executor = executor.Offset(helpers.GetOffset(c.Pagination.Page.(int), c.Pagination.Limit.(int)))
 	}
 
 	if err := executor.Debug().Find(&result).Error; err != nil {

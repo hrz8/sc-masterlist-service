@@ -31,6 +31,7 @@ type (
 		// built-in
 		Pagination PagingQueryParams `query:"_pagination"`
 		Sort       SortQueryParams   `query:"_sort"`
+		Deleted    DeleteQueryParams `query:"_deleted"`
 	}
 
 	// ProcessPayloadGet represents payload to get process by identifier
