@@ -59,7 +59,7 @@ func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error)
 		executor = executor.Limit(c.Pagination.Limit.(int))
 	}
 	if c.Pagination.Limit != nil && c.Pagination.Page != nil {
-		executor = executor.Offset(helpers.GetOffset(c.Pagination.Limit.(int), c.Pagination.Limit.(int)))
+		executor = executor.Offset(helpers.GetOffset(c.Pagination.Page.(int), c.Pagination.Limit.(int)))
 	}
 
 	if err := executor.Debug().Find(&result).Error; err != nil {

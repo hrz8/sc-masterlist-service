@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"net/http"
+
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -14,7 +16,8 @@ type (
 	}
 )
 
-func (c *CustomContext) SuccessResponse(data interface{}, message string, status uint16, meta interface{}) error {
+func (c *CustomContext) SuccessResponse(data interface{}, message string, meta interface{}) error {
+	status := int(http.StatusOK)
 	return c.JSON(int(status), &SuccessResponse{
 		Data:    data,
 		Message: message,
