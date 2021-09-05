@@ -1,8 +1,11 @@
 package helpers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
+
+	"gorm.io/gorm"
 )
 
 // ParseStringToInt is a helper function to convert string to integer
@@ -42,10 +45,10 @@ func NilToEmptyMap(d *interface{}) interface{} {
 	return data
 }
 
-// ParseStatusResponse is a helper function to get http status from error message
-func ParseStatusResponse(m *string, s *uint16) uint16 {
-	if *m == "record not found" {
+// ParseStatusResponse is a helper function to get http status from error interface
+func ParseStatusResponse(err error, s uint16) uint16 {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return http.StatusNotFound
 	}
-	return *s
+	return s
 }
