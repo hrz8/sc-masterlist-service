@@ -20,4 +20,10 @@ type (
 		By   string
 		Mode string
 	}
+
+	// DeleteQueryParams represents payload as LHS bracket for deleted rows selection
+	DeleteQueryParams struct {
+		Include bool
+		Only    bool
+	}
 )

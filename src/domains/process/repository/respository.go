@@ -34,6 +34,12 @@ func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error)
 		Where("name LIKE ?", "%"+c.Name.Like+"%").
 		Where("description LIKE ?", "%"+c.Description.Like+"%")
 
+	if c.Deleted.Only {
+		executor = executor.Unscoped().Where("deleted_at IS NOT NULL")
+	}
+	if c.Deleted.Include {
+		executor = executor.Unscoped()
+	}
 	if c.Name.Eq != "" {
 		executor = executor.Where("name = ?", c.Name.Eq)
 	}
