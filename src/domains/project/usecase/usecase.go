@@ -2,17 +2,17 @@ package usecase
 
 import (
 	"github.com/gofrs/uuid"
-	"github.com/hrz8/sc-masterlist-service/src/domains/process/repository"
+	"github.com/hrz8/sc-masterlist-service/src/domains/project/repository"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 )
 
 type (
 	UsecaseInterface interface {
-		Create(*models.ProcessPayloadCreate) (*models.Process, error)
-		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, *int64, error)
-		GetById(*uuid.UUID) (*models.Process, error)
-		DeleteById(*uuid.UUID) (*models.Process, error)
-		UpdateById(*uuid.UUID, *models.ProcessPayloadUpdateById) (*models.Process, error)
+		Create(*models.ProjectPayloadCreate) (*models.Project, error)
+		GetAll(*models.ProjectPayloadGetAll) (*[]models.Project, *int64, error)
+		GetById(*uuid.UUID) (*models.Project, error)
+		DeleteById(*uuid.UUID) (*models.Project, error)
+		UpdateById(*uuid.UUID, *models.ProjectPayloadUpdateById) (*models.Project, error)
 	}
 
 	impl struct {
@@ -20,28 +20,28 @@ type (
 	}
 )
 
-func (i *impl) Create(process *models.ProcessPayloadCreate) (*models.Process, error) {
+func (i *impl) Create(project *models.ProjectPayloadCreate) (*models.Project, error) {
 	id, _ := uuid.NewV4()
-	payload := &models.Process{
+	payload := &models.Project{
 		ID:          id,
-		Name:        process.Name,
-		Description: process.Description,
+		Name:        project.Name,
+		Description: project.Description,
 	}
 	result, err := i.repository.Create(payload)
 	return result, err
 }
 
-func (i *impl) GetAll(conditions *models.ProcessPayloadGetAll) (*[]models.Process, *int64, error) {
+func (i *impl) GetAll(conditions *models.ProjectPayloadGetAll) (*[]models.Project, *int64, error) {
 	result, total, err := i.repository.GetAll(conditions)
 	return result, total, err
 }
 
-func (i *impl) GetById(id *uuid.UUID) (*models.Process, error) {
+func (i *impl) GetById(id *uuid.UUID) (*models.Project, error) {
 	result, err := i.repository.GetById(id)
 	return result, err
 }
 
-func (i *impl) DeleteById(id *uuid.UUID) (*models.Process, error) {
+func (i *impl) DeleteById(id *uuid.UUID) (*models.Project, error) {
 	instance, err := i.repository.GetById(id)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (i *impl) DeleteById(id *uuid.UUID) (*models.Process, error) {
 	return instance, nil
 }
 
-func (i *impl) UpdateById(id *uuid.UUID, payload *models.ProcessPayloadUpdateById) (*models.Process, error) {
+func (i *impl) UpdateById(id *uuid.UUID, payload *models.ProjectPayloadUpdateById) (*models.Project, error) {
 	instance, err := i.repository.GetById(id)
 	if err != nil {
 		return nil, err

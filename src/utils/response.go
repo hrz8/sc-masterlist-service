@@ -20,6 +20,7 @@ type (
 
 	// ListMetaResponse represents structure of meta rest response
 	ListMetaResponse struct {
-		Total int `json:"total"`
+		Count int   `json:"count"`
+		Total int64 `json:"total"`
 	}
 )
