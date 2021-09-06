@@ -10,7 +10,7 @@ import (
 type (
 	RepositoryInterface interface {
 		Create(*models.Process) (*models.Process, error)
-		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, error)
+		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, *int64, error)
 		GetById(*uuid.UUID) (*models.Process, error)
 		DeleteById(*uuid.UUID) error
 		Update(*models.Process, *models.ProcessPayloadUpdateById) (*models.Process, error)
@@ -28,7 +28,7 @@ func (i *impl) Create(p *models.Process) (*models.Process, error) {
 	return p, nil
 }
 
-func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error) {
+func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, *int64, error) {
 	result := []models.Process{}
 	executor := i.db.
 		Where("name LIKE ?", "%"+c.Name.Like+"%").
@@ -63,9 +63,16 @@ func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, error)
 	}
 
 	if err := executor.Debug().Find(&result).Error; err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return &result, nil
+
+	// get count from all rows
+	var total int64
+	if err := i.db.Model(&models.Process{}).Count(&total).Error; err != nil {
+		return nil, nil, err
+	}
+
+	return &result, &total, nil
 }
 
 func (i *impl) GetById(id *uuid.UUID) (*models.Process, error) {

@@ -10,7 +10,7 @@ import (
 type (
 	RepositoryInterface interface {
 		Create(*models.Project) (*models.Project, error)
-		GetAll(*models.ProjectPayloadGetAll) (*[]models.Project, error)
+		GetAll(*models.ProjectPayloadGetAll) (*[]models.Project, *int64, error)
 		GetById(*uuid.UUID) (*models.Project, error)
 		DeleteById(*uuid.UUID) error
 		Update(*models.Project, *models.ProjectPayloadUpdateById) (*models.Project, error)
@@ -28,7 +28,7 @@ func (i *impl) Create(p *models.Project) (*models.Project, error) {
 	return p, nil
 }
 
-func (i *impl) GetAll(c *models.ProjectPayloadGetAll) (*[]models.Project, error) {
+func (i *impl) GetAll(c *models.ProjectPayloadGetAll) (*[]models.Project, *int64, error) {
 	result := []models.Project{}
 	executor := i.db.
 		Where("name LIKE ?", "%"+c.Name.Like+"%").
@@ -63,9 +63,16 @@ func (i *impl) GetAll(c *models.ProjectPayloadGetAll) (*[]models.Project, error)
 	}
 
 	if err := executor.Debug().Find(&result).Error; err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return &result, nil
+
+	// get count from all rows
+	var total int64
+	if err := i.db.Model(&models.Project{}).Count(&total).Error; err != nil {
+		return nil, nil, err
+	}
+
+	return &result, &total, nil
 }
 
 func (i *impl) GetById(id *uuid.UUID) (*models.Project, error) {

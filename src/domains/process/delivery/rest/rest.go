@@ -44,7 +44,7 @@ func (i *impl) Create(c echo.Context) error {
 func (i *impl) GetAll(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProcessPayloadGetAll)
-	result, err := i.usecase.GetAll(payload)
+	result, total, err := i.usecase.GetAll(payload)
 	if err != nil {
 		errMessage := err.Error()
 		errStatus := uint16(http.StatusBadRequest)
@@ -54,7 +54,8 @@ func (i *impl) GetAll(c echo.Context) error {
 		result,
 		"success fetch all process",
 		utils.ListMetaResponse{
-			Total: len(*result),
+			Count: len(*result),
+			Total: *total,
 		},
 	)
 }

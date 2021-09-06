@@ -9,7 +9,7 @@ import (
 type (
 	UsecaseInterface interface {
 		Create(*models.ProjectPayloadCreate) (*models.Project, error)
-		GetAll(*models.ProjectPayloadGetAll) (*[]models.Project, error)
+		GetAll(*models.ProjectPayloadGetAll) (*[]models.Project, *int64, error)
 		GetById(*uuid.UUID) (*models.Project, error)
 		DeleteById(*uuid.UUID) (*models.Project, error)
 		UpdateById(*uuid.UUID, *models.ProjectPayloadUpdateById) (*models.Project, error)
@@ -31,9 +31,9 @@ func (i *impl) Create(project *models.ProjectPayloadCreate) (*models.Project, er
 	return result, err
 }
 
-func (i *impl) GetAll(conditions *models.ProjectPayloadGetAll) (*[]models.Project, error) {
-	result, err := i.repository.GetAll(conditions)
-	return result, err
+func (i *impl) GetAll(conditions *models.ProjectPayloadGetAll) (*[]models.Project, *int64, error) {
+	result, total, err := i.repository.GetAll(conditions)
+	return result, total, err
 }
 
 func (i *impl) GetById(id *uuid.UUID) (*models.Project, error) {
