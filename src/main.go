@@ -15,6 +15,7 @@ import (
 
 	// domain sourcing
 	SourcingRepository "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/repository"
+	SourcingUsecase "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/usecase"
 
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
@@ -39,7 +40,8 @@ func main() {
 	processRepo := ProcessRepository.NewRepository(mysqlSess)
 	processUsecase := ProcessUsecase.NewUsecase(processRepo)
 	// - domain sourcing
-	SourcingRepository.NewRepository(mysqlSess)
+	sourcingRepo := SourcingRepository.NewRepository(mysqlSess)
+	SourcingUsecase.NewUsecase(sourcingRepo)
 	// #endregion
 
 	// #region rest loader
