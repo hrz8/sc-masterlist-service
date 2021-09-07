@@ -25,6 +25,7 @@ import (
 	// #endregion
 
 	// #region domain mould_maker
+	MouldMakerRest "github.com/hrz8/sc-masterlist-service/src/domains/mould_maker/delivery/rest"
 	MouldMakerRepository "github.com/hrz8/sc-masterlist-service/src/domains/mould_maker/repository"
 	MouldMakerUsecase "github.com/hrz8/sc-masterlist-service/src/domains/mould_maker/usecase"
 
@@ -57,7 +58,7 @@ func main() {
 	sourcingUsecase := SourcingUsecase.NewUsecase(sourcingRepo)
 	// - domain mould_maker
 	mouldMakerRepository := MouldMakerRepository.NewRepository(mysqlSess)
-	MouldMakerUsecase.NewUsecase(mouldMakerRepository)
+	mouldMakerUsecase := MouldMakerUsecase.NewUsecase(mouldMakerRepository)
 	// #endregion
 
 	// #region rest loader
@@ -67,6 +68,8 @@ func main() {
 	processRest := ProcessRest.NewRest(processUsecase)
 	// - domain sourcing
 	sourcingRest := SourcingRest.NewRest(sourcingUsecase)
+	// - domain mould_maker
+	mouldMakerRest := MouldMakerRest.NewRest(mouldMakerUsecase)
 	// #endregion
 
 	// rest server
@@ -90,6 +93,8 @@ func main() {
 	ProjectRest.AddProjectEndpoints(e, projectRest)
 	// - domain sourcing
 	SourcingRest.AddSourcingEndpoints(e, sourcingRest)
+	// - domain mould_maker
+	MouldMakerRest.AddMouldMakerEndpoints(e, mouldMakerRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
