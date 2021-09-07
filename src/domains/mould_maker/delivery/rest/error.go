@@ -12,29 +12,29 @@ type (
 		MouldMakerErrorDelete(*utils.CustomContext, *string, *uint16) error
 	}
 
-	sourcingErrorImpl struct {
+	mouldMakerErrorImpl struct {
 		prefix string
 	}
 )
 
-func (i *sourcingErrorImpl) MouldMakerErrorCreate(ctx *utils.CustomContext, message *string, status *uint16) error {
+func (i *mouldMakerErrorImpl) MouldMakerErrorCreate(ctx *utils.CustomContext, message *string, status *uint16) error {
 	return ctx.ErrorResponse(nil, *message, *status, i.prefix+"-001", nil)
 }
 
-func (i *sourcingErrorImpl) MouldMakerErrorGetAll(ctx *utils.CustomContext, message *string, status *uint16) error {
+func (i *mouldMakerErrorImpl) MouldMakerErrorGetAll(ctx *utils.CustomContext, message *string, status *uint16) error {
 	return ctx.ErrorResponse(nil, *message, *status, i.prefix+"-002", nil)
 }
 
-func (i *sourcingErrorImpl) MouldMakerErrorGet(ctx *utils.CustomContext, message *string, status *uint16) error {
+func (i *mouldMakerErrorImpl) MouldMakerErrorGet(ctx *utils.CustomContext, message *string, status *uint16) error {
 	return ctx.ErrorResponse(nil, *message, *status, i.prefix+"-003", nil)
 }
 
-func (i *sourcingErrorImpl) MouldMakerErrorDelete(ctx *utils.CustomContext, message *string, status *uint16) error {
+func (i *mouldMakerErrorImpl) MouldMakerErrorDelete(ctx *utils.CustomContext, message *string, status *uint16) error {
 	return ctx.ErrorResponse(nil, *message, *status, i.prefix+"-004", nil)
 }
 
 func NewMouldMakerError() MouldMakerErrorInterface {
-	return &sourcingErrorImpl{
+	return &mouldMakerErrorImpl{
 		prefix: "SCM-MOOULDMAKER",
 	}
 }
