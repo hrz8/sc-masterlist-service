@@ -48,7 +48,6 @@ type (
 
 	// MouldMakerPayloadDeleteById represents payload to delete mould maker by identifier
 	MouldMakerPayloadDeleteById struct {
-		// column
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 )

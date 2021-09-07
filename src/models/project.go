@@ -48,7 +48,6 @@ type (
 
 	// ProjectPayloadDeleteById represents payload to delete project by identifier
 	ProjectPayloadDeleteById struct {
-		// column
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 )

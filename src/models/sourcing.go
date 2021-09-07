@@ -48,7 +48,6 @@ type (
 
 	// SourcingPayloadDeleteById represents payload to delete sourcing by identifier
 	SourcingPayloadDeleteById struct {
-		// column
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 )

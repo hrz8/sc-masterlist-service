@@ -48,7 +48,6 @@ type (
 
 	// ProcessPayloadDeleteById represents payload to delete process by identifier
 	ProcessPayloadDeleteById struct {
-		// column
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 )
