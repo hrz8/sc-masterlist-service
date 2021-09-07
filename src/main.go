@@ -3,20 +3,30 @@ package main
 import (
 	"fmt"
 
-	// domain project
+	// #region domain project
 	ProjectRest "github.com/hrz8/sc-masterlist-service/src/domains/project/delivery/rest"
 	ProjectRepository "github.com/hrz8/sc-masterlist-service/src/domains/project/repository"
 	ProjectUsecase "github.com/hrz8/sc-masterlist-service/src/domains/project/usecase"
 
-	// domain process
+	// #endregion
+
+	// #region domain process
 	ProcessRest "github.com/hrz8/sc-masterlist-service/src/domains/process/delivery/rest"
 	ProcessRepository "github.com/hrz8/sc-masterlist-service/src/domains/process/repository"
 	ProcessUsecase "github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
 
-	// domain sourcing
+	// #endregion
+
+	// #region domain sourcing
 	SourcingRest "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/delivery/rest"
 	SourcingRepository "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/repository"
 	SourcingUsecase "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/usecase"
+
+	// #endregion
+
+	// #region domain mould_maker
+	MouldMakerRepository "github.com/hrz8/sc-masterlist-service/src/domains/mould_maker/repository"
+	// #endregion
 
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
@@ -43,6 +53,8 @@ func main() {
 	// - domain sourcing
 	sourcingRepo := SourcingRepository.NewRepository(mysqlSess)
 	sourcingUsecase := SourcingUsecase.NewUsecase(sourcingRepo)
+	// - domain mould_maker
+	MouldMakerRepository.NewRepository(mysqlSess)
 	// #endregion
 
 	// #region rest loader
