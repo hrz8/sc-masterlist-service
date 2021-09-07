@@ -36,7 +36,6 @@ type (
 
 	// ProjectPayloadGet represents payload to get project by identifier
 	ProjectPayloadGet struct {
-		// column
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 

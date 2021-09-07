@@ -36,7 +36,6 @@ type (
 
 	// SourcingPayloadGet represents payload to get sourcing by identifier
 	SourcingPayloadGet struct {
-		// column
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 
