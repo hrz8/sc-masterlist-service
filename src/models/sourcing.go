@@ -16,11 +16,11 @@ type (
 
 	// SourcingPayloadCreate represents payload to create sourcing
 	SourcingPayloadCreate struct {
-		Name        string `json:"name" validate:"required"`
+		Name        string `json:"name" validate:"required,max=50"`
 		Description string `json:"description"`
 	}
 
-	// SourcingPayloadGetAll represents payload to fetch all sourcinges
+	// SourcingPayloadGetAll represents payload to fetch all sourcings
 	SourcingPayloadGetAll struct {
 		// column
 		Name        FilteringQueryParams `query:"name"`
@@ -42,7 +42,7 @@ type (
 	// SourcingPayloadUpdateById represents payload to update sourcing by identifier
 	SourcingPayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id"`
-		Name        string    `json:"name" validate:"required"`
+		Name        string    `json:"name" validate:"required,max=50"`
 		Description string    `json:"description"`
 	}
 

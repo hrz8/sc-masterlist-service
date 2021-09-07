@@ -16,7 +16,7 @@ type (
 
 	// ProcessPayloadCreate represents payload to create process
 	ProcessPayloadCreate struct {
-		Name        string `json:"name" validate:"required"`
+		Name        string `json:"name" validate:"required,max=50"`
 		Description string `json:"description"`
 	}
 
@@ -42,7 +42,7 @@ type (
 	// ProcessPayloadUpdateById represents payload to update process by identifier
 	ProcessPayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id"`
-		Name        string    `json:"name" validate:"required"`
+		Name        string    `json:"name" validate:"required,max=50"`
 		Description string    `json:"description"`
 	}
 

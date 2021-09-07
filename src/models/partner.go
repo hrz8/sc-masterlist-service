@@ -6,8 +6,8 @@ import (
 )
 
 type (
-	// Vendor represents Vendor object for DB
-	Vendor struct {
+	// Partner represents Partner object for DB
+	Partner struct {
 		ID          uuid.UUID `gorm:"column:id;primaryKey" json:"id"`
 		Name        string    `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
 		Adress      string    `gorm:"column:address" json:"address"`
@@ -16,16 +16,16 @@ type (
 		gorm.Model  `json:"-"`
 	}
 
-	// VendorPayloadCreate represents payload to create sourcing
-	VendorPayloadCreate struct {
+	// PartnerPayloadCreate represents payload to create partner
+	PartnerPayloadCreate struct {
 		Name        string `json:"name" validate:"required,max=50"`
 		Address     string `json:"address" validate:"max=140"`
 		Contact     string `json:"contact" validate:"max=140"`
 		Description string `json:"description" validate:"max=140"`
 	}
 
-	// VendorPayloadGetAll represents payload to fetch all sourcinges
-	VendorPayloadGetAll struct {
+	// PartnerPayloadGetAll represents payload to fetch all partners
+	PartnerPayloadGetAll struct {
 		// column
 		Name        FilteringQueryParams `query:"name"`
 		Description FilteringQueryParams `query:"description"`
@@ -38,13 +38,13 @@ type (
 		Deleted    DeleteQueryParams `query:"_deleted"`
 	}
 
-	// VendorPayloadGet represents payload to get sourcing by identifier
-	VendorPayloadGet struct {
+	// PartnerPayloadGet represents payload to get partner by identifier
+	PartnerPayloadGet struct {
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 
-	// VendorPayloadUpdateById represents payload to update sourcing by identifier
-	VendorPayloadUpdateById struct {
+	// PartnerPayloadUpdateById represents payload to update partner by identifier
+	PartnerPayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id"`
 		Name        string    `json:"name" validate:"required,max=50"`
 		Address     string    `json:"address" validate:"max=140"`
@@ -52,8 +52,8 @@ type (
 		Description string    `json:"description" validate:"max=140"`
 	}
 
-	// VendorPayloadDeleteById represents payload to delete sourcing by identifier
-	VendorPayloadDeleteById struct {
+	// PartnerPayloadDeleteById represents payload to delete partner by identifier
+	PartnerPayloadDeleteById struct {
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 )

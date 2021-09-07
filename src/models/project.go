@@ -16,7 +16,7 @@ type (
 
 	// ProjectPayloadCreate represents payload to create project
 	ProjectPayloadCreate struct {
-		Name        string `json:"name" validate:"required"`
+		Name        string `json:"name" validate:"required,max=50"`
 		Description string `json:"description"`
 	}
 
@@ -42,7 +42,7 @@ type (
 	// ProjectPayloadUpdateById represents payload to update project by identifier
 	ProjectPayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id"`
-		Name        string    `json:"name" validate:"required"`
+		Name        string    `json:"name" validate:"required,max=50"`
 		Description string    `json:"description"`
 	}
 
