@@ -5,12 +5,51 @@ import (
 	"gorm.io/gorm"
 )
 
-// Project represents Process object for DB
 type (
+	// Sourcing represents Sourcing object for DB
 	Sourcing struct {
 		ID          uuid.UUID `gorm:"column:id;primaryKey" json:"id"`
 		Name        string    `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
 		Description string    `gorm:"column:description" json:"description"`
 		gorm.Model  `json:"-"`
+	}
+
+	// SourcingPayloadCreate represents payload to create sourcing
+	SourcingPayloadCreate struct {
+		Name        string `json:"name" validate:"required"`
+		Description string `json:"description"`
+	}
+
+	// SourcingPayloadGetAll represents payload to fetch all sourcinges
+	SourcingPayloadGetAll struct {
+		// column
+		Name        FilteringQueryParams `query:"name"`
+		Description FilteringQueryParams `query:"description"`
+		// date props
+		CreatedAt FilteringQueryParams `query:"createdAt"`
+		UpdatedAt FilteringQueryParams `query:"updatedAt"`
+		// built-in
+		Pagination PagingQueryParams `query:"_pagination"`
+		Sort       SortQueryParams   `query:"_sort"`
+		Deleted    DeleteQueryParams `query:"_deleted"`
+	}
+
+	// SourcingPayloadGet represents payload to get sourcing by identifier
+	SourcingPayloadGet struct {
+		// column
+		ID uuid.UUID `param:"id" validate:"required"`
+	}
+
+	// SourcingPayloadUpdateById represents payload to update sourcing by identifier
+	SourcingPayloadUpdateById struct {
+		ID          uuid.UUID `json:"-" param:"id"`
+		Name        string    `json:"name" validate:"required"`
+		Description string    `json:"description"`
+	}
+
+	// SourcingPayloadDeleteById represents payload to delete sourcing by identifier
+	SourcingPayloadDeleteById struct {
+		// column
+		ID uuid.UUID `param:"id" validate:"required"`
 	}
 )
