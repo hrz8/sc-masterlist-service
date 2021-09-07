@@ -13,6 +13,9 @@ import (
 	ProcessRepository "github.com/hrz8/sc-masterlist-service/src/domains/process/repository"
 	ProcessUsecase "github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
 
+	// domain sourcing
+	SourcingRepository "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/repository"
+
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
 	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
@@ -28,15 +31,23 @@ func main() {
 
 	mysqlSess := mysql.Connect()
 
-	// services loader
+	// #region services loader
+	// - domain project
 	projectRepo := ProjectRepository.NewRepository(mysqlSess)
 	projectUsecase := ProjectUsecase.NewUsecase(projectRepo)
+	// - domain process
 	processRepo := ProcessRepository.NewRepository(mysqlSess)
 	processUsecase := ProcessUsecase.NewUsecase(processRepo)
+	// - domain sourcing
+	SourcingRepository.NewRepository(mysqlSess)
+	// #endregion
 
-	// rest loader
+	// #region rest loader
+	// - domain project
 	projectRest := ProjectRest.NewRest(projectUsecase)
+	// - domain process
 	processRest := ProcessRest.NewRest(processUsecase)
+	// #endregion
 
 	// rest server
 	e := echo.New()
@@ -52,9 +63,10 @@ func main() {
 		}
 	})
 
-	// delivery endpoint implementation
+	// #region delivery endpoint implementation
 	ProcessRest.AddProcessEndpoints(e, processRest)
 	ProjectRest.AddProjectEndpoints(e, projectRest)
+	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
 }
