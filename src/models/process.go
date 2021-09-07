@@ -36,7 +36,6 @@ type (
 
 	// ProcessPayloadGet represents payload to get process by identifier
 	ProcessPayloadGet struct {
-		// column
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 
