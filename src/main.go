@@ -26,6 +26,8 @@ import (
 
 	// #region domain mould_maker
 	MouldMakerRepository "github.com/hrz8/sc-masterlist-service/src/domains/mould_maker/repository"
+	MouldMakerUsecase "github.com/hrz8/sc-masterlist-service/src/domains/mould_maker/usecase"
+
 	// #endregion
 
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
@@ -54,7 +56,8 @@ func main() {
 	sourcingRepo := SourcingRepository.NewRepository(mysqlSess)
 	sourcingUsecase := SourcingUsecase.NewUsecase(sourcingRepo)
 	// - domain mould_maker
-	MouldMakerRepository.NewRepository(mysqlSess)
+	mouldMakerRepository := MouldMakerRepository.NewRepository(mysqlSess)
+	MouldMakerUsecase.NewUsecase(mouldMakerRepository)
 	// #endregion
 
 	// #region rest loader
