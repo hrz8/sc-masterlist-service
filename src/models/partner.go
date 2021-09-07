@@ -40,12 +40,12 @@ type (
 
 	// PartnerPayloadGet represents payload to get partner by identifier
 	PartnerPayloadGet struct {
-		ID uuid.UUID `param:"id" validate:"required"`
+		ID uuid.UUID `param:"id" validate:"required,uuid4"`
 	}
 
 	// PartnerPayloadUpdateById represents payload to update partner by identifier
 	PartnerPayloadUpdateById struct {
-		ID          uuid.UUID `json:"-" param:"id"`
+		ID          uuid.UUID `json:"-" param:"id" validate:"required,uuid4"`
 		Name        string    `json:"name" validate:"required,max=50"`
 		Address     string    `json:"address" validate:"max=140"`
 		Contact     string    `json:"contact" validate:"max=140"`
@@ -54,6 +54,6 @@ type (
 
 	// PartnerPayloadDeleteById represents payload to delete partner by identifier
 	PartnerPayloadDeleteById struct {
-		ID uuid.UUID `param:"id" validate:"required"`
+		ID uuid.UUID `param:"id" validate:"required,uuid4"`
 	}
 )

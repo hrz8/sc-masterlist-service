@@ -36,18 +36,18 @@ type (
 
 	// ProcessPayloadGet represents payload to get process by identifier
 	ProcessPayloadGet struct {
-		ID uuid.UUID `param:"id" validate:"required"`
+		ID uuid.UUID `param:"id" validate:"required,uuid4"`
 	}
 
 	// ProcessPayloadUpdateById represents payload to update process by identifier
 	ProcessPayloadUpdateById struct {
-		ID          uuid.UUID `json:"-" param:"id"`
+		ID          uuid.UUID `json:"-" param:"id" validate:"required,uuid4"`
 		Name        string    `json:"name" validate:"required,max=50"`
 		Description string    `json:"description"`
 	}
 
 	// ProcessPayloadDeleteById represents payload to delete process by identifier
 	ProcessPayloadDeleteById struct {
-		ID uuid.UUID `param:"id" validate:"required"`
+		ID uuid.UUID `param:"id" validate:"required,uuid4"`
 	}
 )
