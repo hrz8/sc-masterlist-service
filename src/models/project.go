@@ -36,18 +36,18 @@ type (
 
 	// ProjectPayloadGet represents payload to get project by identifier
 	ProjectPayloadGet struct {
-		ID uuid.UUID `param:"id" validate:"required,uuid4"`
+		ID uuid.UUID `param:"id" validate:"required"`
 	}
 
 	// ProjectPayloadUpdateById represents payload to update project by identifier
 	ProjectPayloadUpdateById struct {
-		ID          uuid.UUID `json:"-" param:"id" validate:"required,uuid4"`
+		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
 		Name        string    `json:"name" validate:"required,max=50"`
 		Description string    `json:"description"`
 	}
 
 	// ProjectPayloadDeleteById represents payload to delete project by identifier
 	ProjectPayloadDeleteById struct {
-		ID uuid.UUID `param:"id" validate:"required,uuid4"`
+		ID uuid.UUID `param:"id" validate:"required"`
 	}
 )

@@ -31,6 +31,13 @@ import (
 
 	// #endregion
 
+	// #region domain partner_type
+	PartnerTypeRest "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/delivery/rest"
+	PartnerTypeRepository "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/repository"
+	PartnerTypeUsecase "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/usecase"
+
+	// #endregion
+
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
 	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
@@ -59,6 +66,9 @@ func main() {
 	// - domain mould_maker
 	mouldMakerRepository := MouldMakerRepository.NewRepository(mysqlSess)
 	mouldMakerUsecase := MouldMakerUsecase.NewUsecase(mouldMakerRepository)
+	// - domain partner_type
+	partnerTypeRepository := PartnerTypeRepository.NewRepository(mysqlSess)
+	partnerTypeUsecase := PartnerTypeUsecase.NewUsecase(partnerTypeRepository)
 	// #endregion
 
 	// #region rest loader
@@ -70,6 +80,8 @@ func main() {
 	sourcingRest := SourcingRest.NewRest(sourcingUsecase)
 	// - domain mould_maker
 	mouldMakerRest := MouldMakerRest.NewRest(mouldMakerUsecase)
+	// - domain partner_type
+	partnerTypeRest := PartnerTypeRest.NewRest(partnerTypeUsecase)
 	// #endregion
 
 	// rest server
@@ -95,6 +107,8 @@ func main() {
 	SourcingRest.AddSourcingEndpoints(e, sourcingRest)
 	// - domain mould_maker
 	MouldMakerRest.AddMouldMakerEndpoints(e, mouldMakerRest)
+	// - domain partner_type
+	PartnerTypeRest.AddPartnerTypeEndpoints(e, partnerTypeRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))

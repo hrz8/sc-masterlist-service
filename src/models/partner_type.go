@@ -36,18 +36,18 @@ type (
 
 	// PartnerTypePayloadGet represents payload to get partner type by identifier
 	PartnerTypePayloadGet struct {
-		ID uuid.UUID `param:"id" validate:"required,uuid4"`
+		ID uuid.UUID `param:"id" validate:"required"`
 	}
 
 	// PartnerTypePayloadUpdateById represents payload to update partner type by identifier
 	PartnerTypePayloadUpdateById struct {
-		ID          uuid.UUID `json:"-" param:"id" validate:"required,uuid4"`
+		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
 		Name        string    `json:"name" validate:"required,max=50"`
 		Description string    `json:"description"`
 	}
 
 	// PartnerTypePayloadDeleteById represents payload to delete partner type by identifier
 	PartnerTypePayloadDeleteById struct {
-		ID uuid.UUID `param:"id" validate:"required,uuid4"`
+		ID uuid.UUID `param:"id" validate:"required"`
 	}
 )
