@@ -14,6 +14,7 @@ import (
 	ProcessUsecase "github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
 
 	// domain sourcing
+	SourcingRest "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/delivery/rest"
 	SourcingRepository "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/repository"
 	SourcingUsecase "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/usecase"
 
@@ -41,7 +42,7 @@ func main() {
 	processUsecase := ProcessUsecase.NewUsecase(processRepo)
 	// - domain sourcing
 	sourcingRepo := SourcingRepository.NewRepository(mysqlSess)
-	SourcingUsecase.NewUsecase(sourcingRepo)
+	sourcingUsecase := SourcingUsecase.NewUsecase(sourcingRepo)
 	// #endregion
 
 	// #region rest loader
@@ -49,6 +50,8 @@ func main() {
 	projectRest := ProjectRest.NewRest(projectUsecase)
 	// - domain process
 	processRest := ProcessRest.NewRest(processUsecase)
+	// - domain sourcing
+	sourcingRest := SourcingRest.NewRest(sourcingUsecase)
 	// #endregion
 
 	// rest server
@@ -66,8 +69,12 @@ func main() {
 	})
 
 	// #region delivery endpoint implementation
+	// - domain project
 	ProcessRest.AddProcessEndpoints(e, processRest)
+	// - domain process
 	ProjectRest.AddProjectEndpoints(e, projectRest)
+	// - domain sourcing
+	SourcingRest.AddSourcingEndpoints(e, sourcingRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
