@@ -17,7 +17,7 @@ type (
 	// ProjectPayloadCreate represents payload to create project
 	ProjectPayloadCreate struct {
 		Name        string `json:"name" validate:"required,max=50"`
-		Description string `json:"description"`
+		Description string `json:"description" validate:"max=140"`
 	}
 
 	// ProjectPayloadGetAll represents payload to fetch all projectes
@@ -42,8 +42,8 @@ type (
 	// ProjectPayloadUpdateById represents payload to update project by identifier
 	ProjectPayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
-		Name        string    `json:"name" validate:"required,max=50"`
-		Description string    `json:"description"`
+		Name        string    `json:"name" validate:"max=50"`
+		Description string    `json:"description" validate:"max=140"`
 	}
 
 	// ProjectPayloadDeleteById represents payload to delete project by identifier

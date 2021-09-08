@@ -17,7 +17,7 @@ type (
 	// SourcingPayloadCreate represents payload to create sourcing
 	SourcingPayloadCreate struct {
 		Name        string `json:"name" validate:"required,max=50"`
-		Description string `json:"description"`
+		Description string `json:"description" validate:"max=140"`
 	}
 
 	// SourcingPayloadGetAll represents payload to fetch all sourcings
@@ -42,8 +42,8 @@ type (
 	// SourcingPayloadUpdateById represents payload to update sourcing by identifier
 	SourcingPayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
-		Name        string    `json:"name" validate:"required,max=50"`
-		Description string    `json:"description"`
+		Name        string    `json:"name" validate:"max=50"`
+		Description string    `json:"description" validate:"max=140"`
 	}
 
 	// SourcingPayloadDeleteById represents payload to delete sourcing by identifier

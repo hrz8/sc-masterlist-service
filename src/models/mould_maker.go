@@ -17,7 +17,7 @@ type (
 	// MouldMakerPayloadCreate represents payload to create mould maker
 	MouldMakerPayloadCreate struct {
 		Name        string `json:"name" validate:"required,max=50"`
-		Description string `json:"description"`
+		Description string `json:"description" validate:"max=140"`
 	}
 
 	// MouldMakerPayloadGetAll represents payload to fetch all mould makers
@@ -42,8 +42,8 @@ type (
 	// MouldMakerPayloadUpdateById represents payload to update mould maker by identifier
 	MouldMakerPayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
-		Name        string    `json:"name" validate:"required,max=50"`
-		Description string    `json:"description"`
+		Name        string    `json:"name" validate:"max=50"`
+		Description string    `json:"description" validate:"max=140"`
 	}
 
 	// MouldMakerPayloadDeleteById represents payload to delete mould maker by identifier

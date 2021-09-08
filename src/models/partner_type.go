@@ -8,16 +8,17 @@ import (
 type (
 	// PartnerType represents PartnerType object for DB
 	PartnerType struct {
-		ID          uuid.UUID `gorm:"column:id;primaryKey" json:"id"`
-		Name        string    `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
-		Description string    `gorm:"column:description" json:"description"`
+		ID          uuid.UUID  `gorm:"column:id;primaryKey" json:"id"`
+		Partners    []*Partner `gorm:"many2many:partners_partner_types"`
+		Name        string     `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
+		Description string     `gorm:"column:description" json:"description"`
 		gorm.Model  `json:"-"`
 	}
 
 	// PartnerTypePayloadCreate represents payload to create partner type
 	PartnerTypePayloadCreate struct {
 		Name        string `json:"name" validate:"required,max=50"`
-		Description string `json:"description"`
+		Description string `json:"description" validate:"max=140"`
 	}
 
 	// PartnerTypePayloadGetAll represents payload to fetch all partner types
@@ -42,8 +43,8 @@ type (
 	// PartnerTypePayloadUpdateById represents payload to update partner type by identifier
 	PartnerTypePayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
-		Name        string    `json:"name" validate:"required,max=50"`
-		Description string    `json:"description"`
+		Name        string    `json:"name" validate:"max=50"`
+		Description string    `json:"description" validate:"max=140"`
 	}
 
 	// PartnerTypePayloadDeleteById represents payload to delete partner type by identifier

@@ -26,4 +26,10 @@ type (
 		Include bool
 		Only    bool
 	}
+
+	// ManyToManyQueryParams represents payload as LHS bracket for many to many relation
+	ManyToManyQueryParams struct {
+		Eq string
+		In string
+	}
 )

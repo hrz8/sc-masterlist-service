@@ -17,7 +17,7 @@ type (
 	// ProcessPayloadCreate represents payload to create process
 	ProcessPayloadCreate struct {
 		Name        string `json:"name" validate:"required,max=50"`
-		Description string `json:"description"`
+		Description string `json:"description" validate:"max=140"`
 	}
 
 	// ProcessPayloadGetAll represents payload to fetch all processes
@@ -42,8 +42,8 @@ type (
 	// ProcessPayloadUpdateById represents payload to update process by identifier
 	ProcessPayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
-		Name        string    `json:"name" validate:"required,max=50"`
-		Description string    `json:"description"`
+		Name        string    `json:"name" validate:"max=50"`
+		Description string    `json:"description" validate:"max=140"`
 	}
 
 	// ProcessPayloadDeleteById represents payload to delete process by identifier
