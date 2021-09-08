@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 )
@@ -67,5 +69,13 @@ type (
 	// PartnerAddTypePayload represents payload for adding type to particular partner
 	PartnerAddTypePayload struct {
 		ID []uuid.UUID `json:"id" validate:"required"`
+	}
+
+	PartnersPartnerTypes struct {
+		PartnerID     uuid.UUID
+		PartnerTypeID uuid.UUID
+		CreatedAt     time.Time
+		UpdatedAt     time.Time
+		DeletedAt     gorm.DeletedAt
 	}
 )
