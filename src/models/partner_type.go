@@ -9,7 +9,7 @@ type (
 	// PartnerType represents PartnerType object for DB
 	PartnerType struct {
 		ID          uuid.UUID  `gorm:"column:id;primaryKey" json:"id"`
-		Partners    []*Partner `gorm:"many2many:partners_partner_types"`
+		Partners    []*Partner `gorm:"many2many:partners_partner_types" json:"partners"`
 		Name        string     `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
 		Description string     `gorm:"column:description" json:"description"`
 		gorm.Model  `json:"-"`
