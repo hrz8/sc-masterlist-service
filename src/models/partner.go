@@ -19,11 +19,11 @@ type (
 
 	// PartnerPayloadCreate represents payload to create partner
 	PartnerPayloadCreate struct {
-		Name        string                      `json:"name" validate:"required,max=50"`
-		Address     string                      `json:"address" validate:"max=140"`
-		Contact     string                      `json:"contact" validate:"max=140"`
-		Description string                      `json:"description" validate:"max=140"`
-		Types       []PartnerTypeForeignPayload `json:"types"`
+		Name        string      `json:"name" validate:"required,max=50"`
+		Address     string      `json:"address" validate:"max=140"`
+		Contact     string      `json:"contact" validate:"max=140"`
+		Description string      `json:"description" validate:"max=140"`
+		Types       []uuid.UUID `json:"types" validate:"required"`
 	}
 
 	// PartnerPayloadGetAll represents payload to fetch all partners
@@ -33,11 +33,11 @@ type (
 		Address     FilteringQueryParams `query:"address"`
 		Contact     FilteringQueryParams `query:"contact"`
 		Description FilteringQueryParams `query:"description"`
+		// relation
+		Types FilteringQueryParams `query:"types"`
 		// date props
 		CreatedAt FilteringQueryParams `query:"createdAt"`
 		UpdatedAt FilteringQueryParams `query:"updatedAt"`
-		// relation
-		Types ManyToManyQueryParams `query:"types"`
 		// built-in
 		Pagination PagingQueryParams `query:"_pagination"`
 		Sort       SortQueryParams   `query:"_sort"`
@@ -51,12 +51,12 @@ type (
 
 	// PartnerPayloadUpdateById represents payload to update partner by identifier
 	PartnerPayloadUpdateById struct {
-		ID          uuid.UUID                   `json:"-" param:"id" validate:"required"`
-		Types       []PartnerTypeForeignPayload `json:"types"`
-		Name        string                      `json:"name" validate:"required,max=50"`
-		Address     string                      `json:"address" validate:"max=140"`
-		Contact     string                      `json:"contact" validate:"max=140"`
-		Description string                      `json:"description" validate:"max=140"`
+		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
+		Name        string    `json:"name" validate:"max=50"`
+		Address     string    `json:"address" validate:"max=140"`
+		Contact     string    `json:"contact" validate:"max=140"`
+		Description string    `json:"description" validate:"max=140"`
+		// Types       []string  `json:"types"`
 	}
 
 	// PartnerPayloadDeleteById represents payload to delete partner by identifier
@@ -64,8 +64,8 @@ type (
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 
-	// PartnerTypeForeignPayload represents partner_type payload for foreign
-	PartnerTypeForeignPayload struct {
-		ID uuid.UUID `json:"id" validate:"required"`
+	// PartnerAddTypePayload represents payload for adding type to particular partner
+	PartnerAddTypePayload struct {
+		ID []uuid.UUID `json:"id" validate:"required"`
 	}
 )

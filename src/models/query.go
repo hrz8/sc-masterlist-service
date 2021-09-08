@@ -5,6 +5,7 @@ type (
 	FilteringQueryParams struct {
 		Eq   string
 		Like string
+		In   []string
 		Gte  interface{}
 		Lte  interface{}
 	}
@@ -25,11 +26,5 @@ type (
 	DeleteQueryParams struct {
 		Include bool
 		Only    bool
-	}
-
-	// ManyToManyQueryParams represents payload as LHS bracket for many to many relation
-	ManyToManyQueryParams struct {
-		Eq string
-		In string
 	}
 )

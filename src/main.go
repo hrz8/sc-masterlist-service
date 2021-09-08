@@ -31,6 +31,13 @@ import (
 
 	// #endregion
 
+	// #region domain partner
+	PartnerRest "github.com/hrz8/sc-masterlist-service/src/domains/partner/delivery/rest"
+	PartnerRepository "github.com/hrz8/sc-masterlist-service/src/domains/partner/repository"
+	PartnerUsecase "github.com/hrz8/sc-masterlist-service/src/domains/partner/usecase"
+
+	// #endregion
+
 	// #region domain partner_type
 	PartnerTypeRest "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/delivery/rest"
 	PartnerTypeRepository "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/repository"
@@ -66,6 +73,9 @@ func main() {
 	// - domain mould_maker
 	mouldMakerRepository := MouldMakerRepository.NewRepository(mysqlSess)
 	mouldMakerUsecase := MouldMakerUsecase.NewUsecase(mouldMakerRepository)
+	// - domain partner
+	partnerRepository := PartnerRepository.NewRepository(mysqlSess)
+	partnerUsecase := PartnerUsecase.NewUsecase(partnerRepository)
 	// - domain partner_type
 	partnerTypeRepository := PartnerTypeRepository.NewRepository(mysqlSess)
 	partnerTypeUsecase := PartnerTypeUsecase.NewUsecase(partnerTypeRepository)
@@ -80,6 +90,8 @@ func main() {
 	sourcingRest := SourcingRest.NewRest(sourcingUsecase)
 	// - domain mould_maker
 	mouldMakerRest := MouldMakerRest.NewRest(mouldMakerUsecase)
+	// - domain partner
+	partnerRest := PartnerRest.NewRest(partnerUsecase)
 	// - domain partner_type
 	partnerTypeRest := PartnerTypeRest.NewRest(partnerTypeUsecase)
 	// #endregion
@@ -107,6 +119,8 @@ func main() {
 	SourcingRest.AddSourcingEndpoints(e, sourcingRest)
 	// - domain mould_maker
 	MouldMakerRest.AddMouldMakerEndpoints(e, mouldMakerRest)
+	// - domain partner
+	PartnerRest.AddPartnerEndpoints(e, partnerRest)
 	// - domain partner_type
 	PartnerTypeRest.AddPartnerTypeEndpoints(e, partnerTypeRest)
 	// #endregion

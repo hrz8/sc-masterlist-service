@@ -62,7 +62,7 @@ func (i *impl) GetAll(c *models.PartnerTypePayloadGetAll) (*[]models.PartnerType
 		executor = executor.Offset(helpers.GetOffset(c.Pagination.Page.(int), c.Pagination.Limit.(int)))
 	}
 
-	if err := executor.Debug().Find(&result).Error; err != nil {
+	if err := executor.Debug().Preload("Partners").Find(&result).Error; err != nil {
 		return nil, nil, err
 	}
 
@@ -77,7 +77,7 @@ func (i *impl) GetAll(c *models.PartnerTypePayloadGetAll) (*[]models.PartnerType
 
 func (i *impl) GetById(id *uuid.UUID) (*models.PartnerType, error) {
 	result := models.PartnerType{}
-	if err := i.db.Debug().First(&result, id).Error; err != nil {
+	if err := i.db.Debug().Preload("Partners").First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil
