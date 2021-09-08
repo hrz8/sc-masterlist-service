@@ -71,6 +71,7 @@ type (
 		ID []uuid.UUID `json:"id" validate:"required"`
 	}
 
+	// PartnersPartnerTypes represents join table schema for partner -> partner_type
 	PartnersPartnerTypes struct {
 		PartnerID     uuid.UUID
 		PartnerTypeID uuid.UUID
