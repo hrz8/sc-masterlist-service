@@ -11,7 +11,7 @@ import (
 
 type (
 	RestInterface interface {
-		Create(echo.Context) error
+		Create(c echo.Context) error
 	}
 
 	impl struct {

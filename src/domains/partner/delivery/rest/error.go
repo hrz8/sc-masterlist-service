@@ -6,7 +6,7 @@ import (
 
 type (
 	PartnerErrorInterface interface {
-		PartnerErrorCreate(*utils.CustomContext, *string, *uint16) error
+		PartnerErrorCreate(ctx *utils.CustomContext, message *string, status *uint16) error
 	}
 
 	partnerErrorImpl struct {

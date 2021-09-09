@@ -10,7 +10,7 @@ import (
 
 type (
 	UsecaseInterface interface {
-		Create(*utils.CustomContext, *models.PartnerPayloadCreate) (*models.Partner, error)
+		Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCreate) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -24,10 +24,13 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 
 	id, _ := uuid.NewV4()
 	types := make([]*models.PartnerType, len(partner.Types))
-	for i, item := range partner.Types {
-		types[i] = &models.PartnerType{
-			ID: item,
+	for index, item := range partner.Types {
+		partnerType, err := i.partnerTypeRepository.GetById(trx, &item)
+		if err != nil {
+			trx.Rollback()
+			return nil, err
 		}
+		types[index] = partnerType
 	}
 	payload := &models.Partner{
 		ID:          id,
