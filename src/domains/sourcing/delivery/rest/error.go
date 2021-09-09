@@ -6,10 +6,10 @@ import (
 
 type (
 	SourcingErrorInterface interface {
-		SourcingErrorCreate(*utils.CustomContext, *string, *uint16) error
-		SourcingErrorGetAll(*utils.CustomContext, *string, *uint16) error
-		SourcingErrorGet(*utils.CustomContext, *string, *uint16) error
-		SourcingErrorDelete(*utils.CustomContext, *string, *uint16) error
+		SourcingErrorCreate(ctx *utils.CustomContext, message *string, status *uint16) error
+		SourcingErrorGetAll(ctx *utils.CustomContext, message *string, status *uint16) error
+		SourcingErrorGet(ctx *utils.CustomContext, message *string, status *uint16) error
+		SourcingErrorDelete(ctx *utils.CustomContext, message *string, status *uint16) error
 	}
 
 	sourcingErrorImpl struct {

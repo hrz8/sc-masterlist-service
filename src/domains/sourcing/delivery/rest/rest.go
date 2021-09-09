@@ -12,11 +12,11 @@ import (
 
 type (
 	RestInterface interface {
-		Create(echo.Context) error
-		GetAll(echo.Context) error
-		GetById(echo.Context) error
-		DeleteById(echo.Context) error
-		UpdateById(echo.Context) error
+		Create(c echo.Context) error
+		GetAll(c echo.Context) error
+		GetById(c echo.Context) error
+		DeleteById(c echo.Context) error
+		UpdateById(c echo.Context) error
 	}
 
 	impl struct {

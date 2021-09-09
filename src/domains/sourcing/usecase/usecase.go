@@ -9,11 +9,11 @@ import (
 
 type (
 	UsecaseInterface interface {
-		Create(*utils.CustomContext, *models.SourcingPayloadCreate) (*models.Sourcing, error)
-		GetAll(*utils.CustomContext, *models.SourcingPayloadGetAll) (*[]models.Sourcing, *int64, error)
-		GetById(*utils.CustomContext, *uuid.UUID) (*models.Sourcing, error)
-		DeleteById(*utils.CustomContext, *uuid.UUID) (*models.Sourcing, error)
-		UpdateById(*utils.CustomContext, *uuid.UUID, *models.SourcingPayloadUpdateById) (*models.Sourcing, error)
+		Create(ctx *utils.CustomContext, sourcing *models.SourcingPayloadCreate) (*models.Sourcing, error)
+		GetAll(ctx *utils.CustomContext, conditions *models.SourcingPayloadGetAll) (*[]models.Sourcing, *int64, error)
+		GetById(ctx *utils.CustomContext, id *uuid.UUID) (*models.Sourcing, error)
+		DeleteById(ctx *utils.CustomContext, id *uuid.UUID) (*models.Sourcing, error)
+		UpdateById(ctx *utils.CustomContext, id *uuid.UUID, payload *models.SourcingPayloadUpdateById) (*models.Sourcing, error)
 	}
 
 	impl struct {
@@ -33,7 +33,14 @@ func (i *impl) Create(_ *utils.CustomContext, sourcing *models.SourcingPayloadCr
 }
 
 func (i *impl) GetAll(_ *utils.CustomContext, conditions *models.SourcingPayloadGetAll) (*[]models.Sourcing, *int64, error) {
-	result, total, err := i.repository.GetAll(nil, conditions)
+	result, err := i.repository.GetAll(nil, conditions)
+	if err != nil {
+		return nil, nil, err
+	}
+	total, err := i.repository.CountAll(nil)
+	if err != nil {
+		return nil, nil, err
+	}
 	return result, total, err
 }
 

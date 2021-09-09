@@ -6,10 +6,10 @@ import (
 
 type (
 	MouldMakerErrorInterface interface {
-		MouldMakerErrorCreate(*utils.CustomContext, *string, *uint16) error
-		MouldMakerErrorGetAll(*utils.CustomContext, *string, *uint16) error
-		MouldMakerErrorGet(*utils.CustomContext, *string, *uint16) error
-		MouldMakerErrorDelete(*utils.CustomContext, *string, *uint16) error
+		MouldMakerErrorCreate(ctx *utils.CustomContext, message *string, status *uint16) error
+		MouldMakerErrorGetAll(ctx *utils.CustomContext, message *string, status *uint16) error
+		MouldMakerErrorGet(ctx *utils.CustomContext, message *string, status *uint16) error
+		MouldMakerErrorDelete(ctx *utils.CustomContext, message *string, status *uint16) error
 	}
 
 	mouldMakerErrorImpl struct {

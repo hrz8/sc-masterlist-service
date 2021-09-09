@@ -6,10 +6,10 @@ import (
 
 type (
 	ProjectErrorInterface interface {
-		ProjectErrorCreate(*utils.CustomContext, *string, *uint16) error
-		ProjectErrorGetAll(*utils.CustomContext, *string, *uint16) error
-		ProjectErrorGet(*utils.CustomContext, *string, *uint16) error
-		ProjectErrorDelete(*utils.CustomContext, *string, *uint16) error
+		ProjectErrorCreate(ctx *utils.CustomContext, message *string, status *uint16) error
+		ProjectErrorGetAll(ctx *utils.CustomContext, message *string, status *uint16) error
+		ProjectErrorGet(ctx *utils.CustomContext, message *string, status *uint16) error
+		ProjectErrorDelete(ctx *utils.CustomContext, message *string, status *uint16) error
 	}
 
 	projectErrorImpl struct {
