@@ -79,7 +79,7 @@ func (i *impl) GetAll(trx *gorm.DB, c *models.PartnerTypePayloadGetAll) (*[]mode
 	}
 
 	// get count from all rows
-	var total int64
+	var total int64 = 0
 	if err := trx.Model(&models.PartnerType{}).Count(&total).Error; err != nil {
 		return nil, nil, err
 	}
