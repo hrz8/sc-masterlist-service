@@ -11,10 +11,10 @@ type (
 	RepositoryInterface interface {
 		CountAll(trx *gorm.DB) (*int64, error)
 		Create(trx *gorm.DB, project *models.Project) (*models.Project, error)
-		GetAll(trx *gorm.DB, condition *models.ProjectPayloadGetAll) (*[]models.Project, error)
+		GetAll(trx *gorm.DB, conditions *models.ProjectPayloadGetAll) (*[]models.Project, error)
 		GetById(trx *gorm.DB, id *uuid.UUID) (*models.Project, error)
 		DeleteById(trx *gorm.DB, id *uuid.UUID) error
-		Update(trx *gorm.DB, instanceProject *models.Project, project *models.ProjectPayloadUpdateById) (*models.Project, error)
+		Update(trx *gorm.DB, instanceProject *models.Project, payload *models.ProjectPayloadUpdateById) (*models.Project, error)
 	}
 
 	impl struct {
@@ -49,7 +49,7 @@ func (i *impl) Create(trx *gorm.DB, project *models.Project) (*models.Project, e
 	return project, nil
 }
 
-func (i *impl) GetAll(trx *gorm.DB, condition *models.ProjectPayloadGetAll) (*[]models.Project, error) {
+func (i *impl) GetAll(trx *gorm.DB, conditions *models.ProjectPayloadGetAll) (*[]models.Project, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
@@ -58,35 +58,35 @@ func (i *impl) GetAll(trx *gorm.DB, condition *models.ProjectPayloadGetAll) (*[]
 	// execution
 	result := []models.Project{}
 	executor := trx.
-		Where("name LIKE ?", "%"+condition.Name.Like+"%").
-		Where("description LIKE ?", "%"+condition.Description.Like+"%")
+		Where("name LIKE ?", "%"+conditions.Name.Like+"%").
+		Where("description LIKE ?", "%"+conditions.Description.Like+"%")
 
-	if condition.Deleted.Only {
+	if conditions.Deleted.Only {
 		executor = executor.Unscoped().Where("deleted_at IS NOT NULL")
 	}
-	if condition.Deleted.Include {
+	if conditions.Deleted.Include {
 		executor = executor.Unscoped()
 	}
-	if condition.Name.Eq != "" {
-		executor = executor.Where("name = ?", condition.Name.Eq)
+	if conditions.Name.Eq != "" {
+		executor = executor.Where("name = ?", conditions.Name.Eq)
 	}
-	if condition.Description.Eq != "" {
-		executor = executor.Where("description = ?", condition.Description.Eq)
+	if conditions.Description.Eq != "" {
+		executor = executor.Where("description = ?", conditions.Description.Eq)
 	}
-	if condition.CreatedAt.Gte != nil && condition.CreatedAt.Lte != nil {
-		executor = executor.Where("created_at BETWEEN ? AND ?", condition.CreatedAt.Gte, condition.CreatedAt.Lte)
+	if conditions.CreatedAt.Gte != nil && conditions.CreatedAt.Lte != nil {
+		executor = executor.Where("created_at BETWEEN ? AND ?", conditions.CreatedAt.Gte, conditions.CreatedAt.Lte)
 	}
-	if condition.UpdatedAt.Gte != nil && condition.UpdatedAt.Lte != nil {
-		executor = executor.Where("updated_at BETWEEN ? AND ?", condition.UpdatedAt.Gte, condition.UpdatedAt.Lte)
+	if conditions.UpdatedAt.Gte != nil && conditions.UpdatedAt.Lte != nil {
+		executor = executor.Where("updated_at BETWEEN ? AND ?", conditions.UpdatedAt.Gte, conditions.UpdatedAt.Lte)
 	}
-	if condition.Sort.By != "" && condition.Sort.Mode != "" {
-		executor = executor.Order(condition.Sort.By + " " + condition.Sort.Mode)
+	if conditions.Sort.By != "" && conditions.Sort.Mode != "" {
+		executor = executor.Order(conditions.Sort.By + " " + conditions.Sort.Mode)
 	}
-	if condition.Pagination.Limit != nil {
-		executor = executor.Limit(condition.Pagination.Limit.(int))
+	if conditions.Pagination.Limit != nil {
+		executor = executor.Limit(conditions.Pagination.Limit.(int))
 	}
-	if condition.Pagination.Limit != nil && condition.Pagination.Page != nil {
-		executor = executor.Offset(helpers.GetOffset(condition.Pagination.Page.(int), condition.Pagination.Limit.(int)))
+	if conditions.Pagination.Limit != nil && conditions.Pagination.Page != nil {
+		executor = executor.Offset(helpers.GetOffset(conditions.Pagination.Page.(int), conditions.Pagination.Limit.(int)))
 	}
 
 	if err := executor.Debug().Find(&result).Error; err != nil {
@@ -124,7 +124,7 @@ func (i *impl) DeleteById(trx *gorm.DB, id *uuid.UUID) error {
 	return nil
 }
 
-func (i *impl) Update(trx *gorm.DB, instanceProject *models.Project, project *models.ProjectPayloadUpdateById) (*models.Project, error) {
+func (i *impl) Update(trx *gorm.DB, instanceProject *models.Project, payload *models.ProjectPayloadUpdateById) (*models.Project, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
@@ -132,8 +132,8 @@ func (i *impl) Update(trx *gorm.DB, instanceProject *models.Project, project *mo
 
 	// execution
 	if err := trx.Debug().Model(instanceProject).Updates(models.Project{
-		Name:        (*project).Name,
-		Description: (*project).Description,
+		Name:        (*payload).Name,
+		Description: (*payload).Description,
 	}).Error; err != nil {
 		return nil, err
 	}

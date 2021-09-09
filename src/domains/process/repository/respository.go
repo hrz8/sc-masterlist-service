@@ -9,11 +9,12 @@ import (
 
 type (
 	RepositoryInterface interface {
-		Create(*models.Process) (*models.Process, error)
-		GetAll(*models.ProcessPayloadGetAll) (*[]models.Process, *int64, error)
-		GetById(*uuid.UUID) (*models.Process, error)
-		DeleteById(*uuid.UUID) error
-		Update(*models.Process, *models.ProcessPayloadUpdateById) (*models.Process, error)
+		CountAll(trx *gorm.DB) (*int64, error)
+		Create(trx *gorm.DB, process *models.Process) (*models.Process, error)
+		GetAll(trx *gorm.DB, conditions *models.ProcessPayloadGetAll) (*[]models.Process, error)
+		GetById(trx *gorm.DB, id *uuid.UUID) (*models.Process, error)
+		DeleteById(trx *gorm.DB, id *uuid.UUID) error
+		Update(trx *gorm.DB, instanceProcess *models.Process, payload *models.ProcessPayloadUpdateById) (*models.Process, error)
 	}
 
 	impl struct {
@@ -21,84 +22,122 @@ type (
 	}
 )
 
-func (i *impl) Create(p *models.Process) (*models.Process, error) {
-	if err := i.db.Debug().Create(&p).Error; err != nil {
+func (i *impl) CountAll(trx *gorm.DB) (*int64, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	var total int64 = 0
+	if err := trx.Model(&models.Process{}).Count(&total).Error; err != nil {
 		return nil, err
 	}
-	return p, nil
+	return &total, nil
 }
 
-func (i *impl) GetAll(c *models.ProcessPayloadGetAll) (*[]models.Process, *int64, error) {
-	result := []models.Process{}
-	executor := i.db.
-		Where("name LIKE ?", "%"+c.Name.Like+"%").
-		Where("description LIKE ?", "%"+c.Description.Like+"%")
+func (i *impl) Create(trx *gorm.DB, process *models.Process) (*models.Process, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
 
-	if c.Deleted.Only {
+	// execution
+	if err := trx.Debug().Create(&process).Error; err != nil {
+		return nil, err
+	}
+	return process, nil
+}
+
+func (i *impl) GetAll(trx *gorm.DB, conditions *models.ProcessPayloadGetAll) (*[]models.Process, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	result := []models.Process{}
+	executor := trx.
+		Where("name LIKE ?", "%"+conditions.Name.Like+"%").
+		Where("description LIKE ?", "%"+conditions.Description.Like+"%")
+
+	if conditions.Deleted.Only {
 		executor = executor.Unscoped().Where("deleted_at IS NOT NULL")
 	}
-	if c.Deleted.Include {
+	if conditions.Deleted.Include {
 		executor = executor.Unscoped()
 	}
-	if c.Name.Eq != "" {
-		executor = executor.Where("name = ?", c.Name.Eq)
+	if conditions.Name.Eq != "" {
+		executor = executor.Where("name = ?", conditions.Name.Eq)
 	}
-	if c.Description.Eq != "" {
-		executor = executor.Where("description = ?", c.Description.Eq)
+	if conditions.Description.Eq != "" {
+		executor = executor.Where("description = ?", conditions.Description.Eq)
 	}
-	if c.CreatedAt.Gte != nil && c.CreatedAt.Lte != nil {
-		executor = executor.Where("created_at BETWEEN ? AND ?", c.CreatedAt.Gte, c.CreatedAt.Lte)
+	if conditions.CreatedAt.Gte != nil && conditions.CreatedAt.Lte != nil {
+		executor = executor.Where("created_at BETWEEN ? AND ?", conditions.CreatedAt.Gte, conditions.CreatedAt.Lte)
 	}
-	if c.UpdatedAt.Gte != nil && c.UpdatedAt.Lte != nil {
-		executor = executor.Where("updated_at BETWEEN ? AND ?", c.UpdatedAt.Gte, c.UpdatedAt.Lte)
+	if conditions.UpdatedAt.Gte != nil && conditions.UpdatedAt.Lte != nil {
+		executor = executor.Where("updated_at BETWEEN ? AND ?", conditions.UpdatedAt.Gte, conditions.UpdatedAt.Lte)
 	}
-	if c.Sort.By != "" && c.Sort.Mode != "" {
-		executor = executor.Order(c.Sort.By + " " + c.Sort.Mode)
+	if conditions.Sort.By != "" && conditions.Sort.Mode != "" {
+		executor = executor.Order(conditions.Sort.By + " " + conditions.Sort.Mode)
 	}
-	if c.Pagination.Limit != nil {
-		executor = executor.Limit(c.Pagination.Limit.(int))
+	if conditions.Pagination.Limit != nil {
+		executor = executor.Limit(conditions.Pagination.Limit.(int))
 	}
-	if c.Pagination.Limit != nil && c.Pagination.Page != nil {
-		executor = executor.Offset(helpers.GetOffset(c.Pagination.Page.(int), c.Pagination.Limit.(int)))
+	if conditions.Pagination.Limit != nil && conditions.Pagination.Page != nil {
+		executor = executor.Offset(helpers.GetOffset(conditions.Pagination.Page.(int), conditions.Pagination.Limit.(int)))
 	}
 
 	if err := executor.Debug().Find(&result).Error; err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	// get count from all rows
-	var total int64
-	if err := i.db.Model(&models.Process{}).Count(&total).Error; err != nil {
-		return nil, nil, err
-	}
-
-	return &result, &total, nil
+	return &result, nil
 }
 
-func (i *impl) GetById(id *uuid.UUID) (*models.Process, error) {
+func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.Process, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
 	result := models.Process{}
-	if err := i.db.Debug().First(&result, id).Error; err != nil {
+	if err := trx.Debug().First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil
 }
 
-func (i *impl) DeleteById(id *uuid.UUID) error {
+func (i *impl) DeleteById(trx *gorm.DB, id *uuid.UUID) error {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
 	result := models.Process{}
-	if err := i.db.Debug().Delete(&result, id).Error; err != nil {
+	if err := trx.Debug().Delete(&result, id).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (i *impl) Update(ip *models.Process, p *models.ProcessPayloadUpdateById) (*models.Process, error) {
-	if err := i.db.Debug().Model(ip).Updates(models.Process{
-		Name:        (*p).Name,
-		Description: (*p).Description,
+func (i *impl) Update(trx *gorm.DB, instanceProcess *models.Process, payload *models.ProcessPayloadUpdateById) (*models.Process, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	if err := trx.Debug().Model(instanceProcess).Updates(models.Process{
+		Name:        (*payload).Name,
+		Description: (*payload).Description,
 	}).Error; err != nil {
 		return nil, err
 	}
-	return ip, nil
+	return instanceProcess, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {
