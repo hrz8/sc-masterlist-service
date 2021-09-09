@@ -10,10 +10,18 @@ type (
 		Create(*gorm.DB, *models.Partner) (*models.Partner, error)
 	}
 
-	impl struct{}
+	impl struct {
+		db *gorm.DB
+	}
 )
 
 func (i *impl) Create(trx *gorm.DB, p *models.Partner) (*models.Partner, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
 	if err := trx.Debug().Create(&p).Error; err != nil {
 		return nil, err
 	}
@@ -23,5 +31,7 @@ func (i *impl) Create(trx *gorm.DB, p *models.Partner) (*models.Partner, error) 
 func NewRepository(db *gorm.DB) RepositoryInterface {
 	db.AutoMigrate(&models.Partner{})
 	db.AutoMigrate(&models.PartnersPartnerTypes{})
-	return &impl{}
+	return &impl{
+		db: db,
+	}
 }
