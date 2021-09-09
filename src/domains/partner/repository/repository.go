@@ -7,7 +7,7 @@ import (
 
 type (
 	RepositoryInterface interface {
-		Create(*models.Partner) (*models.Partner, error)
+		Create(*gorm.DB, *models.Partner) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -15,8 +15,8 @@ type (
 	}
 )
 
-func (i *impl) Create(p *models.Partner) (*models.Partner, error) {
-	if err := i.db.Debug().Create(&p).Error; err != nil {
+func (i *impl) Create(trx *gorm.DB, p *models.Partner) (*models.Partner, error) {
+	if err := trx.Debug().Create(&p).Error; err != nil {
 		return nil, err
 	}
 	return p, nil

@@ -23,7 +23,7 @@ type (
 func (i *impl) Create(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.PartnerPayloadCreate)
-	result, err := i.usecase.Create(payload)
+	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
 		errMessage := err.Error()
 		errStatus := uint16(http.StatusBadRequest)

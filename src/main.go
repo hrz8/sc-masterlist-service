@@ -60,42 +60,6 @@ func main() {
 
 	mysqlSess := mysql.Connect()
 
-	// #region services loader
-	// - domain project
-	projectRepo := ProjectRepository.NewRepository(mysqlSess)
-	projectUsecase := ProjectUsecase.NewUsecase(projectRepo)
-	// - domain process
-	processRepo := ProcessRepository.NewRepository(mysqlSess)
-	processUsecase := ProcessUsecase.NewUsecase(processRepo)
-	// - domain sourcing
-	sourcingRepo := SourcingRepository.NewRepository(mysqlSess)
-	sourcingUsecase := SourcingUsecase.NewUsecase(sourcingRepo)
-	// - domain mould_maker
-	mouldMakerRepository := MouldMakerRepository.NewRepository(mysqlSess)
-	mouldMakerUsecase := MouldMakerUsecase.NewUsecase(mouldMakerRepository)
-	// - domain partner
-	partnerRepository := PartnerRepository.NewRepository(mysqlSess)
-	partnerUsecase := PartnerUsecase.NewUsecase(partnerRepository)
-	// - domain partner_type
-	partnerTypeRepository := PartnerTypeRepository.NewRepository(mysqlSess)
-	partnerTypeUsecase := PartnerTypeUsecase.NewUsecase(partnerTypeRepository)
-	// #endregion
-
-	// #region rest loader
-	// - domain project
-	projectRest := ProjectRest.NewRest(projectUsecase)
-	// - domain process
-	processRest := ProcessRest.NewRest(processUsecase)
-	// - domain sourcing
-	sourcingRest := SourcingRest.NewRest(sourcingUsecase)
-	// - domain mould_maker
-	mouldMakerRest := MouldMakerRest.NewRest(mouldMakerUsecase)
-	// - domain partner
-	partnerRest := PartnerRest.NewRest(partnerUsecase)
-	// - domain partner_type
-	partnerTypeRest := PartnerTypeRest.NewRest(partnerTypeUsecase)
-	// #endregion
-
 	// rest server
 	e := echo.New()
 	e.Validator = utils.NewValidator()
@@ -110,6 +74,33 @@ func main() {
 		}
 	})
 
+	// #region services loader
+	// - domain project
+	projectRepo := ProjectRepository.NewRepository(mysqlSess)
+	projectUsecase := ProjectUsecase.NewUsecase(projectRepo)
+	projectRest := ProjectRest.NewRest(projectUsecase)
+	// - domain process
+	processRepo := ProcessRepository.NewRepository(mysqlSess)
+	processUsecase := ProcessUsecase.NewUsecase(processRepo)
+	processRest := ProcessRest.NewRest(processUsecase)
+	// - domain sourcing
+	sourcingRepo := SourcingRepository.NewRepository(mysqlSess)
+	sourcingUsecase := SourcingUsecase.NewUsecase(sourcingRepo)
+	sourcingRest := SourcingRest.NewRest(sourcingUsecase)
+	// - domain mould_maker
+	mouldMakerRepository := MouldMakerRepository.NewRepository(mysqlSess)
+	mouldMakerUsecase := MouldMakerUsecase.NewUsecase(mouldMakerRepository)
+	mouldMakerRest := MouldMakerRest.NewRest(mouldMakerUsecase)
+	// - domain partner_type
+	partnerTypeRepository := PartnerTypeRepository.NewRepository(mysqlSess)
+	partnerTypeUsecase := PartnerTypeUsecase.NewUsecase(partnerTypeRepository)
+	partnerTypeRest := PartnerTypeRest.NewRest(partnerTypeUsecase)
+	// - domain partner
+	partnerRepository := PartnerRepository.NewRepository(mysqlSess)
+	partnerUsecase := PartnerUsecase.NewUsecase(partnerRepository, partnerTypeRepository)
+	partnerRest := PartnerRest.NewRest(partnerUsecase)
+	// #endregion
+
 	// #region delivery endpoint implementation
 	// - domain project
 	ProcessRest.AddProcessEndpoints(e, processRest)
@@ -119,10 +110,10 @@ func main() {
 	SourcingRest.AddSourcingEndpoints(e, sourcingRest)
 	// - domain mould_maker
 	MouldMakerRest.AddMouldMakerEndpoints(e, mouldMakerRest)
-	// - domain partner
-	PartnerRest.AddPartnerEndpoints(e, partnerRest)
 	// - domain partner_type
 	PartnerTypeRest.AddPartnerTypeEndpoints(e, partnerTypeRest)
+	// - domain partner
+	PartnerRest.AddPartnerEndpoints(e, partnerRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
