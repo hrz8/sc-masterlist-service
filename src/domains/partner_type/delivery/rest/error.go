@@ -6,10 +6,10 @@ import (
 
 type (
 	PartnerTypeErrorInterface interface {
-		PartnerTypeErrorCreate(*utils.CustomContext, *string, *uint16) error
-		PartnerTypeErrorGetAll(*utils.CustomContext, *string, *uint16) error
-		PartnerTypeErrorGet(*utils.CustomContext, *string, *uint16) error
-		PartnerTypeErrorDelete(*utils.CustomContext, *string, *uint16) error
+		PartnerTypeErrorCreate(ctx *utils.CustomContext, message *string, status *uint16) error
+		PartnerTypeErrorGetAll(ctx *utils.CustomContext, message *string, status *uint16) error
+		PartnerTypeErrorGet(ctx *utils.CustomContext, message *string, status *uint16) error
+		PartnerTypeErrorDelete(ctx *utils.CustomContext, message *string, status *uint16) error
 	}
 
 	partnerTypeErrorImpl struct {

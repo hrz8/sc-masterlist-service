@@ -9,8 +9,9 @@ import (
 
 type (
 	RepositoryInterface interface {
+		CountAll(trx *gorm.DB) (*int64, error)
 		Create(trx *gorm.DB, partnerType *models.PartnerType) (*models.PartnerType, error)
-		GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error)
+		GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, error)
 		GetById(trx *gorm.DB, id *uuid.UUID) (*models.PartnerType, error)
 		DeleteById(trx *gorm.DB, id *uuid.UUID) error
 		Update(trx *gorm.DB, instancePartnerType *models.PartnerType, payload *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error)
@@ -20,6 +21,20 @@ type (
 		db *gorm.DB
 	}
 )
+
+func (i *impl) CountAll(trx *gorm.DB) (*int64, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	var total int64 = 0
+	if err := trx.Model(&models.PartnerType{}).Count(&total).Error; err != nil {
+		return nil, err
+	}
+	return &total, nil
+}
 
 func (i *impl) Create(trx *gorm.DB, partnerType *models.PartnerType) (*models.PartnerType, error) {
 	// transaction check
@@ -34,7 +49,7 @@ func (i *impl) Create(trx *gorm.DB, partnerType *models.PartnerType) (*models.Pa
 	return partnerType, nil
 }
 
-func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error) {
+func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
@@ -75,16 +90,10 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll)
 	}
 
 	if err := executor.Debug().Preload("Partners").Find(&result).Error; err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	// get count from all rows
-	var total int64 = 0
-	if err := trx.Model(&models.PartnerType{}).Count(&total).Error; err != nil {
-		return nil, nil, err
-	}
-
-	return &result, &total, nil
+	return &result, nil
 }
 
 func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.PartnerType, error) {
