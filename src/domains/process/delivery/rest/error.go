@@ -6,10 +6,10 @@ import (
 
 type (
 	ProcessErrorInterface interface {
-		ProcessErrorCreate(*utils.CustomContext, *string, *uint16) error
-		ProcessErrorGetAll(*utils.CustomContext, *string, *uint16) error
-		ProcessErrorGet(*utils.CustomContext, *string, *uint16) error
-		ProcessErrorDelete(*utils.CustomContext, *string, *uint16) error
+		ProcessErrorCreate(ctx *utils.CustomContext, message *string, status *uint16) error
+		ProcessErrorGetAll(ctx *utils.CustomContext, message *string, status *uint16) error
+		ProcessErrorGet(ctx *utils.CustomContext, message *string, status *uint16) error
+		ProcessErrorDelete(ctx *utils.CustomContext, message *string, status *uint16) error
 	}
 
 	processErrorImpl struct {

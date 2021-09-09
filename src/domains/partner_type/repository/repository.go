@@ -9,11 +9,11 @@ import (
 
 type (
 	RepositoryInterface interface {
-		Create(*gorm.DB, *models.PartnerType) (*models.PartnerType, error)
-		GetAll(*gorm.DB, *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error)
-		GetById(*gorm.DB, *uuid.UUID) (*models.PartnerType, error)
-		DeleteById(*gorm.DB, *uuid.UUID) error
-		Update(*gorm.DB, *models.PartnerType, *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error)
+		Create(trx *gorm.DB, partnerType *models.PartnerType) (*models.PartnerType, error)
+		GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error)
+		GetById(trx *gorm.DB, id *uuid.UUID) (*models.PartnerType, error)
+		DeleteById(trx *gorm.DB, id *uuid.UUID) error
+		Update(trx *gorm.DB, instancePartnerType *models.PartnerType, payload *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error)
 	}
 
 	impl struct {
@@ -21,20 +21,20 @@ type (
 	}
 )
 
-func (i *impl) Create(trx *gorm.DB, p *models.PartnerType) (*models.PartnerType, error) {
+func (i *impl) Create(trx *gorm.DB, partnerType *models.PartnerType) (*models.PartnerType, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
 	}
 
 	// execution
-	if err := trx.Debug().Create(&p).Error; err != nil {
+	if err := trx.Debug().Create(&partnerType).Error; err != nil {
 		return nil, err
 	}
-	return p, nil
+	return partnerType, nil
 }
 
-func (i *impl) GetAll(trx *gorm.DB, c *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error) {
+func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
@@ -43,35 +43,35 @@ func (i *impl) GetAll(trx *gorm.DB, c *models.PartnerTypePayloadGetAll) (*[]mode
 	// execution
 	result := []models.PartnerType{}
 	executor := trx.
-		Where("name LIKE ?", "%"+c.Name.Like+"%").
-		Where("description LIKE ?", "%"+c.Description.Like+"%")
+		Where("name LIKE ?", "%"+conditions.Name.Like+"%").
+		Where("description LIKE ?", "%"+conditions.Description.Like+"%")
 
-	if c.Deleted.Only {
+	if conditions.Deleted.Only {
 		executor = executor.Unscoped().Where("deleted_at IS NOT NULL")
 	}
-	if c.Deleted.Include {
+	if conditions.Deleted.Include {
 		executor = executor.Unscoped()
 	}
-	if c.Name.Eq != "" {
-		executor = executor.Where("name = ?", c.Name.Eq)
+	if conditions.Name.Eq != "" {
+		executor = executor.Where("name = ?", conditions.Name.Eq)
 	}
-	if c.Description.Eq != "" {
-		executor = executor.Where("description = ?", c.Description.Eq)
+	if conditions.Description.Eq != "" {
+		executor = executor.Where("description = ?", conditions.Description.Eq)
 	}
-	if c.CreatedAt.Gte != nil && c.CreatedAt.Lte != nil {
-		executor = executor.Where("created_at BETWEEN ? AND ?", c.CreatedAt.Gte, c.CreatedAt.Lte)
+	if conditions.CreatedAt.Gte != nil && conditions.CreatedAt.Lte != nil {
+		executor = executor.Where("created_at BETWEEN ? AND ?", conditions.CreatedAt.Gte, conditions.CreatedAt.Lte)
 	}
-	if c.UpdatedAt.Gte != nil && c.UpdatedAt.Lte != nil {
-		executor = executor.Where("updated_at BETWEEN ? AND ?", c.UpdatedAt.Gte, c.UpdatedAt.Lte)
+	if conditions.UpdatedAt.Gte != nil && conditions.UpdatedAt.Lte != nil {
+		executor = executor.Where("updated_at BETWEEN ? AND ?", conditions.UpdatedAt.Gte, conditions.UpdatedAt.Lte)
 	}
-	if c.Sort.By != "" && c.Sort.Mode != "" {
-		executor = executor.Order(c.Sort.By + " " + c.Sort.Mode)
+	if conditions.Sort.By != "" && conditions.Sort.Mode != "" {
+		executor = executor.Order(conditions.Sort.By + " " + conditions.Sort.Mode)
 	}
-	if c.Pagination.Limit != nil {
-		executor = executor.Limit(c.Pagination.Limit.(int))
+	if conditions.Pagination.Limit != nil {
+		executor = executor.Limit(conditions.Pagination.Limit.(int))
 	}
-	if c.Pagination.Limit != nil && c.Pagination.Page != nil {
-		executor = executor.Offset(helpers.GetOffset(c.Pagination.Page.(int), c.Pagination.Limit.(int)))
+	if conditions.Pagination.Limit != nil && conditions.Pagination.Page != nil {
+		executor = executor.Offset(helpers.GetOffset(conditions.Pagination.Page.(int), conditions.Pagination.Limit.(int)))
 	}
 
 	if err := executor.Debug().Preload("Partners").Find(&result).Error; err != nil {
@@ -115,20 +115,20 @@ func (i *impl) DeleteById(trx *gorm.DB, id *uuid.UUID) error {
 	return nil
 }
 
-func (i *impl) Update(trx *gorm.DB, ip *models.PartnerType, p *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error) {
+func (i *impl) Update(trx *gorm.DB, instancePartnerType *models.PartnerType, payload *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
 	}
 
 	// execution
-	if err := trx.Debug().Model(ip).Updates(models.PartnerType{
-		Name:        (*p).Name,
-		Description: (*p).Description,
+	if err := trx.Debug().Model(instancePartnerType).Updates(models.PartnerType{
+		Name:        (*payload).Name,
+		Description: (*payload).Description,
 	}).Error; err != nil {
 		return nil, err
 	}
-	return ip, nil
+	return instancePartnerType, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {

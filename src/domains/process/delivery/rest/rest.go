@@ -12,11 +12,11 @@ import (
 
 type (
 	RestInterface interface {
-		Create(echo.Context) error
-		GetAll(echo.Context) error
-		GetById(echo.Context) error
-		DeleteById(echo.Context) error
-		UpdateById(echo.Context) error
+		Create(c echo.Context) error
+		GetAll(c echo.Context) error
+		GetById(c echo.Context) error
+		DeleteById(c echo.Context) error
+		UpdateById(c echo.Context) error
 	}
 
 	impl struct {
@@ -28,7 +28,7 @@ type (
 func (i *impl) Create(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProcessPayloadCreate)
-	result, err := i.usecase.Create(payload)
+	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
 		errMessage := err.Error()
 		errStatus := uint16(http.StatusBadRequest)
@@ -44,7 +44,7 @@ func (i *impl) Create(c echo.Context) error {
 func (i *impl) GetAll(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProcessPayloadGetAll)
-	result, total, err := i.usecase.GetAll(payload)
+	result, total, err := i.usecase.GetAll(ctx, payload)
 	if err != nil {
 		errMessage := err.Error()
 		errStatus := uint16(http.StatusBadRequest)
@@ -63,7 +63,7 @@ func (i *impl) GetAll(c echo.Context) error {
 func (i *impl) GetById(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProcessPayloadGet)
-	result, err := i.usecase.GetById(&payload.ID)
+	result, err := i.usecase.GetById(ctx, &payload.ID)
 	if err != nil {
 		errMessage := err.Error()
 		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
@@ -79,7 +79,7 @@ func (i *impl) GetById(c echo.Context) error {
 func (i *impl) DeleteById(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProcessPayloadDeleteById)
-	result, err := i.usecase.DeleteById(&payload.ID)
+	result, err := i.usecase.DeleteById(ctx, &payload.ID)
 	if err != nil {
 		errMessage := err.Error()
 		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
@@ -95,7 +95,7 @@ func (i *impl) DeleteById(c echo.Context) error {
 func (i *impl) UpdateById(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProcessPayloadUpdateById)
-	result, err := i.usecase.UpdateById(&payload.ID, payload)
+	result, err := i.usecase.UpdateById(ctx, &payload.ID, payload)
 	if err != nil {
 		errMessage := err.Error()
 		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
