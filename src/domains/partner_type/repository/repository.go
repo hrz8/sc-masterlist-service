@@ -9,11 +9,11 @@ import (
 
 type (
 	RepositoryInterface interface {
-		Create(*models.PartnerType) (*models.PartnerType, error)
-		GetAll(*models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error)
-		GetById(*uuid.UUID) (*models.PartnerType, error)
-		DeleteById(*uuid.UUID) error
-		Update(*models.PartnerType, *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error)
+		Create(*gorm.DB, *models.PartnerType) (*models.PartnerType, error)
+		GetAll(*gorm.DB, *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error)
+		GetById(*gorm.DB, *uuid.UUID) (*models.PartnerType, error)
+		DeleteById(*gorm.DB, *uuid.UUID) error
+		Update(*gorm.DB, *models.PartnerType, *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error)
 	}
 
 	impl struct {
@@ -21,16 +21,28 @@ type (
 	}
 )
 
-func (i *impl) Create(p *models.PartnerType) (*models.PartnerType, error) {
-	if err := i.db.Debug().Create(&p).Error; err != nil {
+func (i *impl) Create(trx *gorm.DB, p *models.PartnerType) (*models.PartnerType, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	if err := trx.Debug().Create(&p).Error; err != nil {
 		return nil, err
 	}
 	return p, nil
 }
 
-func (i *impl) GetAll(c *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error) {
+func (i *impl) GetAll(trx *gorm.DB, c *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, *int64, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
 	result := []models.PartnerType{}
-	executor := i.db.
+	executor := trx.
 		Where("name LIKE ?", "%"+c.Name.Like+"%").
 		Where("description LIKE ?", "%"+c.Description.Like+"%")
 
@@ -68,31 +80,49 @@ func (i *impl) GetAll(c *models.PartnerTypePayloadGetAll) (*[]models.PartnerType
 
 	// get count from all rows
 	var total int64
-	if err := i.db.Model(&models.PartnerType{}).Count(&total).Error; err != nil {
+	if err := trx.Model(&models.PartnerType{}).Count(&total).Error; err != nil {
 		return nil, nil, err
 	}
 
 	return &result, &total, nil
 }
 
-func (i *impl) GetById(id *uuid.UUID) (*models.PartnerType, error) {
+func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.PartnerType, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
 	result := models.PartnerType{}
-	if err := i.db.Debug().Preload("Partners").First(&result, id).Error; err != nil {
+	if err := trx.Debug().Preload("Partners").First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil
 }
 
-func (i *impl) DeleteById(id *uuid.UUID) error {
+func (i *impl) DeleteById(trx *gorm.DB, id *uuid.UUID) error {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
 	result := models.PartnerType{}
-	if err := i.db.Debug().Delete(&result, id).Error; err != nil {
+	if err := trx.Debug().Delete(&result, id).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (i *impl) Update(ip *models.PartnerType, p *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error) {
-	if err := i.db.Debug().Model(ip).Updates(models.PartnerType{
+func (i *impl) Update(trx *gorm.DB, ip *models.PartnerType, p *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	if err := trx.Debug().Model(ip).Updates(models.PartnerType{
 		Name:        (*p).Name,
 		Description: (*p).Description,
 	}).Error; err != nil {

@@ -10,9 +10,7 @@ type (
 		Create(*gorm.DB, *models.Partner) (*models.Partner, error)
 	}
 
-	impl struct {
-		db *gorm.DB
-	}
+	impl struct{}
 )
 
 func (i *impl) Create(trx *gorm.DB, p *models.Partner) (*models.Partner, error) {
@@ -25,7 +23,5 @@ func (i *impl) Create(trx *gorm.DB, p *models.Partner) (*models.Partner, error) 
 func NewRepository(db *gorm.DB) RepositoryInterface {
 	db.AutoMigrate(&models.Partner{})
 	db.AutoMigrate(&models.PartnersPartnerTypes{})
-	return &impl{
-		db: db,
-	}
+	return &impl{}
 }

@@ -6,12 +6,11 @@ import (
 	PartnerTypeDomain "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/repository"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
-	"github.com/labstack/echo/v4"
 )
 
 type (
 	UsecaseInterface interface {
-		Create(echo.Context, *models.PartnerPayloadCreate) (*models.Partner, error)
+		Create(*utils.CustomContext, *models.PartnerPayloadCreate) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -20,8 +19,8 @@ type (
 	}
 )
 
-func (i *impl) Create(c echo.Context, partner *models.PartnerPayloadCreate) (*models.Partner, error) {
-	trx := c.(*utils.CustomContext).MysqlSess.Begin()
+func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCreate) (*models.Partner, error) {
+	trx := ctx.MysqlSess.Begin()
 
 	id, _ := uuid.NewV4()
 	types := make([]*models.PartnerType, len(partner.Types))
