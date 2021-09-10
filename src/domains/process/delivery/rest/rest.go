@@ -1,10 +1,7 @@
 package rest
 
 import (
-	"net/http"
-
 	"github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
-	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
 	"github.com/labstack/echo/v4"
@@ -30,9 +27,7 @@ func (i *impl) Create(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadCreate)
 	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := uint16(http.StatusBadRequest)
-		return i.errorLib.ProcessErrorCreate(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProcessErrorCreate.err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -46,9 +41,7 @@ func (i *impl) GetAll(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadGetAll)
 	result, total, err := i.usecase.GetAll(ctx, payload)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := uint16(http.StatusBadRequest)
-		return i.errorLib.ProcessErrorGetAll(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProcessErrorGetAll.err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -65,9 +58,7 @@ func (i *impl) GetById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadGet)
 	result, err := i.usecase.GetById(ctx, &payload.ID)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
-		return i.errorLib.ProcessErrorGet(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProcessErrorGetById.err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -81,9 +72,7 @@ func (i *impl) DeleteById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadDeleteById)
 	result, err := i.usecase.DeleteById(ctx, &payload.ID)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
-		return i.errorLib.ProcessErrorGet(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProcessErrorDeleteById.err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -97,9 +86,7 @@ func (i *impl) UpdateById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadUpdateById)
 	result, err := i.usecase.UpdateById(ctx, &payload.ID, payload)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
-		return i.errorLib.ProcessErrorGet(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProcessErrorUpdateById.err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
