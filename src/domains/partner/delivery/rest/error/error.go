@@ -9,46 +9,46 @@ import (
 )
 
 type (
-	ProcessErrorInterface interface {
+	RestErrorInterface interface {
 		Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error
 	}
 
-	processErrorImpl struct {
+	restErrorImpl struct {
 		prefix string
 	}
 
-	processErrorMap struct {
+	restErrorMap struct {
 		Status int
 		Err    error
 	}
 )
 
 var (
-	ProcessErrorCreate = processErrorMap{
+	Create = restErrorMap{
 		Status: 400,
-		Err:    errors.New("failed to store process"),
+		Err:    errors.New("failed to store partner"),
 	}
-	ProcessErrorGetAll = processErrorMap{
+	GetAll = restErrorMap{
 		Status: 400,
-		Err:    errors.New("failed to list process"),
+		Err:    errors.New("failed to list partner"),
 	}
-	ProcessErrorGetById = processErrorMap{
+	GetById = restErrorMap{
 		Status: 400,
-		Err:    errors.New("failed to get process"),
+		Err:    errors.New("failed to get partner"),
 	}
-	ProcessErrorDeleteById = processErrorMap{
+	DeleteById = restErrorMap{
 		Status: 400,
-		Err:    errors.New("failed to remove process"),
+		Err:    errors.New("failed to remove partner"),
 	}
-	ProcessErrorUpdateById = processErrorMap{
+	UpdateById = restErrorMap{
 		Status: 400,
-		Err:    errors.New("failed to update process"),
+		Err:    errors.New("failed to update partner"),
 	}
 )
 
-func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
-	if errors.Is(domainErr, ProcessErrorCreate.Err) {
-		status := uint16(ProcessErrorCreate.Status)
+func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
+	if errors.Is(domainErr, Create.Err) {
+		status := uint16(Create.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -59,8 +59,8 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessErrorGetAll.Err) {
-		status := uint16(ProcessErrorGetAll.Status)
+	if errors.Is(domainErr, GetAll.Err) {
+		status := uint16(GetAll.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -71,8 +71,8 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessErrorGetById.Err) {
-		errStatus := uint16(ProcessErrorGetById.Status)
+	if errors.Is(domainErr, GetById.Err) {
+		errStatus := uint16(GetById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -84,8 +84,8 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessErrorDeleteById.Err) {
-		errStatus := uint16(ProcessErrorDeleteById.Status)
+	if errors.Is(domainErr, DeleteById.Err) {
+		errStatus := uint16(DeleteById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -97,8 +97,8 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessErrorUpdateById.Err) {
-		errStatus := uint16(ProcessErrorUpdateById.Status)
+	if errors.Is(domainErr, UpdateById.Err) {
+		errStatus := uint16(UpdateById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -119,8 +119,8 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 	)
 }
 
-func NewProcessError() ProcessErrorInterface {
-	return &processErrorImpl{
-		prefix: "SCM-PROCESS",
+func NewPartnerError() RestErrorInterface {
+	return &restErrorImpl{
+		prefix: "SCM-PARTNER",
 	}
 }
