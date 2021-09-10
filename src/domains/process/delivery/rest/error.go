@@ -18,37 +18,37 @@ type (
 	}
 
 	processErrorMap struct {
-		status int
-		err    error
+		Status int
+		Err    error
 	}
 )
 
 var (
 	ProcessErrorCreate = processErrorMap{
-		status: 400,
-		err:    errors.New("failed to store process"),
+		Status: 400,
+		Err:    errors.New("failed to store process"),
 	}
 	ProcessErrorGetAll = processErrorMap{
-		status: 400,
-		err:    errors.New("failed to list process"),
+		Status: 400,
+		Err:    errors.New("failed to list process"),
 	}
 	ProcessErrorGetById = processErrorMap{
-		status: 400,
-		err:    errors.New("failed to get process"),
+		Status: 400,
+		Err:    errors.New("failed to get process"),
 	}
 	ProcessErrorDeleteById = processErrorMap{
-		status: 400,
-		err:    errors.New("failed to remove process"),
+		Status: 400,
+		Err:    errors.New("failed to remove process"),
 	}
 	ProcessErrorUpdateById = processErrorMap{
-		status: 400,
-		err:    errors.New("failed to update process"),
+		Status: 400,
+		Err:    errors.New("failed to update process"),
 	}
 )
 
 func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
-	if errors.Is(domainErr, ProcessErrorCreate.err) {
-		status := uint16(ProcessErrorCreate.status)
+	if errors.Is(domainErr, ProcessErrorCreate.Err) {
+		status := uint16(ProcessErrorCreate.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -59,8 +59,8 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessErrorGetAll.err) {
-		status := uint16(ProcessErrorGetAll.status)
+	if errors.Is(domainErr, ProcessErrorGetAll.Err) {
+		status := uint16(ProcessErrorGetAll.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -71,8 +71,8 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessErrorGetById.err) {
-		errStatus := uint16(ProcessErrorGetById.status)
+	if errors.Is(domainErr, ProcessErrorGetById.Err) {
+		errStatus := uint16(ProcessErrorGetById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -84,8 +84,8 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessErrorDeleteById.err) {
-		errStatus := uint16(ProcessErrorDeleteById.status)
+	if errors.Is(domainErr, ProcessErrorDeleteById.Err) {
+		errStatus := uint16(ProcessErrorDeleteById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -97,8 +97,8 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessErrorUpdateById.err) {
-		errStatus := uint16(ProcessErrorUpdateById.status)
+	if errors.Is(domainErr, ProcessErrorUpdateById.Err) {
+		errStatus := uint16(ProcessErrorUpdateById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{

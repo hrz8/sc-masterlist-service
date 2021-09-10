@@ -18,37 +18,37 @@ type (
 	}
 
 	partnerErrorMap struct {
-		status int
-		err    error
+		Status int
+		Err    error
 	}
 )
 
 var (
 	PartnerErrorCreate = partnerErrorMap{
-		status: 400,
-		err:    errors.New("failed to store partner"),
+		Status: 400,
+		Err:    errors.New("failed to store partner"),
 	}
 	PartnerErrorGetAll = partnerErrorMap{
-		status: 400,
-		err:    errors.New("failed to list partner"),
+		Status: 400,
+		Err:    errors.New("failed to list partner"),
 	}
 	PartnerErrorGetById = partnerErrorMap{
-		status: 400,
-		err:    errors.New("failed to get partner"),
+		Status: 400,
+		Err:    errors.New("failed to get partner"),
 	}
 	PartnerErrorDeleteById = partnerErrorMap{
-		status: 400,
-		err:    errors.New("failed to remove partner"),
+		Status: 400,
+		Err:    errors.New("failed to remove partner"),
 	}
 	PartnerErrorUpdateById = partnerErrorMap{
-		status: 400,
-		err:    errors.New("failed to update partner"),
+		Status: 400,
+		Err:    errors.New("failed to update partner"),
 	}
 )
 
 func (i *partnerErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
-	if errors.Is(domainErr, PartnerErrorCreate.err) {
-		status := uint16(PartnerErrorCreate.status)
+	if errors.Is(domainErr, PartnerErrorCreate.Err) {
+		status := uint16(PartnerErrorCreate.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -59,8 +59,8 @@ func (i *partnerErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, PartnerErrorGetAll.err) {
-		status := uint16(PartnerErrorGetAll.status)
+	if errors.Is(domainErr, PartnerErrorGetAll.Err) {
+		status := uint16(PartnerErrorGetAll.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -71,8 +71,8 @@ func (i *partnerErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, PartnerErrorGetById.err) {
-		errStatus := uint16(PartnerErrorGetById.status)
+	if errors.Is(domainErr, PartnerErrorGetById.Err) {
+		errStatus := uint16(PartnerErrorGetById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -84,8 +84,8 @@ func (i *partnerErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, PartnerErrorDeleteById.err) {
-		errStatus := uint16(PartnerErrorDeleteById.status)
+	if errors.Is(domainErr, PartnerErrorDeleteById.Err) {
+		errStatus := uint16(PartnerErrorDeleteById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -97,8 +97,8 @@ func (i *partnerErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, PartnerErrorUpdateById.err) {
-		errStatus := uint16(PartnerErrorUpdateById.status)
+	if errors.Is(domainErr, PartnerErrorUpdateById.Err) {
+		errStatus := uint16(PartnerErrorUpdateById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{

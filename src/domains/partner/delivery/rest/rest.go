@@ -23,7 +23,7 @@ func (i *impl) Create(c echo.Context) error {
 	payload := ctx.Payload.(*models.PartnerPayloadCreate)
 	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, PartnerErrorCreate.err, err)
+		return i.errorLib.Throw(ctx, PartnerErrorCreate.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,

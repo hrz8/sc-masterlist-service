@@ -27,7 +27,7 @@ func (i *impl) Create(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadCreate)
 	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorCreate.err, err)
+		return i.errorLib.Throw(ctx, ProjectErrorCreate.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -41,7 +41,7 @@ func (i *impl) GetAll(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadGetAll)
 	result, total, err := i.usecase.GetAll(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorGetAll.err, err)
+		return i.errorLib.Throw(ctx, ProjectErrorGetAll.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -58,7 +58,7 @@ func (i *impl) GetById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadGet)
 	result, err := i.usecase.GetById(ctx, &payload.ID)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorGetById.err, err)
+		return i.errorLib.Throw(ctx, ProjectErrorGetById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -72,7 +72,7 @@ func (i *impl) DeleteById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadDeleteById)
 	result, err := i.usecase.DeleteById(ctx, &payload.ID)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorDeleteById.err, err)
+		return i.errorLib.Throw(ctx, ProjectErrorDeleteById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -86,7 +86,7 @@ func (i *impl) UpdateById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadUpdateById)
 	result, err := i.usecase.UpdateById(ctx, &payload.ID, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorUpdateById.err, err)
+		return i.errorLib.Throw(ctx, ProjectErrorUpdateById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,

@@ -3,7 +3,8 @@ package usecase
 import (
 	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/domains/partner/repository"
-	PartnerTypeDomain "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/repository"
+	PartnerTypeRest "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/delivery/rest"
+	PartnerTypeRepository "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/repository"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
 )
@@ -15,7 +16,7 @@ type (
 
 	impl struct {
 		repository            repository.RepositoryInterface
-		partnerTypeRepository PartnerTypeDomain.RepositoryInterface
+		partnerTypeRepository PartnerTypeRepository.RepositoryInterface
 	}
 )
 
@@ -28,7 +29,7 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 		partnerType, err := i.partnerTypeRepository.GetById(trx, &item)
 		if err != nil {
 			trx.Rollback()
-			return nil, err
+			return nil, PartnerTypeRest.PartnerTypeErrorGetById.Err
 		}
 		types[index] = partnerType
 	}
@@ -46,7 +47,7 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 	return result, err
 }
 
-func NewUsecase(repo repository.RepositoryInterface, ptRepo PartnerTypeDomain.RepositoryInterface) UsecaseInterface {
+func NewUsecase(repo repository.RepositoryInterface, ptRepo PartnerTypeRepository.RepositoryInterface) UsecaseInterface {
 	return &impl{
 		repository:            repo,
 		partnerTypeRepository: ptRepo,
