@@ -1,8 +1,6 @@
 package rest
 
 import (
-	"net/http"
-
 	"github.com/hrz8/sc-masterlist-service/src/domains/partner/usecase"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
@@ -25,9 +23,7 @@ func (i *impl) Create(c echo.Context) error {
 	payload := ctx.Payload.(*models.PartnerPayloadCreate)
 	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := uint16(http.StatusBadRequest)
-		return i.errorLib.PartnerErrorCreate(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, PartnerErrorCreate.err, err)
 	}
 	return ctx.SuccessResponse(
 		result,

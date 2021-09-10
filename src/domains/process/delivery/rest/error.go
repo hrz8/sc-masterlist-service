@@ -10,7 +10,7 @@ import (
 
 type (
 	ProcessErrorInterface interface {
-		Throw(ctx *utils.CustomContext, domainErr error, err error) error
+		Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error
 	}
 
 	processErrorImpl struct {
@@ -46,12 +46,12 @@ var (
 	}
 )
 
-func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err error) error {
+func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
 	if errors.Is(domainErr, ProcessErrorCreate.err) {
 		status := uint16(ProcessErrorCreate.status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,
@@ -63,7 +63,7 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err 
 		status := uint16(ProcessErrorGetAll.status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,
@@ -73,10 +73,10 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err 
 	}
 	if errors.Is(domainErr, ProcessErrorGetById.err) {
 		errStatus := uint16(ProcessErrorGetById.status)
-		status := helpers.ParseStatusResponse(err, errStatus)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,
@@ -86,10 +86,10 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err 
 	}
 	if errors.Is(domainErr, ProcessErrorDeleteById.err) {
 		errStatus := uint16(ProcessErrorDeleteById.status)
-		status := helpers.ParseStatusResponse(err, errStatus)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,
@@ -99,10 +99,10 @@ func (i *processErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err 
 	}
 	if errors.Is(domainErr, ProcessErrorUpdateById.err) {
 		errStatus := uint16(ProcessErrorUpdateById.status)
-		status := helpers.ParseStatusResponse(err, errStatus)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,

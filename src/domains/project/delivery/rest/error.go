@@ -10,7 +10,7 @@ import (
 
 type (
 	ProjectErrorInterface interface {
-		Throw(ctx *utils.CustomContext, domainErr error, err error) error
+		Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error
 	}
 
 	projectErrorImpl struct {
@@ -46,12 +46,12 @@ var (
 	}
 )
 
-func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err error) error {
+func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
 	if errors.Is(domainErr, ProjectErrorCreate.err) {
 		status := uint16(ProjectErrorCreate.status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,
@@ -63,7 +63,7 @@ func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err 
 		status := uint16(ProjectErrorGetAll.status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,
@@ -73,10 +73,10 @@ func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err 
 	}
 	if errors.Is(domainErr, ProjectErrorGetById.err) {
 		errStatus := uint16(ProjectErrorGetById.status)
-		status := helpers.ParseStatusResponse(err, errStatus)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,
@@ -86,10 +86,10 @@ func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err 
 	}
 	if errors.Is(domainErr, ProjectErrorDeleteById.err) {
 		errStatus := uint16(ProjectErrorDeleteById.status)
-		status := helpers.ParseStatusResponse(err, errStatus)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,
@@ -99,10 +99,10 @@ func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, err 
 	}
 	if errors.Is(domainErr, ProjectErrorUpdateById.err) {
 		errStatus := uint16(ProjectErrorUpdateById.status)
-		status := helpers.ParseStatusResponse(err, errStatus)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
-				"reason": err.Error(),
+				"reason": dataErr.Error(),
 			},
 			domainErr.Error(),
 			status,
