@@ -7,7 +7,7 @@ import (
 
 type (
 	RepositoryInterface interface {
-		Create(*gorm.DB, *models.Partner) (*models.Partner, error)
+		Create(trx *gorm.DB, partner *models.Partner) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -15,17 +15,17 @@ type (
 	}
 )
 
-func (i *impl) Create(trx *gorm.DB, p *models.Partner) (*models.Partner, error) {
+func (i *impl) Create(trx *gorm.DB, partner *models.Partner) (*models.Partner, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
 	}
 
 	// execution
-	if err := trx.Debug().Create(&p).Error; err != nil {
+	if err := trx.Debug().Create(&partner).Error; err != nil {
 		return nil, err
 	}
-	return p, nil
+	return partner, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {
