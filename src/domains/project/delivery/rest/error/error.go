@@ -9,46 +9,46 @@ import (
 )
 
 type (
-	ProjectErrorInterface interface {
+	RestErrorInterface interface {
 		Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error
 	}
 
-	projectErrorImpl struct {
+	restErrorImpl struct {
 		prefix string
 	}
 
-	projectErrorMap struct {
+	restErrorMap struct {
 		Status int
 		Err    error
 	}
 )
 
 var (
-	ProjectErrorCreate = projectErrorMap{
+	Create = restErrorMap{
 		Status: 400,
 		Err:    errors.New("failed to store project"),
 	}
-	ProjectErrorGetAll = projectErrorMap{
+	GetAll = restErrorMap{
 		Status: 400,
 		Err:    errors.New("failed to list project"),
 	}
-	ProjectErrorGetById = projectErrorMap{
+	GetById = restErrorMap{
 		Status: 400,
 		Err:    errors.New("failed to get project"),
 	}
-	ProjectErrorDeleteById = projectErrorMap{
+	DeleteById = restErrorMap{
 		Status: 400,
 		Err:    errors.New("failed to remove project"),
 	}
-	ProjectErrorUpdateById = projectErrorMap{
+	UpdateById = restErrorMap{
 		Status: 400,
 		Err:    errors.New("failed to update project"),
 	}
 )
 
-func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
-	if errors.Is(domainErr, ProjectErrorCreate.Err) {
-		status := uint16(ProjectErrorCreate.Status)
+func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
+	if errors.Is(domainErr, Create.Err) {
+		status := uint16(Create.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -59,8 +59,8 @@ func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProjectErrorGetAll.Err) {
-		status := uint16(ProjectErrorGetAll.Status)
+	if errors.Is(domainErr, GetAll.Err) {
+		status := uint16(GetAll.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -71,8 +71,8 @@ func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProjectErrorGetById.Err) {
-		errStatus := uint16(ProjectErrorGetById.Status)
+	if errors.Is(domainErr, GetById.Err) {
+		errStatus := uint16(GetById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -84,8 +84,8 @@ func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProjectErrorDeleteById.Err) {
-		errStatus := uint16(ProjectErrorDeleteById.Status)
+	if errors.Is(domainErr, DeleteById.Err) {
+		errStatus := uint16(DeleteById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -97,8 +97,8 @@ func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProjectErrorUpdateById.Err) {
-		errStatus := uint16(ProjectErrorUpdateById.Status)
+	if errors.Is(domainErr, UpdateById.Err) {
+		errStatus := uint16(UpdateById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -119,8 +119,8 @@ func (i *projectErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, data
 	)
 }
 
-func NewProjectError() ProjectErrorInterface {
-	return &projectErrorImpl{
+func NewProjectError() RestErrorInterface {
+	return &restErrorImpl{
 		prefix: "SCM-PROJECT",
 	}
 }

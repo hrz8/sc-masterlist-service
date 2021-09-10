@@ -1,6 +1,7 @@
 package rest
 
 import (
+	ProjectRestError "github.com/hrz8/sc-masterlist-service/src/domains/project/delivery/rest/error"
 	"github.com/hrz8/sc-masterlist-service/src/domains/project/usecase"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
@@ -18,7 +19,7 @@ type (
 
 	impl struct {
 		usecase  usecase.UsecaseInterface
-		errorLib ProjectErrorInterface
+		errorLib ProjectRestError.RestErrorInterface
 	}
 )
 
@@ -27,7 +28,7 @@ func (i *impl) Create(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadCreate)
 	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorCreate.Err, err)
+		return i.errorLib.Throw(ctx, ProjectRestError.Create.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -41,7 +42,7 @@ func (i *impl) GetAll(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadGetAll)
 	result, total, err := i.usecase.GetAll(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorGetAll.Err, err)
+		return i.errorLib.Throw(ctx, ProjectRestError.GetAll.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -58,7 +59,7 @@ func (i *impl) GetById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadGet)
 	result, err := i.usecase.GetById(ctx, &payload.ID)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorGetById.Err, err)
+		return i.errorLib.Throw(ctx, ProjectRestError.GetById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -72,7 +73,7 @@ func (i *impl) DeleteById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadDeleteById)
 	result, err := i.usecase.DeleteById(ctx, &payload.ID)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorDeleteById.Err, err)
+		return i.errorLib.Throw(ctx, ProjectRestError.DeleteById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -86,7 +87,7 @@ func (i *impl) UpdateById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProjectPayloadUpdateById)
 	result, err := i.usecase.UpdateById(ctx, &payload.ID, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProjectErrorUpdateById.Err, err)
+		return i.errorLib.Throw(ctx, ProjectRestError.UpdateById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -96,7 +97,7 @@ func (i *impl) UpdateById(c echo.Context) error {
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
-	errLib := NewProjectError()
+	errLib := ProjectRestError.NewProjectError()
 	return &impl{
 		usecase:  u,
 		errorLib: errLib,
