@@ -14,7 +14,11 @@ type (
 		GetAll(trx *gorm.DB, conditions *models.ProcessPayloadGetAll) (*[]models.Process, error)
 		GetById(trx *gorm.DB, id *uuid.UUID) (*models.Process, error)
 		DeleteById(trx *gorm.DB, id *uuid.UUID) error
-		Update(trx *gorm.DB, instanceProcess *models.Process, payload *models.ProcessPayloadUpdateById) (*models.Process, error)
+		Update(
+			trx *gorm.DB,
+			processInstance *models.Process,
+			payload *models.ProcessPayloadUpdateById,
+		) (*models.Process, error)
 	}
 
 	impl struct {
@@ -124,20 +128,24 @@ func (i *impl) DeleteById(trx *gorm.DB, id *uuid.UUID) error {
 	return nil
 }
 
-func (i *impl) Update(trx *gorm.DB, instanceProcess *models.Process, payload *models.ProcessPayloadUpdateById) (*models.Process, error) {
+func (i *impl) Update(
+	trx *gorm.DB,
+	processInstance *models.Process,
+	payload *models.ProcessPayloadUpdateById,
+) (*models.Process, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
 	}
 
 	// execution
-	if err := trx.Debug().Model(instanceProcess).Updates(models.Process{
+	if err := trx.Debug().Model(processInstance).Updates(models.Process{
 		Name:        (*payload).Name,
 		Description: (*payload).Description,
 	}).Error; err != nil {
 		return nil, err
 	}
-	return instanceProcess, nil
+	return processInstance, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {

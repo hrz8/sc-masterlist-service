@@ -3,7 +3,6 @@ package usecase
 import (
 	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/domains/partner/repository"
-	PartnerTypeRest "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/delivery/rest"
 	PartnerTypeRepository "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/repository"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
@@ -23,25 +22,29 @@ type (
 func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCreate) (*models.Partner, error) {
 	trx := ctx.MysqlSess.Begin()
 
+	// create partner
 	id, _ := uuid.NewV4()
-	types := make([]*models.PartnerType, len(partner.Types))
-	for index, item := range partner.Types {
-		partnerType, err := i.partnerTypeRepository.GetById(trx, &item)
-		if err != nil {
-			trx.Rollback()
-			return nil, PartnerTypeRest.PartnerTypeErrorGetById.Err
-		}
-		types[index] = partnerType
-	}
 	payload := &models.Partner{
 		ID:          id,
 		Name:        partner.Name,
 		Adress:      partner.Address,
 		Contact:     partner.Address,
 		Description: partner.Description,
-		Types:       types,
 	}
 	result, err := i.repository.Create(trx, payload)
+	if err != nil {
+		trx.Rollback()
+		return nil, err
+	}
+
+	// add each partner_type into created partner
+	resultTypes, err := i.partnerTypeRepository.AddTypeBatch(trx, &partner.Types)
+	if err != nil {
+		trx.Rollback()
+		return nil, err
+	}
+
+	result.Types = resultTypes
 
 	trx.Commit()
 	return result, err

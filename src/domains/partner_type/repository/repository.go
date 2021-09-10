@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/gofrs/uuid"
+	PartnerTypeRestError "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/delivery/rest/error"
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
@@ -14,7 +15,13 @@ type (
 		GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll) (*[]models.PartnerType, error)
 		GetById(trx *gorm.DB, id *uuid.UUID) (*models.PartnerType, error)
 		DeleteById(trx *gorm.DB, id *uuid.UUID) error
-		Update(trx *gorm.DB, instancePartnerType *models.PartnerType, payload *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error)
+		Update(
+			trx *gorm.DB,
+			partnerTypeInstance *models.PartnerType,
+			payload *models.PartnerTypePayloadUpdateById,
+		) (*models.PartnerType, error)
+		// assoc
+		AddTypeBatch(trx *gorm.DB, partnerTypeIDs *[]uuid.UUID) ([]*models.PartnerType, error)
 	}
 
 	impl struct {
@@ -124,21 +131,50 @@ func (i *impl) DeleteById(trx *gorm.DB, id *uuid.UUID) error {
 	return nil
 }
 
-func (i *impl) Update(trx *gorm.DB, instancePartnerType *models.PartnerType, payload *models.PartnerTypePayloadUpdateById) (*models.PartnerType, error) {
+func (i *impl) Update(
+	trx *gorm.DB,
+	partnerTypeInstance *models.PartnerType,
+	payload *models.PartnerTypePayloadUpdateById,
+) (*models.PartnerType, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
 	}
 
 	// execution
-	if err := trx.Debug().Model(instancePartnerType).Updates(models.PartnerType{
+	if err := trx.Debug().Model(partnerTypeInstance).Updates(models.PartnerType{
 		Name:        (*payload).Name,
 		Description: (*payload).Description,
 	}).Error; err != nil {
 		return nil, err
 	}
-	return instancePartnerType, nil
+	return partnerTypeInstance, nil
 }
+
+// #region association functions
+
+// AddTypeBatch is a method to adding partner_type into partner object/instance batchly
+func (i *impl) AddTypeBatch(trx *gorm.DB, partnerTypeIDs *[]uuid.UUID) ([]*models.PartnerType, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	types := make([]*models.PartnerType, len(*partnerTypeIDs))
+	for index, item := range *partnerTypeIDs {
+		partnerType, err := i.GetById(trx, &item)
+		if err != nil {
+			trx.Rollback()
+			return nil, PartnerTypeRestError.GetById.Err
+		}
+		types[index] = partnerType
+	}
+
+	return types, nil
+}
+
+// #endregion
 
 func NewRepository(db *gorm.DB) RepositoryInterface {
 	db.AutoMigrate(&models.PartnerType{})
