@@ -14,22 +14,22 @@ type (
 var (
 	Create = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to store partner type"),
+		Err:    errors.New("failed to store process"),
 	}
 	GetAll = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to list partner type"),
+		Err:    errors.New("failed to list process"),
 	}
 	GetById = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to get partner type"),
+		Err:    errors.New("failed to get process"),
 	}
 	DeleteById = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to remove partner type"),
+		Err:    errors.New("failed to remove process"),
 	}
 	UpdateById = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to update partner type"),
+		Err:    errors.New("failed to update process"),
 	}
 )

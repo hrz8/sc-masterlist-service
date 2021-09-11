@@ -1,7 +1,7 @@
 package rest
 
 import (
-	ProcessRestError "github.com/hrz8/sc-masterlist-service/src/domains/process/delivery/rest/error"
+	ProcessError "github.com/hrz8/sc-masterlist-service/src/domains/process/error"
 	"github.com/hrz8/sc-masterlist-service/src/domains/process/usecase"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
@@ -19,7 +19,7 @@ type (
 
 	impl struct {
 		usecase  usecase.UsecaseInterface
-		errorLib ProcessRestError.RestErrorInterface
+		errorLib RestErrorInterface
 	}
 )
 
@@ -28,7 +28,7 @@ func (i *impl) Create(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadCreate)
 	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProcessRestError.Create.Err, err)
+		return i.errorLib.Throw(ctx, ProcessError.Create.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -42,7 +42,7 @@ func (i *impl) GetAll(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadGetAll)
 	result, total, err := i.usecase.GetAll(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProcessRestError.GetAll.Err, err)
+		return i.errorLib.Throw(ctx, ProcessError.GetAll.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -59,7 +59,7 @@ func (i *impl) GetById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadGet)
 	result, err := i.usecase.GetById(ctx, &payload.ID)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProcessRestError.GetById.Err, err)
+		return i.errorLib.Throw(ctx, ProcessError.GetById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -73,7 +73,7 @@ func (i *impl) DeleteById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadDeleteById)
 	result, err := i.usecase.DeleteById(ctx, &payload.ID)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProcessRestError.DeleteById.Err, err)
+		return i.errorLib.Throw(ctx, ProcessError.DeleteById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -87,7 +87,7 @@ func (i *impl) UpdateById(c echo.Context) error {
 	payload := ctx.Payload.(*models.ProcessPayloadUpdateById)
 	result, err := i.usecase.UpdateById(ctx, &payload.ID, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, ProcessRestError.UpdateById.Err, err)
+		return i.errorLib.Throw(ctx, ProcessError.UpdateById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -97,7 +97,7 @@ func (i *impl) UpdateById(c echo.Context) error {
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
-	errLib := ProcessRestError.NewProcessError()
+	errLib := NewProcessError()
 	return &impl{
 		usecase:  u,
 		errorLib: errLib,
