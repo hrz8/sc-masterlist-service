@@ -1,7 +1,7 @@
 package rest
 
 import (
-	PartnerRestError "github.com/hrz8/sc-masterlist-service/src/domains/partner/delivery/rest/error"
+	PartnerError "github.com/hrz8/sc-masterlist-service/src/domains/partner/error"
 	"github.com/hrz8/sc-masterlist-service/src/domains/partner/usecase"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
@@ -15,7 +15,7 @@ type (
 
 	impl struct {
 		usecase  usecase.UsecaseInterface
-		errorLib PartnerRestError.RestErrorInterface
+		errorLib RestErrorInterface
 	}
 )
 
@@ -24,7 +24,7 @@ func (i *impl) Create(c echo.Context) error {
 	payload := ctx.Payload.(*models.PartnerPayloadCreate)
 	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, PartnerRestError.Create.Err, err)
+		return i.errorLib.Throw(ctx, PartnerError.Create.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -34,7 +34,7 @@ func (i *impl) Create(c echo.Context) error {
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
-	errLib := PartnerRestError.NewPartnerError()
+	errLib := NewPartnerError()
 	return &impl{
 		usecase:  u,
 		errorLib: errLib,

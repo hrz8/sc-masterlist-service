@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	PartnerError "github.com/hrz8/sc-masterlist-service/src/domains/partner/error"
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
 )
@@ -16,39 +17,11 @@ type (
 	restErrorImpl struct {
 		prefix string
 	}
-
-	restErrorMap struct {
-		Status int
-		Err    error
-	}
-)
-
-var (
-	Create = restErrorMap{
-		Status: 400,
-		Err:    errors.New("failed to store project"),
-	}
-	GetAll = restErrorMap{
-		Status: 400,
-		Err:    errors.New("failed to list project"),
-	}
-	GetById = restErrorMap{
-		Status: 400,
-		Err:    errors.New("failed to get project"),
-	}
-	DeleteById = restErrorMap{
-		Status: 400,
-		Err:    errors.New("failed to remove project"),
-	}
-	UpdateById = restErrorMap{
-		Status: 400,
-		Err:    errors.New("failed to update project"),
-	}
 )
 
 func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
-	if errors.Is(domainErr, Create.Err) {
-		status := uint16(Create.Status)
+	if errors.Is(domainErr, PartnerError.Create.Err) {
+		status := uint16(PartnerError.Create.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -59,8 +32,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			nil,
 		)
 	}
-	if errors.Is(domainErr, GetAll.Err) {
-		status := uint16(GetAll.Status)
+	if errors.Is(domainErr, PartnerError.GetAll.Err) {
+		status := uint16(PartnerError.GetAll.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -71,8 +44,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			nil,
 		)
 	}
-	if errors.Is(domainErr, GetById.Err) {
-		errStatus := uint16(GetById.Status)
+	if errors.Is(domainErr, PartnerError.GetById.Err) {
+		errStatus := uint16(PartnerError.GetById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -84,8 +57,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			nil,
 		)
 	}
-	if errors.Is(domainErr, DeleteById.Err) {
-		errStatus := uint16(DeleteById.Status)
+	if errors.Is(domainErr, PartnerError.DeleteById.Err) {
+		errStatus := uint16(PartnerError.DeleteById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -97,8 +70,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			nil,
 		)
 	}
-	if errors.Is(domainErr, UpdateById.Err) {
-		errStatus := uint16(UpdateById.Status)
+	if errors.Is(domainErr, PartnerError.UpdateById.Err) {
+		errStatus := uint16(PartnerError.UpdateById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -119,8 +92,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 	)
 }
 
-func NewProjectError() RestErrorInterface {
+func NewPartnerError() RestErrorInterface {
 	return &restErrorImpl{
-		prefix: "SCM-PROJECT",
+		prefix: "SCM-PARTNER",
 	}
 }
