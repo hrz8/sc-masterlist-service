@@ -97,9 +97,8 @@ func (i *impl) UpdateById(c echo.Context) error {
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
-	errLib := NewRestError()
 	return &impl{
 		usecase:  u,
-		errorLib: errLib,
+		errorLib: NewRestError(),
 	}
 }

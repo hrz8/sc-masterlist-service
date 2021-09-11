@@ -21,7 +21,11 @@ type (
 			payload *models.PartnerTypePayloadUpdateById,
 		) (*models.PartnerType, error)
 		// assoc
-		AddTypeBatch(trx *gorm.DB, partnerTypeIDs *[]uuid.UUID) ([]*models.PartnerType, error)
+		AddTypeBatch(
+			trx *gorm.DB,
+			partnerInstance *models.Partner,
+			partnerTypeIDs *[]uuid.UUID,
+		) ([]*models.PartnerType, error)
 	}
 
 	impl struct {
@@ -154,24 +158,34 @@ func (i *impl) Update(
 // #region association functions
 
 // AddTypeBatch is a method to adding partner_type into partner object/instance batchly
-func (i *impl) AddTypeBatch(trx *gorm.DB, partnerTypeIDs *[]uuid.UUID) ([]*models.PartnerType, error) {
+func (i *impl) AddTypeBatch(
+	trx *gorm.DB,
+	partnerInstance *models.Partner,
+	partnerTypeIDs *[]uuid.UUID,
+) ([]*models.PartnerType, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
 	}
 
-	// execution
-	types := make([]*models.PartnerType, len(*partnerTypeIDs))
-	for index, item := range *partnerTypeIDs {
-		partnerType, err := i.GetById(trx, &item)
+	// chunck IDs to object
+	partnerTypes := make([]*models.PartnerType, len(*partnerTypeIDs))
+	for index, partnerTypeID := range *partnerTypeIDs {
+		partnerType, err := i.GetById(trx, &partnerTypeID)
 		if err != nil {
 			trx.Rollback()
 			return nil, PartnerTypeError.GetById.Err
 		}
-		types[index] = partnerType
+		partnerTypes[index] = partnerType
 	}
 
-	return types, nil
+	// update/save partnerINstance with type chunked
+	partnerInstance.PartnerTypes = partnerTypes
+	if err := trx.Debug().Save(&partnerInstance).Error; err != nil {
+		return nil, err
+	}
+
+	return partnerTypes, nil
 }
 
 // #endregion

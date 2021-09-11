@@ -10,13 +10,15 @@ import (
 type (
 	// Partner represents Partner object for DB
 	Partner struct {
-		ID          uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
-		Name        string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
-		Adress      string         `gorm:"column:address" json:"address"`
-		Contact     string         `gorm:"column:contact" json:"contact"`
-		Description string         `gorm:"column:description" json:"description"`
-		Types       []*PartnerType `gorm:"many2many:partners_partner_types" json:"types"`
-		gorm.Model  `json:"-"`
+		ID           uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
+		Name         string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
+		Adress       string         `gorm:"column:address" json:"address"`
+		Contact      string         `gorm:"column:contact" json:"contact"`
+		Description  string         `gorm:"column:description" json:"description"`
+		PartnerTypes []*PartnerType `gorm:"many2many:partners_partner_types" json:"partner_types,omitempty"`
+		CreatedAt    time.Time      `gorm:"column:created_at" json:"createdAt"`
+		UpdatedAt    time.Time      `gorm:"column:updated_at" json:"updatedAt"`
+		DeletedAt    gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
 	}
 
 	// PartnerPayloadCreate represents payload to create partner
@@ -76,7 +78,11 @@ type (
 		PartnerID     uuid.UUID
 		PartnerTypeID uuid.UUID
 		CreatedAt     time.Time
-		UpdatedAt     time.Time
-		DeletedAt     gorm.DeletedAt
+		DeletedAt     gorm.DeletedAt `gorm:"index"`
 	}
 )
+
+func (partnerPartnerType *PartnersPartnerTypes) BeforeCreate(tx *gorm.DB) error {
+	partnerPartnerType.CreatedAt = time.Now()
+	return nil
+}

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 )
@@ -8,11 +10,13 @@ import (
 type (
 	// PartnerType represents PartnerType object for DB
 	PartnerType struct {
-		ID          uuid.UUID  `gorm:"column:id;primaryKey" json:"id"`
-		Name        string     `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
-		Description string     `gorm:"column:description" json:"description"`
-		Partners    []*Partner `gorm:"many2many:partners_partner_types" json:"partners"`
-		gorm.Model  `json:"-"`
+		ID          uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
+		Name        string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
+		Description string         `gorm:"column:description" json:"description"`
+		Partners    []*Partner     `gorm:"many2many:partners_partner_types" json:"partners,omitempty"`
+		CreatedAt   time.Time      `gorm:"column:created_at" json:"createdAt"`
+		UpdatedAt   time.Time      `gorm:"column:updated_at" json:"updatedAt"`
+		DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
 	}
 
 	// PartnerTypePayloadCreate represents payload to create partner type

@@ -17,20 +17,6 @@ import (
 
 	// #endregion
 
-	// #region domain sourcing
-	SourcingRest "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/delivery/rest"
-	SourcingRepository "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/repository"
-	SourcingUsecase "github.com/hrz8/sc-masterlist-service/src/domains/sourcing/usecase"
-
-	// #endregion
-
-	// #region domain mould_maker
-	MouldMakerRest "github.com/hrz8/sc-masterlist-service/src/domains/mould_maker/delivery/rest"
-	MouldMakerRepository "github.com/hrz8/sc-masterlist-service/src/domains/mould_maker/repository"
-	MouldMakerUsecase "github.com/hrz8/sc-masterlist-service/src/domains/mould_maker/usecase"
-
-	// #endregion
-
 	// #region domain partner
 	PartnerRest "github.com/hrz8/sc-masterlist-service/src/domains/partner/delivery/rest"
 	PartnerRepository "github.com/hrz8/sc-masterlist-service/src/domains/partner/repository"
@@ -83,14 +69,6 @@ func main() {
 	processRepo := ProcessRepository.NewRepository(mysqlSess)
 	processUsecase := ProcessUsecase.NewUsecase(processRepo)
 	processRest := ProcessRest.NewRest(processUsecase)
-	// - domain sourcing
-	sourcingRepo := SourcingRepository.NewRepository(mysqlSess)
-	sourcingUsecase := SourcingUsecase.NewUsecase(sourcingRepo)
-	sourcingRest := SourcingRest.NewRest(sourcingUsecase)
-	// - domain mould_maker
-	mouldMakerRepository := MouldMakerRepository.NewRepository(mysqlSess)
-	mouldMakerUsecase := MouldMakerUsecase.NewUsecase(mouldMakerRepository)
-	mouldMakerRest := MouldMakerRest.NewRest(mouldMakerUsecase)
 	// - domain partner_type
 	partnerTypeRepository := PartnerTypeRepository.NewRepository(mysqlSess)
 	partnerTypeUsecase := PartnerTypeUsecase.NewUsecase(partnerTypeRepository)
@@ -106,10 +84,6 @@ func main() {
 	ProcessRest.AddProcessEndpoints(e, processRest)
 	// - domain process
 	ProjectRest.AddProjectEndpoints(e, projectRest)
-	// - domain sourcing
-	SourcingRest.AddSourcingEndpoints(e, sourcingRest)
-	// - domain mould_maker
-	MouldMakerRest.AddMouldMakerEndpoints(e, mouldMakerRest)
 	// - domain partner_type
 	PartnerTypeRest.AddPartnerTypeEndpoints(e, partnerTypeRest)
 	// - domain partner

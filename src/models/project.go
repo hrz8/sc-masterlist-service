@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 )
@@ -8,10 +10,12 @@ import (
 // Project represents Project object for DB
 type (
 	Project struct {
-		ID          uuid.UUID `gorm:"column:id;primaryKey" json:"id"`
-		Name        string    `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
-		Description string    `gorm:"column:description" json:"description"`
-		gorm.Model  `json:"-"`
+		ID          uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
+		Name        string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
+		Description string         `gorm:"column:description" json:"description"`
+		CreatedAt   time.Time      `gorm:"column:created_at" json:"createdAt"`
+		UpdatedAt   time.Time      `gorm:"column:updated_at" json:"updatedAt"`
+		DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
 	}
 
 	// ProjectPayloadCreate represents payload to create project

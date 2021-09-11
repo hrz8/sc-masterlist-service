@@ -28,7 +28,7 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 		ID:          id,
 		Name:        partner.Name,
 		Adress:      partner.Address,
-		Contact:     partner.Address,
+		Contact:     partner.Contact,
 		Description: partner.Description,
 	}
 	result, err := i.repository.Create(trx, payload)
@@ -38,13 +38,17 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 	}
 
 	// add each partner_type into created partner
-	resultTypes, err := i.partnerTypeRepository.AddTypeBatch(trx, &partner.Types)
+	resultTypes, err := i.partnerTypeRepository.AddTypeBatch(
+		trx,
+		result,
+		&partner.Types,
+	)
 	if err != nil {
 		trx.Rollback()
 		return nil, err
 	}
 
-	result.Types = resultTypes
+	result.PartnerTypes = resultTypes
 
 	trx.Commit()
 	return result, err

@@ -31,6 +31,7 @@ func (i *impl) Create(trx *gorm.DB, partner *models.Partner) (*models.Partner, e
 func NewRepository(db *gorm.DB) RepositoryInterface {
 	db.AutoMigrate(&models.Partner{})
 	db.AutoMigrate(&models.PartnersPartnerTypes{})
+	db.SetupJoinTable(&models.Partner{}, "PartnerTypes", &models.PartnersPartnerTypes{})
 	return &impl{
 		db: db,
 	}

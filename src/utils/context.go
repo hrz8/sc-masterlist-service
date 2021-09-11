@@ -19,10 +19,10 @@ type (
 func (c *CustomContext) SuccessResponse(data interface{}, message string, meta interface{}) error {
 	status := int(http.StatusOK)
 	return c.JSON(int(status), &SuccessResponse{
-		Data:    data,
+		Data:    helpers.NilToEmptyMap(&data),
 		Message: message,
 		Status:  int(status),
-		Meta:    meta,
+		Meta:    helpers.NilToEmptyMap(&meta),
 	})
 }
 
