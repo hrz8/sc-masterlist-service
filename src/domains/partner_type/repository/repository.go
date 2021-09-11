@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/gofrs/uuid"
-	PartnerTypeRestError "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/delivery/rest/error"
+	PartnerTypeError "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/error"
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
@@ -166,7 +166,7 @@ func (i *impl) AddTypeBatch(trx *gorm.DB, partnerTypeIDs *[]uuid.UUID) ([]*model
 		partnerType, err := i.GetById(trx, &item)
 		if err != nil {
 			trx.Rollback()
-			return nil, PartnerTypeRestError.GetById.Err
+			return nil, PartnerTypeError.GetById.Err
 		}
 		types[index] = partnerType
 	}

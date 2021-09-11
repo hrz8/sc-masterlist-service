@@ -1,7 +1,7 @@
 package rest
 
 import (
-	PartnerTypeRestError "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/delivery/rest/error"
+	PartnerTypeError "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/error"
 	"github.com/hrz8/sc-masterlist-service/src/domains/partner_type/usecase"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
@@ -19,7 +19,7 @@ type (
 
 	impl struct {
 		usecase  usecase.UsecaseInterface
-		errorLib PartnerTypeRestError.RestErrorInterface
+		errorLib RestErrorInterface
 	}
 )
 
@@ -28,7 +28,7 @@ func (i *impl) Create(c echo.Context) error {
 	payload := ctx.Payload.(*models.PartnerTypePayloadCreate)
 	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, PartnerTypeRestError.Create.Err, err)
+		return i.errorLib.Throw(ctx, PartnerTypeError.Create.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -42,7 +42,7 @@ func (i *impl) GetAll(c echo.Context) error {
 	payload := ctx.Payload.(*models.PartnerTypePayloadGetAll)
 	result, total, err := i.usecase.GetAll(ctx, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, PartnerTypeRestError.GetAll.Err, err)
+		return i.errorLib.Throw(ctx, PartnerTypeError.GetAll.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -59,7 +59,7 @@ func (i *impl) GetById(c echo.Context) error {
 	payload := ctx.Payload.(*models.PartnerTypePayloadGet)
 	result, err := i.usecase.GetById(ctx, &payload.ID)
 	if err != nil {
-		return i.errorLib.Throw(ctx, PartnerTypeRestError.GetById.Err, err)
+		return i.errorLib.Throw(ctx, PartnerTypeError.GetById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -73,7 +73,7 @@ func (i *impl) DeleteById(c echo.Context) error {
 	payload := ctx.Payload.(*models.PartnerTypePayloadDeleteById)
 	result, err := i.usecase.DeleteById(ctx, &payload.ID)
 	if err != nil {
-		return i.errorLib.Throw(ctx, PartnerTypeRestError.DeleteById.Err, err)
+		return i.errorLib.Throw(ctx, PartnerTypeError.DeleteById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -87,7 +87,7 @@ func (i *impl) UpdateById(c echo.Context) error {
 	payload := ctx.Payload.(*models.PartnerTypePayloadUpdateById)
 	result, err := i.usecase.UpdateById(ctx, &payload.ID, payload)
 	if err != nil {
-		return i.errorLib.Throw(ctx, PartnerTypeRestError.UpdateById.Err, err)
+		return i.errorLib.Throw(ctx, PartnerTypeError.UpdateById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -97,7 +97,7 @@ func (i *impl) UpdateById(c echo.Context) error {
 }
 
 func NewRest(u usecase.UsecaseInterface) RestInterface {
-	errLib := PartnerTypeRestError.NewRestError()
+	errLib := NewRestError()
 	return &impl{
 		usecase:  u,
 		errorLib: errLib,
