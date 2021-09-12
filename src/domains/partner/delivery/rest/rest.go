@@ -12,6 +12,7 @@ type (
 	RestInterface interface {
 		Create(c echo.Context) error
 		GetAll(c echo.Context) error
+		GetById(c echo.Context) error
 	}
 
 	impl struct {
@@ -43,11 +44,25 @@ func (i *impl) GetAll(c echo.Context) error {
 	}
 	return ctx.SuccessResponse(
 		result,
-		"success fetch all partner type",
+		"success fetch all partner",
 		utils.ListMetaResponse{
 			Count: len(*result),
 			Total: *total,
 		},
+	)
+}
+
+func (i *impl) GetById(c echo.Context) error {
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.PartnerPayloadGet)
+	result, err := i.usecase.GetById(ctx, &payload.ID)
+	if err != nil {
+		return i.errorLib.Throw(ctx, PartnerError.GetById.Err, err)
+	}
+	return ctx.SuccessResponse(
+		result,
+		"success get partner",
+		nil,
 	)
 }
 

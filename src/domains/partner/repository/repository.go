@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
@@ -12,6 +13,7 @@ type (
 		CountAll(trx *gorm.DB) (*int64, error)
 		Create(trx *gorm.DB, partner *models.Partner) (*models.Partner, error)
 		GetAll(trx *gorm.DB, conditions *models.PartnerPayloadGetAll) (*[]models.Partner, error)
+		GetById(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -111,6 +113,20 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerPayloadGetAll) (*[
 
 	// select executor
 	if err := executor.Debug().Preload(clause.Associations).Find(&result).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	result := models.Partner{}
+	if err := trx.Debug().Preload("PartnerTypes").First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil

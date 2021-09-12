@@ -13,6 +13,7 @@ type (
 	UsecaseInterface interface {
 		Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCreate) (*models.Partner, error)
 		GetAll(ctx *utils.CustomContext, conditions *models.PartnerPayloadGetAll) (*[]models.Partner, *int64, error)
+		GetById(ctx *utils.CustomContext, id *uuid.UUID) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -69,6 +70,11 @@ func (i *impl) GetAll(_ *utils.CustomContext, conditions *models.PartnerPayloadG
 		return nil, nil, err
 	}
 	return result, total, err
+}
+
+func (i *impl) GetById(_ *utils.CustomContext, id *uuid.UUID) (*models.Partner, error) {
+	result, err := i.repository.GetById(nil, id)
+	return result, err
 }
 
 func NewUsecase(repo repository.RepositoryInterface, ptRepo PartnerTypeRepository.RepositoryInterface) UsecaseInterface {
