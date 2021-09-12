@@ -14,6 +14,7 @@ type (
 		Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCreate) (*models.Partner, error)
 		GetAll(ctx *utils.CustomContext, conditions *models.PartnerPayloadGetAll) (*[]models.Partner, *int64, error)
 		GetById(ctx *utils.CustomContext, id *uuid.UUID) (*models.Partner, error)
+		DeleteById(ctx *utils.CustomContext, id *uuid.UUID) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -75,6 +76,17 @@ func (i *impl) GetAll(_ *utils.CustomContext, conditions *models.PartnerPayloadG
 func (i *impl) GetById(_ *utils.CustomContext, id *uuid.UUID) (*models.Partner, error) {
 	result, err := i.repository.GetById(nil, id)
 	return result, err
+}
+
+func (i *impl) DeleteById(_ *utils.CustomContext, id *uuid.UUID) (*models.Partner, error) {
+	instance, err := i.repository.GetById(nil, id)
+	if err != nil {
+		return nil, err
+	}
+	if err := i.repository.DeleteById(nil, id); err != nil {
+		return nil, err
+	}
+	return instance, nil
 }
 
 func NewUsecase(repo repository.RepositoryInterface, ptRepo PartnerTypeRepository.RepositoryInterface) UsecaseInterface {

@@ -12,4 +12,5 @@ func AddPartnerEndpoints(e *echo.Echo, rest RestInterface) {
 	e.POST("/api/v1/partner", rest.Create, Utils.ValidatorMiddleware(reflect.TypeOf(models.PartnerPayloadCreate{}), false))
 	e.GET("/api/v1/partner", rest.GetAll, Utils.ValidatorMiddleware(reflect.TypeOf(models.PartnerPayloadGetAll{}), true))
 	e.GET("/api/v1/partner/:id", rest.GetById, Utils.ValidatorMiddleware(reflect.TypeOf(models.PartnerPayloadGet{}), false))
+	e.DELETE("/api/v1/partner/:id", rest.DeleteById, Utils.ValidatorMiddleware(reflect.TypeOf(models.PartnerPayloadDeleteById{}), false))
 }
