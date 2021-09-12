@@ -15,7 +15,7 @@ type (
 		Adress       string         `gorm:"column:address" json:"address"`
 		Contact      string         `gorm:"column:contact" json:"contact"`
 		Description  string         `gorm:"column:description" json:"description"`
-		PartnerTypes []*PartnerType `gorm:"many2many:partners_partner_types" json:"partner_types,omitempty"`
+		PartnerTypes []*PartnerType `gorm:"many2many:partners_partner_types" json:"partnerTypes,omitempty"`
 		CreatedAt    time.Time      `gorm:"column:created_at" json:"createdAt"`
 		UpdatedAt    time.Time      `gorm:"column:updated_at" json:"updatedAt"`
 		DeletedAt    gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
@@ -23,11 +23,11 @@ type (
 
 	// PartnerPayloadCreate represents payload to create partner
 	PartnerPayloadCreate struct {
-		Name        string      `json:"name" validate:"required,max=50"`
-		Address     string      `json:"address" validate:"max=140"`
-		Contact     string      `json:"contact" validate:"max=140"`
-		Description string      `json:"description" validate:"max=140"`
-		Types       []uuid.UUID `json:"types" validate:"required"`
+		Name         string      `json:"name" validate:"required,max=50"`
+		Address      string      `json:"address" validate:"max=140"`
+		Contact      string      `json:"contact" validate:"max=140"`
+		Description  string      `json:"description" validate:"max=140"`
+		PartnerTypes []uuid.UUID `json:"partnerTypes" validate:"required"`
 	}
 
 	// PartnerPayloadGetAll represents payload to fetch all partners
@@ -38,7 +38,7 @@ type (
 		Contact     FilteringQueryParams `query:"contact"`
 		Description FilteringQueryParams `query:"description"`
 		// relation
-		Types FilteringQueryParams `query:"types"`
+		PartnerTypes FilteringQueryParams `query:"partnerTypes"`
 		// date props
 		CreatedAt FilteringQueryParams `query:"createdAt"`
 		UpdatedAt FilteringQueryParams `query:"updatedAt"`

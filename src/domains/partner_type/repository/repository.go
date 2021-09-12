@@ -2,10 +2,10 @@ package repository
 
 import (
 	"github.com/gofrs/uuid"
-	PartnerTypeError "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/error"
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type (
@@ -20,12 +20,6 @@ type (
 			partnerTypeInstance *models.PartnerType,
 			payload *models.PartnerTypePayloadUpdateById,
 		) (*models.PartnerType, error)
-		// assoc
-		AddTypeBatch(
-			trx *gorm.DB,
-			partnerInstance *models.Partner,
-			partnerTypeIDs *[]uuid.UUID,
-		) ([]*models.PartnerType, error)
 	}
 
 	impl struct {
@@ -72,24 +66,31 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll)
 		Where("name LIKE ?", "%"+conditions.Name.Like+"%").
 		Where("description LIKE ?", "%"+conditions.Description.Like+"%")
 
+	// scoping conditions
 	if conditions.Deleted.Only {
 		executor = executor.Unscoped().Where("deleted_at IS NOT NULL")
 	}
 	if conditions.Deleted.Include {
 		executor = executor.Unscoped()
 	}
+
+	// column conditions
 	if conditions.Name.Eq != "" {
 		executor = executor.Where("name = ?", conditions.Name.Eq)
 	}
 	if conditions.Description.Eq != "" {
 		executor = executor.Where("description = ?", conditions.Description.Eq)
 	}
+
+	// timestamp conditions
 	if conditions.CreatedAt.Gte != nil && conditions.CreatedAt.Lte != nil {
 		executor = executor.Where("created_at BETWEEN ? AND ?", conditions.CreatedAt.Gte, conditions.CreatedAt.Lte)
 	}
 	if conditions.UpdatedAt.Gte != nil && conditions.UpdatedAt.Lte != nil {
 		executor = executor.Where("updated_at BETWEEN ? AND ?", conditions.UpdatedAt.Gte, conditions.UpdatedAt.Lte)
 	}
+
+	// sort and paging condition
 	if conditions.Sort.By != "" && conditions.Sort.Mode != "" {
 		executor = executor.Order(conditions.Sort.By + " " + conditions.Sort.Mode)
 	}
@@ -100,10 +101,10 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerTypePayloadGetAll)
 		executor = executor.Offset(helpers.GetOffset(conditions.Pagination.Page.(int), conditions.Pagination.Limit.(int)))
 	}
 
-	if err := executor.Debug().Preload("Partners").Find(&result).Error; err != nil {
+	// select executor
+	if err := executor.Debug().Preload(clause.Associations).Find(&result).Error; err != nil {
 		return nil, err
 	}
-
 	return &result, nil
 }
 
@@ -154,41 +155,6 @@ func (i *impl) Update(
 	}
 	return partnerTypeInstance, nil
 }
-
-// #region association functions
-
-// AddTypeBatch is a method to adding partner_type into partner object/instance batchly
-func (i *impl) AddTypeBatch(
-	trx *gorm.DB,
-	partnerInstance *models.Partner,
-	partnerTypeIDs *[]uuid.UUID,
-) ([]*models.PartnerType, error) {
-	// transaction check
-	if trx == nil {
-		trx = i.db
-	}
-
-	// chunck IDs to object
-	partnerTypes := make([]*models.PartnerType, len(*partnerTypeIDs))
-	for index, partnerTypeID := range *partnerTypeIDs {
-		partnerType, err := i.GetById(trx, &partnerTypeID)
-		if err != nil {
-			trx.Rollback()
-			return nil, PartnerTypeError.GetById.Err
-		}
-		partnerTypes[index] = partnerType
-	}
-
-	// update/save partnerINstance with type chunked
-	partnerInstance.PartnerTypes = partnerTypes
-	if err := trx.Debug().Save(&partnerInstance).Error; err != nil {
-		return nil, err
-	}
-
-	return partnerTypes, nil
-}
-
-// #endregion
 
 func NewRepository(db *gorm.DB) RepositoryInterface {
 	db.AutoMigrate(&models.PartnerType{})

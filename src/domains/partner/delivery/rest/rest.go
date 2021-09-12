@@ -11,6 +11,7 @@ import (
 type (
 	RestInterface interface {
 		Create(c echo.Context) error
+		GetAll(c echo.Context) error
 	}
 
 	impl struct {
@@ -30,6 +31,23 @@ func (i *impl) Create(c echo.Context) error {
 		result,
 		"success create partner",
 		nil,
+	)
+}
+
+func (i *impl) GetAll(c echo.Context) error {
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.PartnerPayloadGetAll)
+	result, total, err := i.usecase.GetAll(ctx, payload)
+	if err != nil {
+		return i.errorLib.Throw(ctx, PartnerError.GetAll.Err, err)
+	}
+	return ctx.SuccessResponse(
+		result,
+		"success fetch all partner type",
+		utils.ListMetaResponse{
+			Count: len(*result),
+			Total: *total,
+		},
 	)
 }
 

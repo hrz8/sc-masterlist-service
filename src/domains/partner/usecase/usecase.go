@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/domains/partner/repository"
+	PartnerTypeError "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/error"
 	PartnerTypeRepository "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/repository"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
@@ -11,6 +12,7 @@ import (
 type (
 	UsecaseInterface interface {
 		Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCreate) (*models.Partner, error)
+		GetAll(ctx *utils.CustomContext, conditions *models.PartnerPayloadGetAll) (*[]models.Partner, *int64, error)
 	}
 
 	impl struct {
@@ -31,27 +33,42 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 		Contact:     partner.Contact,
 		Description: partner.Description,
 	}
-	result, err := i.repository.Create(trx, payload)
+	partnerCreated, err := i.repository.Create(trx, payload)
 	if err != nil {
 		trx.Rollback()
 		return nil, err
+	}
+
+	// get each partnerTypes by its uuid to check if its available
+	partnerTypes := make([]*models.PartnerType, len(partner.PartnerTypes))
+	for index, partnerTypeID := range partner.PartnerTypes {
+		partnerType, err := i.partnerTypeRepository.GetById(trx, &partnerTypeID)
+		if err != nil {
+			trx.Rollback()
+			return nil, PartnerTypeError.GetById.Err
+		}
+		partnerTypes[index] = partnerType
 	}
 
 	// add each partner_type into created partner
-	resultTypes, err := i.partnerTypeRepository.AddTypeBatch(
-		trx,
-		result,
-		&partner.Types,
-	)
-	if err != nil {
-		trx.Rollback()
+	if err := trx.Debug().Model(&partnerCreated).Association("PartnerTypes").Append(partnerTypes); err != nil {
 		return nil, err
 	}
 
-	result.PartnerTypes = resultTypes
-
 	trx.Commit()
-	return result, err
+	return partnerCreated, err
+}
+
+func (i *impl) GetAll(_ *utils.CustomContext, conditions *models.PartnerPayloadGetAll) (*[]models.Partner, *int64, error) {
+	result, err := i.repository.GetAll(nil, conditions)
+	if err != nil {
+		return nil, nil, err
+	}
+	total, err := i.repository.CountAll(nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	return result, total, err
 }
 
 func NewUsecase(repo repository.RepositoryInterface, ptRepo PartnerTypeRepository.RepositoryInterface) UsecaseInterface {
