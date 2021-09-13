@@ -32,4 +32,8 @@ var (
 		Status: 400,
 		Err:    errors.New("failed to update partner type"),
 	}
+	DeleteByIdHasPartner = errorMap{
+		Status: 400,
+		Err:    errors.New("failed to remove partner type, there is still partner associate with this partner type"),
+	}
 )

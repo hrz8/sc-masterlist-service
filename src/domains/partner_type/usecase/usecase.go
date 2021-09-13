@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"github.com/gofrs/uuid"
+	PartnerTypeError "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/error"
 	"github.com/hrz8/sc-masterlist-service/src/domains/partner_type/repository"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
@@ -53,6 +54,9 @@ func (i *impl) DeleteById(_ *utils.CustomContext, id *uuid.UUID) (*models.Partne
 	instance, err := i.repository.GetById(nil, id)
 	if err != nil {
 		return nil, err
+	}
+	if len(instance.Partners) > 0 {
+		return nil, PartnerTypeError.DeleteByIdHasPartner.Err
 	}
 	if err := i.repository.DeleteById(nil, id); err != nil {
 		return nil, err
