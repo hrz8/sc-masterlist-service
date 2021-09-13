@@ -2,9 +2,11 @@ package usecase
 
 import (
 	"github.com/gofrs/uuid"
+	PartnerError "github.com/hrz8/sc-masterlist-service/src/domains/partner/error"
 	"github.com/hrz8/sc-masterlist-service/src/domains/partner/repository"
 	PartnerTypeError "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/error"
 	PartnerTypeRepository "github.com/hrz8/sc-masterlist-service/src/domains/partner_type/repository"
+	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
 )
@@ -15,6 +17,11 @@ type (
 		GetAll(ctx *utils.CustomContext, conditions *models.PartnerPayloadGetAll) (*[]models.Partner, *int64, error)
 		GetById(ctx *utils.CustomContext, id *uuid.UUID) (*models.Partner, error)
 		DeleteById(ctx *utils.CustomContext, id *uuid.UUID) (*models.Partner, error)
+		UpdateById(
+			ctx *utils.CustomContext,
+			id *uuid.UUID,
+			payload *models.PartnerPayloadUpdateById,
+		) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -31,7 +38,7 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 	payload := &models.Partner{
 		ID:          id,
 		Name:        partner.Name,
-		Adress:      partner.Address,
+		Address:     partner.Address,
 		Contact:     partner.Contact,
 		Description: partner.Description,
 	}
@@ -39,6 +46,11 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 	if err != nil {
 		trx.Rollback()
 		return nil, err
+	}
+
+	// check if partner_types payload not empty
+	if len(partner.PartnerTypes) <= 0 {
+		return nil, PartnerError.CreateWithEmptyPartnerTypes.Err
 	}
 
 	// get each partnerTypes by its uuid to check if its available
@@ -87,6 +99,41 @@ func (i *impl) DeleteById(_ *utils.CustomContext, id *uuid.UUID) (*models.Partne
 		return nil, err
 	}
 	return instance, nil
+}
+
+func (i *impl) UpdateById(
+	ctx *utils.CustomContext,
+	id *uuid.UUID,
+	payload *models.PartnerPayloadUpdateById,
+) (*models.Partner, error) {
+	trx := ctx.MysqlSess.Begin()
+	instance, err := i.repository.GetById(nil, id)
+	if err != nil {
+		return nil, err
+	}
+
+	// update agnostic columns
+	result, err := i.repository.Update(nil, instance, payload)
+
+	// associating column
+	if len(payload.PartnerTypes) > 0 {
+		var partnerTypes []*models.PartnerType
+		for _, partnerTypeID := range payload.PartnerTypes {
+			if helpers.SliceOfStructContainsFieldValue(instance.PartnerTypes, "ID", partnerTypeID) {
+				continue
+			}
+			partnerType, err := i.partnerTypeRepository.GetById(trx, &partnerTypeID)
+			if err != nil {
+				trx.Rollback()
+				return nil, PartnerTypeError.GetById.Err
+			}
+			partnerTypes = append(partnerTypes, partnerType)
+		}
+		trx.Model(&instance).Association("PartnerTypes").Append(partnerTypes)
+	}
+
+	trx.Commit()
+	return result, err
 }
 
 func NewUsecase(repo repository.RepositoryInterface, ptRepo PartnerTypeRepository.RepositoryInterface) UsecaseInterface {

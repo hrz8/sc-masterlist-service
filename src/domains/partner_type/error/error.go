@@ -34,6 +34,6 @@ var (
 	}
 	DeleteByIdHasPartner = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to remove partner type, there is still partner associate with this partner type"),
+		Err:    errors.New("there is still partner associate with this partner type"),
 	}
 )

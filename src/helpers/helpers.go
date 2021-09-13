@@ -3,6 +3,7 @@ package helpers
 import (
 	"errors"
 	"net/http"
+	"reflect"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -51,4 +52,20 @@ func ParseStatusResponse(err error, s uint16) uint16 {
 		return http.StatusNotFound
 	}
 	return s
+}
+
+// ParseStatusResponse is a helper function to check if slice of struct has field with value
+// same as like _.find(arr, (a) => a.field === value).length
+func SliceOfStructContainsFieldValue(slice interface{}, fieldName string, fieldValueToCheck interface{}) bool {
+	rangeOnMe := reflect.ValueOf(slice)
+	for i := 0; i < rangeOnMe.Len(); i++ {
+		s := rangeOnMe.Index(i)
+		f := reflect.Indirect(s).FieldByName(fieldName)
+		if f.IsValid() {
+			if f.Interface() == fieldValueToCheck {
+				return true
+			}
+		}
+	}
+	return false
 }

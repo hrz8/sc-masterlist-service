@@ -14,6 +14,7 @@ type (
 		GetAll(c echo.Context) error
 		GetById(c echo.Context) error
 		DeleteById(c echo.Context) error
+		UpdateById(c echo.Context) error
 	}
 
 	impl struct {
@@ -77,6 +78,20 @@ func (i *impl) DeleteById(c echo.Context) error {
 	return ctx.SuccessResponse(
 		result,
 		"success delete partner",
+		nil,
+	)
+}
+
+func (i *impl) UpdateById(c echo.Context) error {
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.PartnerPayloadUpdateById)
+	result, err := i.usecase.UpdateById(ctx, &payload.ID, payload)
+	if err != nil {
+		return i.errorLib.Throw(ctx, PartnerError.UpdateById.Err, err)
+	}
+	return ctx.SuccessResponse(
+		result,
+		"success update partner",
 		nil,
 	)
 }

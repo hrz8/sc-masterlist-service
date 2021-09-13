@@ -12,7 +12,7 @@ type (
 	Partner struct {
 		ID           uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
 		Name         string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
-		Adress       string         `gorm:"column:address" json:"address"`
+		Address      string         `gorm:"column:address" json:"address"`
 		Contact      string         `gorm:"column:contact" json:"contact"`
 		Description  string         `gorm:"column:description" json:"description"`
 		PartnerTypes []*PartnerType `gorm:"many2many:partners_partner_types" json:"partnerTypes,omitempty"`
@@ -55,12 +55,12 @@ type (
 
 	// PartnerPayloadUpdateById represents payload to update partner by identifier
 	PartnerPayloadUpdateById struct {
-		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
-		Name        string    `json:"name" validate:"max=50"`
-		Address     string    `json:"address" validate:"max=140"`
-		Contact     string    `json:"contact" validate:"max=140"`
-		Description string    `json:"description" validate:"max=140"`
-		// Types       []string  `json:"types"`
+		ID           uuid.UUID   `json:"-" param:"id" validate:"required"`
+		Name         string      `json:"name" validate:"max=50"`
+		Address      string      `json:"address" validate:"max=140"`
+		Contact      string      `json:"contact" validate:"max=140"`
+		Description  string      `json:"description" validate:"max=140"`
+		PartnerTypes []uuid.UUID `json:"partnerTypes"`
 	}
 
 	// PartnerPayloadDeleteById represents payload to delete partner by identifier

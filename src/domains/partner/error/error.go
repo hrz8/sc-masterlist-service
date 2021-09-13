@@ -30,4 +30,8 @@ var (
 		Status: 400,
 		Err:    errors.New("failed to update partner"),
 	}
+	CreateWithEmptyPartnerTypes = errorMap{
+		Status: 400,
+		Err:    errors.New("cannot assign a partner with empty partner types"),
+	}
 )
