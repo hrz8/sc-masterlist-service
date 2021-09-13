@@ -117,7 +117,9 @@ func (i *impl) UpdateById(
 
 	// associating column
 	if len(payload.PartnerTypes) > 0 {
-		var partnerTypes []*models.PartnerType
+
+		// get partnerType to be added
+		var partnerTypesToBeAdd []*models.PartnerType
 		for _, partnerTypeID := range payload.PartnerTypes {
 			if helpers.SliceOfStructContainsFieldValue(instance.PartnerTypes, "ID", partnerTypeID) {
 				continue
@@ -127,9 +129,29 @@ func (i *impl) UpdateById(
 				trx.Rollback()
 				return nil, PartnerTypeError.GetById.Err
 			}
-			partnerTypes = append(partnerTypes, partnerType)
+
+			// exclude partners asscoiate
+			partnerType.Partners = nil
+			partnerTypesToBeAdd = append(partnerTypesToBeAdd, partnerType)
 		}
-		trx.Model(&instance).Association("PartnerTypes").Append(partnerTypes)
+
+		// appending un-related-yet partnerType
+		trx.Model(&instance).Association("PartnerTypes").Append(partnerTypesToBeAdd)
+
+		// get partnerType to be remove
+		var partnerTypesToBeRemove []*models.PartnerType
+		for _, instancePartnerType := range instance.PartnerTypes {
+			if _, exists := helpers.SliceContains(payload.PartnerTypes, instancePartnerType.ID); exists {
+				continue
+			}
+
+			// exclude partners asscoiate
+			instancePartnerType.Partners = nil
+			partnerTypesToBeRemove = append(partnerTypesToBeRemove, instancePartnerType)
+		}
+
+		// deleting related-yet partnerType
+		trx.Model(&instance).Association("PartnerTypes").Delete(partnerTypesToBeRemove)
 	}
 
 	trx.Commit()

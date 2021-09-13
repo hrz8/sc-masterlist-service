@@ -18,14 +18,29 @@ func ParseStringToInt(str string) int {
 	return result
 }
 
-// SliceStringContains is a helper function to check if slice of string contains string
-func SliceStringContains(slice []string, val string) (int, bool) {
+// SliceContains is a helper function to check if slice of string contains string
+func SliceContains(s interface{}, val interface{}) (int, bool) {
+	slice := ConvertSliceToInterface(s)
 	for i, item := range slice {
 		if item == val {
 			return i, true
 		}
 	}
 	return -1, false
+}
+
+// convertSliceToInterface takes a slice passed in as an interface{}
+func ConvertSliceToInterface(s interface{}) (slice []interface{}) {
+	v := reflect.ValueOf(s)
+	if v.Kind() != reflect.Slice {
+		return nil
+	}
+	length := v.Len()
+	slice = make([]interface{}, length)
+	for i := 0; i < length; i++ {
+		slice[i] = v.Index(i).Interface()
+	}
+	return slice
 }
 
 // GetOffset is a helper function to get sql offset value from page and limit args

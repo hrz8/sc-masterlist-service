@@ -81,7 +81,7 @@ func QueryParamsBind(destination interface{}, c echo.Context) (err error) {
 					continue
 				}
 
-				_, modeValid := helpers.SliceStringContains([]string{"asc", "desc"}, sortMode[0])
+				_, modeValid := helpers.SliceContains([]string{"asc", "desc"}, sortMode[0])
 				if !modeValid {
 					continue
 				}
