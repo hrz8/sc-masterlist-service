@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/gofrs/uuid"
 	PartnerError "github.com/hrz8/sc-masterlist-service/src/domains/partner/error"
 	"github.com/hrz8/sc-masterlist-service/src/domains/partner/repository"
@@ -137,6 +139,15 @@ func (i *impl) UpdateById(
 
 		// appending un-related-yet partnerType
 		trx.Model(&instance).Association("PartnerTypes").Append(partnerTypesToBeAdd)
+
+		for _, partnerType := range partnerTypesToBeAdd {
+			partnerIDStr := fmt.Sprintf("%v", *id)
+			partnerTypeID := fmt.Sprintf("%v", partnerType.ID)
+			trx.Debug().Unscoped().Model(&models.PartnersPartnerTypes{}).
+				Where("partner_id = ?", partnerIDStr).
+				Where("partner_type_id = ?", partnerTypeID).
+				Update("deleted_at", nil)
+		}
 
 		// get partnerType to be remove
 		var partnerTypesToBeRemove []*models.PartnerType
