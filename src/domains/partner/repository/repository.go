@@ -20,6 +20,16 @@ type (
 			partnerInstance *models.Partner,
 			payload *models.PartnerPayloadUpdateById,
 		) (*models.Partner, error)
+		AddPartnerType(
+			trx *gorm.DB,
+			partner *models.Partner,
+			partnerTypes *models.PartnerType,
+		) (*models.Partner, error)
+		DeletePartnerType(
+			trx *gorm.DB,
+			partner *models.Partner,
+			partnerTypes *models.PartnerType,
+		) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -172,6 +182,44 @@ func (i *impl) Update(
 		return nil, err
 	}
 	return partnerInstance, nil
+}
+
+func (i *impl) AddPartnerType(
+	trx *gorm.DB,
+	partner *models.Partner,
+	partnerTypes *models.PartnerType,
+) (*models.Partner, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	if err := trx.Model(&partner).Association("PartnerTypes").
+		Append(partnerTypes); err != nil {
+		return nil, err
+	}
+
+	return partner, nil
+}
+
+func (i *impl) DeletePartnerType(
+	trx *gorm.DB,
+	partner *models.Partner,
+	partnerTypes *models.PartnerType,
+) (*models.Partner, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	if err := trx.Model(&partner).Association("PartnerTypes").
+		Delete(partnerTypes); err != nil {
+		return nil, err
+	}
+
+	return partner, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {

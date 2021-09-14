@@ -138,7 +138,10 @@ func (i *impl) UpdateById(
 		}
 
 		// appending un-related-yet partnerType
-		trx.Model(&instance).Association("PartnerTypes").Append(partnerTypesToBeAdd)
+		if err := trx.Model(&instance).Association("PartnerTypes").
+			Append(partnerTypesToBeAdd); err != nil {
+			return nil, err
+		}
 
 		for _, partnerType := range partnerTypesToBeAdd {
 			partnerIDStr := fmt.Sprintf("%v", *id)
@@ -162,7 +165,10 @@ func (i *impl) UpdateById(
 		}
 
 		// deleting related-yet partnerType
-		trx.Model(&instance).Association("PartnerTypes").Delete(partnerTypesToBeRemove)
+		if err := trx.Model(&instance).Association("PartnerTypes").
+			Delete(partnerTypesToBeRemove); err != nil {
+			return nil, err
+		}
 	}
 
 	trx.Commit()
