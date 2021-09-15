@@ -115,7 +115,7 @@ func (i *impl) AddPartnerType(c echo.Context) error {
 func (i *impl) DeletePartnerType(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.PartnerDeletePartnerTypePayload)
-	result, err := i.usecase.AddPartnerType(ctx, &payload.ID, &payload.PartnerTypeID)
+	result, err := i.usecase.DeletePartnerType(ctx, &payload.ID, &payload.PartnerTypeID)
 	if err != nil {
 		return i.errorLib.Throw(ctx, PartnerError.DeletePartnerType.Err, err)
 	}
