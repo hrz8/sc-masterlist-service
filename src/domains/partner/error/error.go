@@ -34,4 +34,12 @@ var (
 		Status: 400,
 		Err:    errors.New("cannot assign a partner with empty partner types"),
 	}
+	AddPartnerType = errorMap{
+		Status: 400,
+		Err:    errors.New("failed to add partner type into partner"),
+	}
+	DeletePartnerType = errorMap{
+		Status: 400,
+		Err:    errors.New("failed to delete partner type from partner"),
+	}
 )

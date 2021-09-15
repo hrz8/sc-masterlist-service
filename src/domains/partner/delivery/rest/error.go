@@ -83,6 +83,32 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			nil,
 		)
 	}
+	if errors.Is(domainErr, PartnerError.AddPartnerType.Err) {
+		errStatus := uint16(PartnerError.UpdateById.Status)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
+		return ctx.ErrorResponse(
+			map[string]interface{}{
+				"reason": dataErr.Error(),
+			},
+			domainErr.Error(),
+			status,
+			i.prefix+"-006",
+			nil,
+		)
+	}
+	if errors.Is(domainErr, PartnerError.DeletePartnerType.Err) {
+		errStatus := uint16(PartnerError.UpdateById.Status)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
+		return ctx.ErrorResponse(
+			map[string]interface{}{
+				"reason": dataErr.Error(),
+			},
+			domainErr.Error(),
+			status,
+			i.prefix+"-007",
+			nil,
+		)
+	}
 	return ctx.ErrorResponse(
 		nil,
 		"Internal Server Error",
