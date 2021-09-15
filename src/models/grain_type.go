@@ -11,7 +11,7 @@ import (
 type (
 	GrainType struct {
 		ID          uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
-		Code        string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
+		Code        string         `gorm:"column:code;index:idx_code;unique;not null" json:"code" validate:"required"`
 		Description string         `gorm:"column:description" json:"description"`
 		CreatedAt   time.Time      `gorm:"column:created_at" json:"createdAt"`
 		UpdatedAt   time.Time      `gorm:"column:updated_at" json:"updatedAt"`
@@ -20,14 +20,14 @@ type (
 
 	// GrainTypePayloadCreate represents payload to create grain type
 	GrainTypePayloadCreate struct {
-		Code        string `json:"name" validate:"required,max=50"`
+		Code        string `json:"code" validate:"required,max=50"`
 		Description string `json:"description" validate:"max=140"`
 	}
 
 	// GrainTypePayloadGetAll represents payload to fetch all grain types
 	GrainTypePayloadGetAll struct {
 		// column
-		Code        FilteringQueryParams `query:"name"`
+		Code        FilteringQueryParams `query:"code"`
 		Description FilteringQueryParams `query:"description"`
 		// date props
 		CreatedAt FilteringQueryParams `query:"createdAt"`
@@ -46,7 +46,7 @@ type (
 	// GrainTypePayloadUpdateById represents payload to update grain type by identifier
 	GrainTypePayloadUpdateById struct {
 		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
-		Code        string    `json:"name" validate:"max=50"`
+		Code        string    `json:"code" validate:"max=50"`
 		Description string    `json:"description" validate:"max=140"`
 	}
 
