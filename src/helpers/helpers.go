@@ -3,6 +3,7 @@ package helpers
 import (
 	"errors"
 	"net/http"
+	"reflect"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -17,14 +18,29 @@ func ParseStringToInt(str string) int {
 	return result
 }
 
-// SliceStringContains is a helper function to check if slice of string contains string
-func SliceStringContains(slice []string, val string) (int, bool) {
+// SliceContains is a helper function to check if slice of string contains string
+func SliceContains(s interface{}, val interface{}) (int, bool) {
+	slice := ConvertSliceToInterface(s)
 	for i, item := range slice {
 		if item == val {
 			return i, true
 		}
 	}
 	return -1, false
+}
+
+// convertSliceToInterface takes a slice passed in as an interface{}
+func ConvertSliceToInterface(s interface{}) (slice []interface{}) {
+	v := reflect.ValueOf(s)
+	if v.Kind() != reflect.Slice {
+		return nil
+	}
+	length := v.Len()
+	slice = make([]interface{}, length)
+	for i := 0; i < length; i++ {
+		slice[i] = v.Index(i).Interface()
+	}
+	return slice
 }
 
 // GetOffset is a helper function to get sql offset value from page and limit args
@@ -51,4 +67,20 @@ func ParseStatusResponse(err error, s uint16) uint16 {
 		return http.StatusNotFound
 	}
 	return s
+}
+
+// ParseStatusResponse is a helper function to check if slice of struct has field with value
+// same as like _.find(arr, (a) => a.field === value).length
+func SliceOfStructContainsFieldValue(slice interface{}, fieldName string, fieldValueToCheck interface{}) bool {
+	rangeOnMe := reflect.ValueOf(slice)
+	for i := 0; i < rangeOnMe.Len(); i++ {
+		s := rangeOnMe.Index(i)
+		f := reflect.Indirect(s).FieldByName(fieldName)
+		if f.IsValid() {
+			if f.Interface() == fieldValueToCheck {
+				return true
+			}
+		}
+	}
+	return false
 }

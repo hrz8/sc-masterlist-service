@@ -1,10 +1,8 @@
 package rest
 
 import (
-	"net/http"
-
+	ProjectError "github.com/hrz8/sc-masterlist-service/src/domains/project/error"
 	"github.com/hrz8/sc-masterlist-service/src/domains/project/usecase"
-	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
 	"github.com/labstack/echo/v4"
@@ -12,27 +10,25 @@ import (
 
 type (
 	RestInterface interface {
-		Create(echo.Context) error
-		GetAll(echo.Context) error
-		GetById(echo.Context) error
-		DeleteById(echo.Context) error
-		UpdateById(echo.Context) error
+		Create(c echo.Context) error
+		GetAll(c echo.Context) error
+		GetById(c echo.Context) error
+		DeleteById(c echo.Context) error
+		UpdateById(c echo.Context) error
 	}
 
 	impl struct {
 		usecase  usecase.UsecaseInterface
-		errorLib ProjectErrorInterface
+		errorLib RestErrorInterface
 	}
 )
 
 func (i *impl) Create(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProjectPayloadCreate)
-	result, err := i.usecase.Create(payload)
+	result, err := i.usecase.Create(ctx, payload)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := uint16(http.StatusBadRequest)
-		return i.errorLib.ProjectErrorCreate(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProjectError.Create.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -44,11 +40,9 @@ func (i *impl) Create(c echo.Context) error {
 func (i *impl) GetAll(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProjectPayloadGetAll)
-	result, total, err := i.usecase.GetAll(payload)
+	result, total, err := i.usecase.GetAll(ctx, payload)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := uint16(http.StatusBadRequest)
-		return i.errorLib.ProjectErrorGetAll(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProjectError.GetAll.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -63,11 +57,9 @@ func (i *impl) GetAll(c echo.Context) error {
 func (i *impl) GetById(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProjectPayloadGet)
-	result, err := i.usecase.GetById(&payload.ID)
+	result, err := i.usecase.GetById(ctx, &payload.ID)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
-		return i.errorLib.ProjectErrorGet(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProjectError.GetById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -79,11 +71,9 @@ func (i *impl) GetById(c echo.Context) error {
 func (i *impl) DeleteById(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProjectPayloadDeleteById)
-	result, err := i.usecase.DeleteById(&payload.ID)
+	result, err := i.usecase.DeleteById(ctx, &payload.ID)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
-		return i.errorLib.ProjectErrorGet(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProjectError.DeleteById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,
@@ -95,11 +85,9 @@ func (i *impl) DeleteById(c echo.Context) error {
 func (i *impl) UpdateById(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
 	payload := ctx.Payload.(*models.ProjectPayloadUpdateById)
-	result, err := i.usecase.UpdateById(&payload.ID, payload)
+	result, err := i.usecase.UpdateById(ctx, &payload.ID, payload)
 	if err != nil {
-		errMessage := err.Error()
-		errStatus := helpers.ParseStatusResponse(err, uint16(http.StatusBadRequest))
-		return i.errorLib.ProjectErrorGet(ctx, &errMessage, &errStatus)
+		return i.errorLib.Throw(ctx, ProjectError.UpdateById.Err, err)
 	}
 	return ctx.SuccessResponse(
 		result,

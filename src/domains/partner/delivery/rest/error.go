@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	ProcessError "github.com/hrz8/sc-masterlist-service/src/domains/process/error"
+	PartnerError "github.com/hrz8/sc-masterlist-service/src/domains/partner/error"
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
 )
@@ -20,8 +20,8 @@ type (
 )
 
 func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr error) error {
-	if errors.Is(domainErr, ProcessError.Create.Err) {
-		status := uint16(ProcessError.Create.Status)
+	if errors.Is(domainErr, PartnerError.Create.Err) {
+		status := uint16(PartnerError.Create.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -32,8 +32,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessError.GetAll.Err) {
-		status := uint16(ProcessError.GetAll.Status)
+	if errors.Is(domainErr, PartnerError.GetAll.Err) {
+		status := uint16(PartnerError.GetAll.Status)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
 				"reason": dataErr.Error(),
@@ -44,8 +44,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessError.GetById.Err) {
-		errStatus := uint16(ProcessError.GetById.Status)
+	if errors.Is(domainErr, PartnerError.GetById.Err) {
+		errStatus := uint16(PartnerError.GetById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -57,8 +57,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessError.DeleteById.Err) {
-		errStatus := uint16(ProcessError.DeleteById.Status)
+	if errors.Is(domainErr, PartnerError.DeleteById.Err) {
+		errStatus := uint16(PartnerError.DeleteById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -70,8 +70,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			nil,
 		)
 	}
-	if errors.Is(domainErr, ProcessError.UpdateById.Err) {
-		errStatus := uint16(ProcessError.UpdateById.Status)
+	if errors.Is(domainErr, PartnerError.UpdateById.Err) {
+		errStatus := uint16(PartnerError.UpdateById.Status)
 		status := helpers.ParseStatusResponse(dataErr, errStatus)
 		return ctx.ErrorResponse(
 			map[string]interface{}{
@@ -80,6 +80,32 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 			domainErr.Error(),
 			status,
 			i.prefix+"-005",
+			nil,
+		)
+	}
+	if errors.Is(domainErr, PartnerError.AddPartnerType.Err) {
+		errStatus := uint16(PartnerError.UpdateById.Status)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
+		return ctx.ErrorResponse(
+			map[string]interface{}{
+				"reason": dataErr.Error(),
+			},
+			domainErr.Error(),
+			status,
+			i.prefix+"-006",
+			nil,
+		)
+	}
+	if errors.Is(domainErr, PartnerError.DeletePartnerType.Err) {
+		errStatus := uint16(PartnerError.UpdateById.Status)
+		status := helpers.ParseStatusResponse(dataErr, errStatus)
+		return ctx.ErrorResponse(
+			map[string]interface{}{
+				"reason": dataErr.Error(),
+			},
+			domainErr.Error(),
+			status,
+			i.prefix+"-007",
 			nil,
 		)
 	}
@@ -92,8 +118,8 @@ func (i *restErrorImpl) Throw(ctx *utils.CustomContext, domainErr error, dataErr
 	)
 }
 
-func NewProcessError() RestErrorInterface {
+func NewPartnerError() RestErrorInterface {
 	return &restErrorImpl{
-		prefix: "SCM-PROCESS",
+		prefix: "SCM-PARTNER",
 	}
 }

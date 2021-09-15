@@ -5,6 +5,7 @@ type (
 	FilteringQueryParams struct {
 		Eq   string
 		Like string
+		In   []string
 		Gte  interface{}
 		Lte  interface{}
 	}

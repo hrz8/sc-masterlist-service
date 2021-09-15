@@ -81,7 +81,7 @@ func QueryParamsBind(destination interface{}, c echo.Context) (err error) {
 					continue
 				}
 
-				_, modeValid := helpers.SliceStringContains([]string{"asc", "desc"}, sortMode[0])
+				_, modeValid := helpers.SliceContains([]string{"asc", "desc"}, sortMode[0])
 				if !modeValid {
 					continue
 				}
@@ -129,6 +129,11 @@ func QueryParamsBind(destination interface{}, c echo.Context) (err error) {
 						case queryTag + "[like]":
 							{
 								field.Like = val
+								break
+							}
+						case queryTag + "[in]":
+							{
+								field.In = strings.Split(val, ",")
 								break
 							}
 						case queryTag + "[gte]":
