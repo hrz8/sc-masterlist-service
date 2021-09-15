@@ -24,6 +24,16 @@ type (
 			id *uuid.UUID,
 			payload *models.PartnerPayloadUpdateById,
 		) (*models.Partner, error)
+		AddPartnerType(
+			ctx *utils.CustomContext,
+			id *uuid.UUID,
+			partnerTypeID *uuid.UUID,
+		) (*models.Partner, error)
+		DeletePartnerType(
+			ctx *utils.CustomContext,
+			id *uuid.UUID,
+			partnerTypeID *uuid.UUID,
+		) (*models.Partner, error)
 	}
 
 	impl struct {
@@ -68,6 +78,7 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 
 	// add each partner_type into created partner
 	if err := trx.Debug().Model(&partnerCreated).Association("PartnerTypes").Append(partnerTypes); err != nil {
+		trx.Rollback()
 		return nil, err
 	}
 
@@ -109,13 +120,14 @@ func (i *impl) UpdateById(
 	payload *models.PartnerPayloadUpdateById,
 ) (*models.Partner, error) {
 	trx := ctx.MysqlSess.Begin()
-	instance, err := i.repository.GetById(nil, id)
+	instance, err := i.repository.GetById(trx, id)
 	if err != nil {
+		trx.Rollback()
 		return nil, err
 	}
 
 	// update agnostic columns
-	result, err := i.repository.Update(nil, instance, payload)
+	result, err := i.repository.Update(trx, instance, payload)
 
 	// associating column
 	if len(payload.PartnerTypes) > 0 {
@@ -140,6 +152,7 @@ func (i *impl) UpdateById(
 		// appending un-related-yet partnerType
 		if err := trx.Model(&instance).Association("PartnerTypes").
 			Append(partnerTypesToBeAdd); err != nil {
+			trx.Rollback()
 			return nil, err
 		}
 
@@ -167,12 +180,69 @@ func (i *impl) UpdateById(
 		// deleting related-yet partnerType
 		if err := trx.Model(&instance).Association("PartnerTypes").
 			Delete(partnerTypesToBeRemove); err != nil {
+			trx.Rollback()
 			return nil, err
 		}
 	}
 
 	trx.Commit()
 	return result, err
+}
+
+func (i *impl) AddPartnerType(
+	ctx *utils.CustomContext,
+	id *uuid.UUID,
+	partnerTypeID *uuid.UUID,
+) (*models.Partner, error) {
+	trx := ctx.MysqlSess.Begin()
+	instance, err := i.repository.GetById(trx, id)
+	if err != nil {
+		trx.Rollback()
+		return nil, err
+	}
+
+	partnerTypeInstance, err := i.partnerTypeRepository.GetById(trx, partnerTypeID)
+	if err != nil {
+		trx.Rollback()
+		return nil, err
+	}
+
+	result, err := i.repository.AddPartnerType(trx, instance, partnerTypeInstance)
+	if err != nil {
+		trx.Rollback()
+		return nil, err
+	}
+
+	trx.Commit()
+	return result, nil
+}
+
+func (i *impl) DeletePartnerType(
+	ctx *utils.CustomContext,
+	id *uuid.UUID,
+	partnerTypeID *uuid.UUID,
+) (*models.Partner, error) {
+	trx := ctx.MysqlSess.Begin()
+	instance, err := i.repository.GetById(trx, id)
+	if err != nil {
+		trx.Rollback()
+		return nil, err
+	}
+
+	partnerTypeInstance, err := i.partnerTypeRepository.GetById(trx, partnerTypeID)
+	if err != nil {
+		trx.Rollback()
+		return nil, err
+	}
+
+	result, err := i.repository.DeletePartnerType(trx, instance, partnerTypeInstance)
+	if err != nil {
+		trx.Rollback()
+		return nil, err
+	}
+
+	trx.Commit()
+	return result, nil
 }
 
 func NewUsecase(repo repository.RepositoryInterface, ptRepo PartnerTypeRepository.RepositoryInterface) UsecaseInterface {

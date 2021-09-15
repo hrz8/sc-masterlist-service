@@ -15,6 +15,8 @@ type (
 		GetById(c echo.Context) error
 		DeleteById(c echo.Context) error
 		UpdateById(c echo.Context) error
+		AddPartnerType(c echo.Context) error
+		DeletePartnerType(c echo.Context) error
 	}
 
 	impl struct {
@@ -92,6 +94,34 @@ func (i *impl) UpdateById(c echo.Context) error {
 	return ctx.SuccessResponse(
 		result,
 		"success update partner",
+		nil,
+	)
+}
+
+func (i *impl) AddPartnerType(c echo.Context) error {
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.PartnerAddPartnerTypePayload)
+	result, err := i.usecase.AddPartnerType(ctx, &payload.ID, &payload.PartnerTypeID)
+	if err != nil {
+		return i.errorLib.Throw(ctx, PartnerError.AddPartnerType.Err, err)
+	}
+	return ctx.SuccessResponse(
+		result,
+		"success add partner type into partner",
+		nil,
+	)
+}
+
+func (i *impl) DeletePartnerType(c echo.Context) error {
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.PartnerDeletePartnerTypePayload)
+	result, err := i.usecase.AddPartnerType(ctx, &payload.ID, &payload.PartnerTypeID)
+	if err != nil {
+		return i.errorLib.Throw(ctx, PartnerError.DeletePartnerType.Err, err)
+	}
+	return ctx.SuccessResponse(
+		result,
+		"success delete partner type from partner",
 		nil,
 	)
 }
