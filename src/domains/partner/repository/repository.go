@@ -23,12 +23,12 @@ type (
 		AddPartnerType(
 			trx *gorm.DB,
 			partner *models.Partner,
-			partnerTypes *models.PartnerType,
+			partnerType *models.PartnerType,
 		) (*models.Partner, error)
 		DeletePartnerType(
 			trx *gorm.DB,
 			partner *models.Partner,
-			partnerTypes *models.PartnerType,
+			partnerType *models.PartnerType,
 		) (*models.Partner, error)
 	}
 
@@ -187,7 +187,7 @@ func (i *impl) Update(
 func (i *impl) AddPartnerType(
 	trx *gorm.DB,
 	partner *models.Partner,
-	partnerTypes *models.PartnerType,
+	partnerType *models.PartnerType,
 ) (*models.Partner, error) {
 	// transaction check
 	if trx == nil {
@@ -196,7 +196,7 @@ func (i *impl) AddPartnerType(
 
 	// execution
 	if err := trx.Model(&partner).Association("PartnerTypes").
-		Append(partnerTypes); err != nil {
+		Append(partnerType); err != nil {
 		return nil, err
 	}
 
@@ -206,7 +206,7 @@ func (i *impl) AddPartnerType(
 func (i *impl) DeletePartnerType(
 	trx *gorm.DB,
 	partner *models.Partner,
-	partnerTypes *models.PartnerType,
+	partnerType *models.PartnerType,
 ) (*models.Partner, error) {
 	// transaction check
 	if trx == nil {
@@ -215,7 +215,7 @@ func (i *impl) DeletePartnerType(
 
 	// execution
 	if err := trx.Model(&partner).Association("PartnerTypes").
-		Delete(partnerTypes); err != nil {
+		Delete(partnerType); err != nil {
 		return nil, err
 	}
 
