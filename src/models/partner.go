@@ -68,9 +68,16 @@ type (
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
 
-	// PartnerAddTypePayload represents payload for adding type to particular partner
-	PartnerAddTypePayload struct {
-		ID []uuid.UUID `json:"id" validate:"required"`
+	// PartnerAddPartnerTypePayload represents payload for adding type to particular partner
+	PartnerAddPartnerTypePayload struct {
+		ID            uuid.UUID `param:"id" validate:"required"`
+		PartnerTypeID uuid.UUID `param:"partnerTypeId" validate:"required"`
+	}
+
+	// PartnerDeletePartnerTypePayload represents payload for adding type to particular partner
+	PartnerDeletePartnerTypePayload struct {
+		ID            uuid.UUID `param:"id" validate:"required"`
+		PartnerTypeID uuid.UUID `param:"partnerTypeId" validate:"required"`
 	}
 
 	// PartnersPartnerTypes represents join table schema for partner -> partner_type
