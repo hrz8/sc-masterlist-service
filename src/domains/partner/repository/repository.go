@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
@@ -195,10 +197,18 @@ func (i *impl) AddPartnerType(
 	}
 
 	// execution
+	partnerType.Partners = nil
 	if err := trx.Model(&partner).Association("PartnerTypes").
 		Append(partnerType); err != nil {
 		return nil, err
 	}
+
+	partnerIDStr := fmt.Sprintf("%v", partner.ID)
+	partnerTypeID := fmt.Sprintf("%v", partnerType.ID)
+	trx.Debug().Unscoped().Model(&models.PartnersPartnerTypes{}).
+		Where("partner_id = ?", partnerIDStr).
+		Where("partner_type_id = ?", partnerTypeID).
+		Update("deleted_at", nil)
 
 	return partner, nil
 }
