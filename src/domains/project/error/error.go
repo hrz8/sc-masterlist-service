@@ -19,7 +19,7 @@ var (
 		Err:    errors.New("failed to list project"),
 	}
 	GetById = errorMap{
-		Status: 400,
+		Status: 404,
 		Err:    errors.New("failed to get project"),
 	}
 	DeleteById = errorMap{

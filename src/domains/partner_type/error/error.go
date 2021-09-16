@@ -21,7 +21,7 @@ var (
 		Err:    errors.New("failed to list partner type"),
 	}
 	GetById = errorMap{
-		Status: 400,
+		Status: 404,
 		Err:    errors.New("failed to get partner type"),
 	}
 	DeleteById = errorMap{
