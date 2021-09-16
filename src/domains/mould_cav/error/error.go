@@ -1,8 +1,6 @@
 package error
 
-import (
-	"errors"
-)
+import "errors"
 
 type (
 	errorMap struct {
@@ -14,22 +12,22 @@ type (
 var (
 	Create = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to store process"),
+		Err:    errors.New("failed to store mould cav"),
 	}
 	GetAll = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to list process"),
+		Err:    errors.New("failed to list mould cav"),
 	}
 	GetById = errorMap{
 		Status: 404,
-		Err:    errors.New("failed to get process"),
+		Err:    errors.New("failed to get mould cav"),
 	}
 	DeleteById = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to remove process"),
+		Err:    errors.New("failed to remove mould cav"),
 	}
 	UpdateById = errorMap{
 		Status: 400,
-		Err:    errors.New("failed to update process"),
+		Err:    errors.New("failed to update mould cav"),
 	}
 )
