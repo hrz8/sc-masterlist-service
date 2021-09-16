@@ -38,6 +38,13 @@ import (
 
 	// #endregion
 
+	// #region domain partner_type
+	MouldCavRest "github.com/hrz8/sc-masterlist-service/src/domains/mould_cav/delivery/rest"
+	MouldCavRepository "github.com/hrz8/sc-masterlist-service/src/domains/mould_cav/repository"
+	MouldCavUsecase "github.com/hrz8/sc-masterlist-service/src/domains/mould_cav/usecase"
+
+	// #endregion
+
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
 	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
@@ -88,6 +95,10 @@ func main() {
 	grainTypeRepository := GrainTypeRepository.NewRepository(mysqlSess)
 	grainTypeUsecase := GrainTypeUsecase.NewUsecase(grainTypeRepository)
 	grainTypeRest := GrainTypeRest.NewRest(grainTypeUsecase)
+	// - domain mould_cav
+	mouldCavRepository := MouldCavRepository.NewRepository(mysqlSess)
+	mouldCavUsecase := MouldCavUsecase.NewUsecase(mouldCavRepository)
+	mouldCavRest := MouldCavRest.NewRest(mouldCavUsecase)
 	// #endregion
 
 	// #region delivery endpoint implementation
@@ -101,6 +112,8 @@ func main() {
 	PartnerRest.AddPartnerEndpoints(e, partnerRest)
 	// - domain grain_type
 	GrainTypeRest.AddGrainTypeEndpoints(e, grainTypeRest)
+	// - domain mould_cav
+	MouldCavRest.AddMouldCavEndpoints(e, mouldCavRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
