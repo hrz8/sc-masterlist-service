@@ -31,17 +31,24 @@ import (
 
 	// #endregion
 
-	// #region domain partner_type
+	// #region domain graintype
 	GrainTypeRest "github.com/hrz8/sc-masterlist-service/src/domains/grain_type/delivery/rest"
 	GrainTypeRepository "github.com/hrz8/sc-masterlist-service/src/domains/grain_type/repository"
 	GrainTypeUsecase "github.com/hrz8/sc-masterlist-service/src/domains/grain_type/usecase"
 
 	// #endregion
 
-	// #region domain partner_type
+	// #region domain mould_cav
 	MouldCavRest "github.com/hrz8/sc-masterlist-service/src/domains/mould_cav/delivery/rest"
 	MouldCavRepository "github.com/hrz8/sc-masterlist-service/src/domains/mould_cav/repository"
 	MouldCavUsecase "github.com/hrz8/sc-masterlist-service/src/domains/mould_cav/usecase"
+
+	// #endregion
+
+	// #region domain mould_ton
+	MouldTonRest "github.com/hrz8/sc-masterlist-service/src/domains/mould_ton/delivery/rest"
+	MouldTonRepository "github.com/hrz8/sc-masterlist-service/src/domains/mould_ton/repository"
+	MouldTonUsecase "github.com/hrz8/sc-masterlist-service/src/domains/mould_ton/usecase"
 
 	// #endregion
 
@@ -100,6 +107,11 @@ func main() {
 	mouldCavUsecase := MouldCavUsecase.NewUsecase(mouldCavRepository)
 	mouldCavRest := MouldCavRest.NewRest(mouldCavUsecase)
 	// #endregion
+	// - domain mould_ton
+	mouldTonRepository := MouldTonRepository.NewRepository(mysqlSess)
+	mouldTonUsecase := MouldTonUsecase.NewUsecase(mouldTonRepository)
+	mouldTonRest := MouldTonRest.NewRest(mouldTonUsecase)
+	// #endregion
 
 	// #region delivery endpoint implementation
 	// - domain project
@@ -114,6 +126,8 @@ func main() {
 	GrainTypeRest.AddGrainTypeEndpoints(e, grainTypeRest)
 	// - domain mould_cav
 	MouldCavRest.AddMouldCavEndpoints(e, mouldCavRest)
+	// - domain mould_ton
+	MouldTonRest.AddMouldTonEndpoints(e, mouldTonRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
