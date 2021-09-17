@@ -52,6 +52,11 @@ import (
 
 	// #endregion
 
+	// #region domain material_grade
+	MaterialGradeRest "github.com/hrz8/sc-masterlist-service/src/domains/material_grade/delivery/rest"
+
+	// #endregion
+
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
 	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
@@ -106,11 +111,14 @@ func main() {
 	mouldCavRepository := MouldCavRepository.NewRepository(mysqlSess)
 	mouldCavUsecase := MouldCavUsecase.NewUsecase(mouldCavRepository)
 	mouldCavRest := MouldCavRest.NewRest(mouldCavUsecase)
-	// #endregion
 	// - domain mould_ton
 	mouldTonRepository := MouldTonRepository.NewRepository(mysqlSess)
 	mouldTonUsecase := MouldTonUsecase.NewUsecase(mouldTonRepository)
 	mouldTonRest := MouldTonRest.NewRest(mouldTonUsecase)
+	// - domain material_grade
+	materialGradeRepository := MouldTonRepository.NewRepository(mysqlSess)
+	materialGradeUsecase := MouldTonUsecase.NewUsecase(materialGradeRepository)
+	materialGradeRest := MouldTonRest.NewRest(materialGradeUsecase)
 	// #endregion
 
 	// #region delivery endpoint implementation
@@ -128,6 +136,8 @@ func main() {
 	MouldCavRest.AddMouldCavEndpoints(e, mouldCavRest)
 	// - domain mould_ton
 	MouldTonRest.AddMouldTonEndpoints(e, mouldTonRest)
+	// - domain material_grade
+	MaterialGradeRest.AddMaterialGradeEndpoints(e, materialGradeRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
