@@ -54,6 +54,15 @@ import (
 
 	// #region domain material_grade
 	MaterialGradeRest "github.com/hrz8/sc-masterlist-service/src/domains/material_grade/delivery/rest"
+	MaterialGradeRepository "github.com/hrz8/sc-masterlist-service/src/domains/material_grade/repository"
+	MaterialGradeUsecase "github.com/hrz8/sc-masterlist-service/src/domains/material_grade/usecase"
+
+	// #endregion
+
+	// #region domain color
+	ColorRest "github.com/hrz8/sc-masterlist-service/src/domains/color/delivery/rest"
+	ColorRepository "github.com/hrz8/sc-masterlist-service/src/domains/color/repository"
+	ColorUsecase "github.com/hrz8/sc-masterlist-service/src/domains/color/usecase"
 
 	// #endregion
 
@@ -116,9 +125,13 @@ func main() {
 	mouldTonUsecase := MouldTonUsecase.NewUsecase(mouldTonRepository)
 	mouldTonRest := MouldTonRest.NewRest(mouldTonUsecase)
 	// - domain material_grade
-	materialGradeRepository := MouldTonRepository.NewRepository(mysqlSess)
-	materialGradeUsecase := MouldTonUsecase.NewUsecase(materialGradeRepository)
-	materialGradeRest := MouldTonRest.NewRest(materialGradeUsecase)
+	materialGradeRepository := MaterialGradeRepository.NewRepository(mysqlSess)
+	materialGradeUsecase := MaterialGradeUsecase.NewUsecase(materialGradeRepository)
+	materialGradeRest := MaterialGradeRest.NewRest(materialGradeUsecase)
+	// - domain color
+	colorRepository := ColorRepository.NewRepository(mysqlSess)
+	colorUsecase := ColorUsecase.NewUsecase(colorRepository)
+	colorRest := ColorRest.NewRest(colorUsecase)
 	// #endregion
 
 	// #region delivery endpoint implementation
@@ -138,6 +151,8 @@ func main() {
 	MouldTonRest.AddMouldTonEndpoints(e, mouldTonRest)
 	// - domain material_grade
 	MaterialGradeRest.AddMaterialGradeEndpoints(e, materialGradeRest)
+	// - domain color
+	ColorRest.AddColorEndpoints(e, colorRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
