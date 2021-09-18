@@ -10,12 +10,16 @@ import (
 // Material represents Material object for DB
 type (
 	Material struct {
-		ID          uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
-		Tsm         string         `gorm:"column:tsm;index:idx_tsm;unique;not null" json:"tsm" validate:"required"`
-		Description string         `gorm:"column:description" json:"description"`
-		CreatedAt   time.Time      `gorm:"column:created_at" json:"createdAt"`
-		UpdatedAt   time.Time      `gorm:"column:updated_at" json:"updatedAt"`
-		DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
+		ID              uuid.UUID `gorm:"column:id;primaryKey" json:"id"`
+		Tsm             string    `gorm:"column:tsm;index:idx_tsm;unique;not null" json:"tsm" validate:"required"`
+		Description     string    `gorm:"column:description" json:"description"`
+		MaterialGradeID uuid.UUID
+		MaterialGrade   MaterialGrade `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+		MakerID         uuid.UUID
+		Maker           Partner        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+		CreatedAt       time.Time      `gorm:"column:created_at" json:"createdAt"`
+		UpdatedAt       time.Time      `gorm:"column:updated_at" json:"updatedAt"`
+		DeletedAt       gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
 	}
 
 	// MaterialPayloadCreate represents payload to create material
