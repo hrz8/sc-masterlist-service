@@ -14,9 +14,9 @@ type (
 		Tsm             string         `gorm:"column:tsm;index:idx_tsm;unique;not null" json:"tsm" validate:"required"`
 		Description     string         `gorm:"column:description" json:"description"`
 		MaterialGradeID uuid.UUID      `gorm:"size:40"`
-		MaterialGrade   MaterialGrade  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+		MaterialGrade   MaterialGrade  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"materialGrade"`
 		MakerID         uuid.UUID      `gorm:"size:40"`
-		Maker           Partner        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+		Maker           Partner        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"maker"`
 		CreatedAt       time.Time      `gorm:"column:created_at" json:"createdAt"`
 		UpdatedAt       time.Time      `gorm:"column:updated_at" json:"updatedAt"`
 		DeletedAt       gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
