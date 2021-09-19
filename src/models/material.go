@@ -10,12 +10,12 @@ import (
 // Material represents Material object for DB
 type (
 	Material struct {
-		ID              uuid.UUID `gorm:"column:id;primaryKey" json:"id"`
-		Tsm             string    `gorm:"column:tsm;index:idx_tsm;unique;not null" json:"tsm" validate:"required"`
-		Description     string    `gorm:"column:description" json:"description"`
-		MaterialGradeID uuid.UUID
-		MaterialGrade   MaterialGrade `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-		MakerID         uuid.UUID
+		ID              uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
+		Tsm             string         `gorm:"column:tsm;index:idx_tsm;unique;not null" json:"tsm" validate:"required"`
+		Description     string         `gorm:"column:description" json:"description"`
+		MaterialGradeID uuid.UUID      `gorm:"size:40"`
+		MaterialGrade   MaterialGrade  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+		MakerID         uuid.UUID      `gorm:"size:40"`
 		Maker           Partner        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 		CreatedAt       time.Time      `gorm:"column:created_at" json:"createdAt"`
 		UpdatedAt       time.Time      `gorm:"column:updated_at" json:"updatedAt"`
@@ -24,8 +24,10 @@ type (
 
 	// MaterialPayloadCreate represents payload to create material
 	MaterialPayloadCreate struct {
-		Tsm         string `json:"tsm" validate:"required,max=50"`
-		Description string `json:"description" validate:"max=140"`
+		Tsm           string    `json:"tsm" validate:"required,max=50"`
+		Description   string    `json:"description" validate:"max=140"`
+		MaterialGrade uuid.UUID `json:"materialGrade" validate:"required"`
+		Maker         uuid.UUID `json:"maker" validate:"required"`
 	}
 
 	// MaterialPayloadGetAll represents payload to fetch all materials
@@ -33,6 +35,9 @@ type (
 		// column
 		Tsm         FilteringQueryParams `query:"tsm"`
 		Description FilteringQueryParams `query:"description"`
+		// relation
+		MaterialGrade FilteringQueryParams `query:"materialGrade"`
+		Maker         FilteringQueryParams `query:"maker"`
 		// date props
 		CreatedAt FilteringQueryParams `query:"createdAt"`
 		UpdatedAt FilteringQueryParams `query:"updatedAt"`
@@ -49,9 +54,11 @@ type (
 
 	// MaterialPayloadUpdateById represents payload to update material by identifier
 	MaterialPayloadUpdateById struct {
-		ID          uuid.UUID `json:"-" param:"id" validate:"required"`
-		Tsm         string    `json:"tsm" validate:"max=50"`
-		Description string    `json:"description" validate:"max=140"`
+		ID            uuid.UUID `json:"-" param:"id" validate:"required"`
+		Tsm           string    `json:"tsm" validate:"max=50"`
+		Description   string    `json:"description" validate:"max=140"`
+		MaterialGrade uuid.UUID `json:"materialGrade"`
+		Maker         uuid.UUID `json:"maker"`
 	}
 
 	// MaterialPayloadDeleteById represents payload to delete material by identifier
