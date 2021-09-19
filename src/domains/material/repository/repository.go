@@ -77,6 +77,12 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.MaterialPayloadGetAll) (*
 	if conditions.Description.Eq != "" {
 		executor = executor.Where("description = ?", conditions.Description.Eq)
 	}
+	if conditions.MaterialGrade.Eq != "" {
+		executor = executor.Where("material_grade_id = ?", conditions.MaterialGrade.Eq)
+	}
+	if conditions.Maker.Eq != "" {
+		executor = executor.Where("maker_id = ?", conditions.Maker.Eq)
+	}
 	if conditions.CreatedAt.Gte != nil && conditions.CreatedAt.Lte != nil {
 		executor = executor.Where("created_at BETWEEN ? AND ?", conditions.CreatedAt.Gte, conditions.CreatedAt.Lte)
 	}
