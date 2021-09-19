@@ -67,7 +67,9 @@ import (
 	// #endregion
 
 	// #region domain material
+	MaterialRest "github.com/hrz8/sc-masterlist-service/src/domains/material/delivery/rest"
 	MaterialRepository "github.com/hrz8/sc-masterlist-service/src/domains/material/repository"
+	MaterialUsecase "github.com/hrz8/sc-masterlist-service/src/domains/material/usecase"
 
 	// #endregion
 
@@ -138,7 +140,9 @@ func main() {
 	colorUsecase := ColorUsecase.NewUsecase(colorRepository)
 	colorRest := ColorRest.NewRest(colorUsecase)
 	//- domain material
-	MaterialRepository.NewRepository(mysqlSess)
+	materialRepository := MaterialRepository.NewRepository(mysqlSess)
+	materialUsecase := MaterialUsecase.NewUsecase(materialRepository)
+	materialRest := MaterialRest.NewRest(materialUsecase)
 	// #endregion
 
 	// #region delivery endpoint implementation
@@ -160,6 +164,8 @@ func main() {
 	MaterialGradeRest.AddMaterialGradeEndpoints(e, materialGradeRest)
 	// - domain color
 	ColorRest.AddColorEndpoints(e, colorRest)
+	// - domain color
+	MaterialRest.AddMaterialEndpoints(e, materialRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
