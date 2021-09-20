@@ -30,4 +30,8 @@ var (
 		Status: 400,
 		Err:    errors.New("failed to update material grade"),
 	}
+	DeleteByIdHasMaterial = errorMap{
+		Status: 400,
+		Err:    errors.New("there is still material associate with this material grade"),
+	}
 )

@@ -13,6 +13,7 @@ type (
 		ID          uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
 		Code        string         `gorm:"column:code;index:idx_code;unique;not null" json:"code" validate:"required"`
 		Description string         `gorm:"column:description" json:"description"`
+		Materials   []Material     `json:"materials,omitempty"`
 		CreatedAt   time.Time      `gorm:"column:created_at" json:"createdAt"`
 		UpdatedAt   time.Time      `gorm:"column:updated_at" json:"updatedAt"`
 		DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`

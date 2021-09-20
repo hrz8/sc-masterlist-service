@@ -108,7 +108,7 @@ func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.MaterialGrade, erro
 
 	// execution
 	result := models.MaterialGrade{}
-	if err := trx.Debug().First(&result, id).Error; err != nil {
+	if err := trx.Debug().Preload("Materials").First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil
