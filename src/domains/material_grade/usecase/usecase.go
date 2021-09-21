@@ -51,7 +51,7 @@ func (i *impl) GetById(_ *utils.CustomContext, id *uuid.UUID) (*models.MaterialG
 }
 
 func (i *impl) DeleteById(_ *utils.CustomContext, id *uuid.UUID) (*models.MaterialGrade, error) {
-	instance, err := i.repository.GetById(nil, id)
+	instance, err := i.repository.GetByIdWithPreload(nil, id)
 	if err != nil {
 		return nil, err
 	}

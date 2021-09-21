@@ -13,6 +13,7 @@ type (
 		Create(trx *gorm.DB, materialGrade *models.MaterialGrade) (*models.MaterialGrade, error)
 		GetAll(trx *gorm.DB, conditions *models.MaterialGradePayloadGetAll) (*[]models.MaterialGrade, error)
 		GetById(trx *gorm.DB, id *uuid.UUID) (*models.MaterialGrade, error)
+		GetByIdWithPreload(trx *gorm.DB, id *uuid.UUID) (*models.MaterialGrade, error)
 		DeleteById(trx *gorm.DB, id *uuid.UUID) error
 		Update(
 			trx *gorm.DB,
@@ -101,6 +102,20 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.MaterialGradePayloadGetAl
 }
 
 func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.MaterialGrade, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	result := models.MaterialGrade{}
+	if err := trx.Debug().First(&result, id).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (i *impl) GetByIdWithPreload(trx *gorm.DB, id *uuid.UUID) (*models.MaterialGrade, error) {
 	// transaction check
 	if trx == nil {
 		trx = i.db
