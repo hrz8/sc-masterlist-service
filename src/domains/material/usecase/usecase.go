@@ -3,6 +3,10 @@ package usecase
 import (
 	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/domains/material/repository"
+	MaterialGradeError "github.com/hrz8/sc-masterlist-service/src/domains/material_grade/error"
+	MaterialGradeRepository "github.com/hrz8/sc-masterlist-service/src/domains/material_grade/repository"
+	MakerError "github.com/hrz8/sc-masterlist-service/src/domains/partner/error"
+	MakerRepository "github.com/hrz8/sc-masterlist-service/src/domains/partner/repository"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
 )
@@ -17,21 +21,49 @@ type (
 	}
 
 	impl struct {
-		repository repository.RepositoryInterface
+		repository              repository.RepositoryInterface
+		materialGradeRepository MaterialGradeRepository.RepositoryInterface
+		makerRepository         MakerRepository.RepositoryInterface
 	}
 )
 
-func (i *impl) Create(_ *utils.CustomContext, material *models.MaterialPayloadCreate) (*models.Material, error) {
+// Create is a facade function to implemented model creation
+func (i *impl) Create(ctx *utils.CustomContext, material *models.MaterialPayloadCreate) (*models.Material, error) {
+	trx := ctx.MysqlSess.Begin()
+
 	id, _ := uuid.NewV4()
+
+	// get MaterialGrade by its uuid to check if its available
+	materialGrade, err := i.materialGradeRepository.GetById(trx, &material.MaterialGrade)
+	if err != nil {
+		trx.Rollback()
+		return nil, MaterialGradeError.GetById.Err
+	}
+
+	// get Maker by its uuid to check if its available
+	maker, err := i.makerRepository.GetById(trx, &material.Maker)
+	if err != nil {
+		trx.Rollback()
+		return nil, MakerError.GetById.Err
+	}
+
 	payload := &models.Material{
 		ID:              id,
 		Tsm:             material.Tsm,
 		Description:     material.Description,
-		MaterialGradeID: material.MaterialGrade,
-		MakerID:         material.Maker,
+		MaterialGradeID: materialGrade.ID,
+		MakerID:         maker.ID,
 	}
-	result, err := i.repository.Create(nil, payload)
-	return result, err
+	materialCreated, err := i.repository.Create(trx, payload)
+	if err != nil {
+		trx.Rollback()
+		return nil, err
+	}
+
+	trx.Commit()
+	materialCreated.MaterialGrade = *materialGrade
+	materialCreated.Maker = *maker
+	return materialCreated, err
 }
 
 func (i *impl) GetAll(_ *utils.CustomContext, conditions *models.MaterialPayloadGetAll) (*[]models.Material, *int64, error) {
@@ -71,8 +103,14 @@ func (i *impl) UpdateById(_ *utils.CustomContext, id *uuid.UUID, payload *models
 	return result, err
 }
 
-func NewUsecase(r repository.RepositoryInterface) UsecaseInterface {
+func NewUsecase(
+	r repository.RepositoryInterface,
+	mgRepo MaterialGradeRepository.RepositoryInterface,
+	mRepo MakerRepository.RepositoryInterface,
+) UsecaseInterface {
 	return &impl{
-		repository: r,
+		repository:              r,
+		materialGradeRepository: mgRepo,
+		makerRepository:         mRepo,
 	}
 }

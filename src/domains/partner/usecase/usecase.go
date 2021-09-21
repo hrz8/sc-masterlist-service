@@ -245,7 +245,10 @@ func (i *impl) DeletePartnerType(
 	return result, nil
 }
 
-func NewUsecase(repo repository.RepositoryInterface, ptRepo PartnerTypeRepository.RepositoryInterface) UsecaseInterface {
+func NewUsecase(
+	repo repository.RepositoryInterface,
+	ptRepo PartnerTypeRepository.RepositoryInterface,
+) UsecaseInterface {
 	return &impl{
 		repository:            repo,
 		partnerTypeRepository: ptRepo,

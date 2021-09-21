@@ -141,7 +141,11 @@ func main() {
 	colorRest := ColorRest.NewRest(colorUsecase)
 	//- domain material
 	materialRepository := MaterialRepository.NewRepository(mysqlSess)
-	materialUsecase := MaterialUsecase.NewUsecase(materialRepository)
+	materialUsecase := MaterialUsecase.NewUsecase(
+		materialRepository,
+		materialGradeRepository,
+		partnerRepository,
+	)
 	materialRest := MaterialRest.NewRest(materialUsecase)
 	// #endregion
 
