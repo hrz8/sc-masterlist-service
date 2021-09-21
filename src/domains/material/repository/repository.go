@@ -5,6 +5,7 @@ import (
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type (
@@ -99,7 +100,7 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.MaterialPayloadGetAll) (*
 		executor = executor.Offset(helpers.GetOffset(conditions.Pagination.Page.(int), conditions.Pagination.Limit.(int)))
 	}
 
-	if err := executor.Debug().Find(&result).Error; err != nil {
+	if err := executor.Debug().Preload(clause.Associations).Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -114,7 +115,10 @@ func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.Material, error) {
 
 	// execution
 	result := models.Material{}
-	if err := trx.Debug().First(&result, id).Error; err != nil {
+	if err := trx.Debug().
+		Preload("MaterialGrade").
+		Preload("Maker").
+		First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil
