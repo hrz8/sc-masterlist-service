@@ -16,6 +16,7 @@ type (
 		Create(trx *gorm.DB, partner *models.Partner) (*models.Partner, error)
 		GetAll(trx *gorm.DB, conditions *models.PartnerPayloadGetAll) (*[]models.Partner, error)
 		GetById(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error)
+		GetByIdWithPreloadForDelete(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error)
 		DeleteById(trx *gorm.DB, id *uuid.UUID) error
 		Update(
 			trx *gorm.DB,
@@ -145,6 +146,20 @@ func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error) {
 	// execution
 	result := models.Partner{}
 	if err := trx.Debug().Preload("PartnerTypes").First(&result, id).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (i *impl) GetByIdWithPreloadForDelete(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	result := models.Partner{}
+	if err := trx.Debug().Preload("Materials").First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil

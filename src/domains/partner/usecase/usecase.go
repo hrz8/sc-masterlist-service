@@ -104,9 +104,12 @@ func (i *impl) GetById(_ *utils.CustomContext, id *uuid.UUID) (*models.Partner, 
 }
 
 func (i *impl) DeleteById(_ *utils.CustomContext, id *uuid.UUID) (*models.Partner, error) {
-	instance, err := i.repository.GetById(nil, id)
+	instance, err := i.repository.GetByIdWithPreloadForDelete(nil, id)
 	if err != nil {
 		return nil, err
+	}
+	if len(instance.Materials) > 0 {
+		return nil, PartnerError.DeleteByIdHasMaterial.Err
 	}
 	if err := i.repository.DeleteById(nil, id); err != nil {
 		return nil, err

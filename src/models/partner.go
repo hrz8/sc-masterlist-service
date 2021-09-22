@@ -16,9 +16,12 @@ type (
 		Contact      string         `gorm:"column:contact" json:"contact"`
 		Description  string         `gorm:"column:description" json:"description"`
 		PartnerTypes []*PartnerType `gorm:"many2many:partners_partner_types" json:"partnerTypes,omitempty"`
-		CreatedAt    time.Time      `gorm:"column:created_at" json:"createdAt"`
-		UpdatedAt    time.Time      `gorm:"column:updated_at" json:"updatedAt"`
-		DeletedAt    gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
+		// additional assoc
+		Materials []Material `json:"materials,omitempty"`
+		// timestamp
+		CreatedAt time.Time      `gorm:"column:created_at" json:"createdAt"`
+		UpdatedAt time.Time      `gorm:"column:updated_at" json:"updatedAt"`
+		DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
 	}
 
 	// PartnerPayloadCreate represents payload to create partner

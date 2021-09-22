@@ -42,4 +42,8 @@ var (
 		Status: 400,
 		Err:    errors.New("failed to delete partner type from partner"),
 	}
+	DeleteByIdHasMaterial = errorMap{
+		Status: 400,
+		Err:    errors.New("there is still material associate with this partner"),
+	}
 )
