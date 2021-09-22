@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"github.com/go-sql-driver/mysql"
 	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/domains/material/repository"
 	MaterialGradeError "github.com/hrz8/sc-masterlist-service/src/domains/material_grade/error"
@@ -56,8 +57,27 @@ func (i *impl) Create(ctx *utils.CustomContext, material *models.MaterialPayload
 	}
 	materialCreated, err := i.repository.Create(trx, payload)
 	if err != nil {
-		trx.Rollback()
-		return nil, err
+		me, ok := err.(*mysql.MySQLError)
+		if !ok {
+			trx.Rollback()
+			return nil, err
+		}
+		if me.Number != 1062 {
+			trx.Rollback()
+			return nil, err
+		}
+		// if re-create row with previous uniq value
+		err = nil
+		where := map[string]interface{}{"tsm": material.Tsm}
+		instance, err := i.repository.GetOne(trx, where, map[string]interface{}{}, true)
+		if err != nil {
+			return nil, err
+		}
+		materialCreatedExist, err := i.repository.Restore(trx, instance)
+		if err != nil {
+			return nil, err
+		}
+		materialCreated = materialCreatedExist
 	}
 
 	trx.Commit()

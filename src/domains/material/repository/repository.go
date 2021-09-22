@@ -20,6 +20,13 @@ type (
 			materialInstance *models.Material,
 			payload *models.MaterialPayloadUpdateById,
 		) (*models.Material, error)
+		GetOne(
+			trx *gorm.DB,
+			payload map[string]interface{},
+			payloadNot map[string]interface{},
+			withDeleted bool,
+		) (*models.Material, error)
+		Restore(trx *gorm.DB, materialInstance *models.Material) (*models.Material, error)
 	}
 
 	impl struct {
@@ -153,6 +160,42 @@ func (i *impl) Update(
 		Tsm:         (*payload).Tsm,
 		Description: (*payload).Description,
 	}).Error; err != nil {
+		return nil, err
+	}
+	return materialInstance, nil
+}
+
+func (i *impl) GetOne(
+	trx *gorm.DB,
+	payload map[string]interface{},
+	payloadNot map[string]interface{},
+	withDeleted bool,
+) (*models.Material, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	result := models.Material{}
+	executioner := trx.Debug()
+	if withDeleted {
+		executioner = executioner.Unscoped()
+	}
+	if err := executioner.Where(payload).Not(payloadNot).First(&result).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (i *impl) Restore(trx *gorm.DB, materialInstance *models.Material) (*models.Material, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	if err := trx.Debug().Model(materialInstance).Update("deleted_at", nil).Error; err != nil {
 		return nil, err
 	}
 	return materialInstance, nil

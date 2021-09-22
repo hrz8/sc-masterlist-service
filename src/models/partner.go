@@ -17,7 +17,7 @@ type (
 		Description  string         `gorm:"column:description" json:"description"`
 		PartnerTypes []*PartnerType `gorm:"many2many:partners_partner_types" json:"partnerTypes,omitempty"`
 		// additional assoc
-		Materials []Material `json:"materials,omitempty"`
+		Materials []Material `gorm:"foreignKey:MakerID" json:"materials,omitempty"`
 		// timestamp
 		CreatedAt time.Time      `gorm:"column:created_at" json:"createdAt"`
 		UpdatedAt time.Time      `gorm:"column:updated_at" json:"updatedAt"`
