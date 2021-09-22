@@ -83,4 +83,56 @@ type (
 	PartPayloadDeleteById struct {
 		ID uuid.UUID `param:"id" validate:"required"`
 	}
+
+	// PartsProcesses represents join table schema for part -> process
+	PartsProcesses struct {
+		PartID    uuid.UUID
+		ProcessID uuid.UUID
+		CreatedAt time.Time
+		DeletedAt gorm.DeletedAt `gorm:"index"`
+	}
+
+	// PartsColors represents join table schema for part -> color
+	PartsColors struct {
+		PartID    uuid.UUID
+		ColorID   uuid.UUID
+		CreatedAt time.Time
+		DeletedAt gorm.DeletedAt `gorm:"index"`
+	}
+
+	// PartsSourcings represents join table schema for part -> partner -> partner_type (sourcing)
+	PartsSourcings struct {
+		PartID     uuid.UUID
+		SourcingID uuid.UUID
+		CreatedAt  time.Time
+		DeletedAt  gorm.DeletedAt `gorm:"index"`
+	}
+
+	// PartsMouldMakers represents join table schema for part -> partner -> partner_type (mould_maker)
+	PartsMouldMakers struct {
+		PartID       uuid.UUID
+		MouldMakerID uuid.UUID
+		CreatedAt    time.Time
+		DeletedAt    gorm.DeletedAt `gorm:"index"`
+	}
 )
+
+func (partProcess *PartsProcesses) BeforeCreate(tx *gorm.DB) error {
+	partProcess.CreatedAt = time.Now()
+	return nil
+}
+
+func (partColor *PartsColors) BeforeCreate(tx *gorm.DB) error {
+	partColor.CreatedAt = time.Now()
+	return nil
+}
+
+func (partSourcing *PartsSourcings) BeforeCreate(tx *gorm.DB) error {
+	partSourcing.CreatedAt = time.Now()
+	return nil
+}
+
+func (partMouldMaker *PartsMouldMakers) BeforeCreate(tx *gorm.DB) error {
+	partMouldMaker.CreatedAt = time.Now()
+	return nil
+}

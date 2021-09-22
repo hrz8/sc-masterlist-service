@@ -10,12 +10,14 @@ import (
 type (
 	// Partner represents Partner object for DB
 	Partner struct {
-		ID           uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
-		Name         string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
-		Address      string         `gorm:"column:address" json:"address"`
-		Contact      string         `gorm:"column:contact" json:"contact"`
-		Description  string         `gorm:"column:description" json:"description"`
-		PartnerTypes []*PartnerType `gorm:"many2many:partners_partner_types" json:"partnerTypes,omitempty"`
+		ID              uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
+		Name            string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
+		Address         string         `gorm:"column:address" json:"address"`
+		Contact         string         `gorm:"column:contact" json:"contact"`
+		Description     string         `gorm:"column:description" json:"description"`
+		PartnerTypes    []*PartnerType `gorm:"many2many:partners_partner_types" json:"partnerTypes,omitempty"`
+		SourcedParts    []*Part        `gorm:"many2many:parts_sourcings" json:"sourcedParts,omitempty"`
+		MouldMakedParts []*Part        `gorm:"many2many:parts_mould_makers" json:"mouldMakedParts,omitempty"`
 		// additional assoc
 		Materials []Material `gorm:"foreignKey:MakerID" json:"materials,omitempty"`
 		// timestamp
