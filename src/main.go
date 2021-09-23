@@ -73,6 +73,11 @@ import (
 
 	// #endregion
 
+	// #region domain material
+	PartRepository "github.com/hrz8/sc-masterlist-service/src/domains/part/repository"
+
+	// #endregion
+
 	Config "github.com/hrz8/sc-masterlist-service/src/shared/config"
 	Container "github.com/hrz8/sc-masterlist-service/src/shared/container"
 	Database "github.com/hrz8/sc-masterlist-service/src/shared/database"
@@ -139,7 +144,7 @@ func main() {
 	colorRepository := ColorRepository.NewRepository(mysqlSess)
 	colorUsecase := ColorUsecase.NewUsecase(colorRepository)
 	colorRest := ColorRest.NewRest(colorUsecase)
-	//- domain material
+	// - domain material
 	materialRepository := MaterialRepository.NewRepository(mysqlSess)
 	materialUsecase := MaterialUsecase.NewUsecase(
 		materialRepository,
@@ -147,6 +152,8 @@ func main() {
 		partnerRepository,
 	)
 	materialRest := MaterialRest.NewRest(materialUsecase)
+	// - domain part
+	PartRepository.NewRepository(mysqlSess)
 	// #endregion
 
 	// #region delivery endpoint implementation

@@ -16,8 +16,8 @@ type (
 		Contact         string         `gorm:"column:contact" json:"contact"`
 		Description     string         `gorm:"column:description" json:"description"`
 		PartnerTypes    []*PartnerType `gorm:"many2many:partners_partner_types" json:"partnerTypes,omitempty"`
-		SourcedParts    []*Part        `gorm:"many2many:parts_sourcings" json:"sourcedParts,omitempty"`
-		MouldMakedParts []*Part        `gorm:"many2many:parts_mould_makers" json:"mouldMakedParts,omitempty"`
+		SourcedParts    []*Part        `gorm:"many2many:parts_sourcings;foreignKey:ID;joinForeignKey:SourcingID;References:ID;JoinReferences:PartID" json:"sourcedParts,omitempty"`
+		MouldMakedParts []*Part        `gorm:"many2many:parts_mould_makers;foreignKey:ID;joinForeignKey:MouldMakerID;References:ID;JoinReferences:PartID" json:"mouldMakedParts,omitempty"`
 		// additional assoc
 		Materials []Material `gorm:"foreignKey:MakerID" json:"materials,omitempty"`
 		// timestamp

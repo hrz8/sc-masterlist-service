@@ -34,13 +34,13 @@ type (
 		MouldTonID  uuid.UUID `gorm:"size:40"`
 		MouldTon    MouldTon  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"mouldTon"`
 		MouldCavID  uuid.UUID `gorm:"size:40"`
-		MouldCav    GrainType `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"mouldCav"`
+		MouldCav    MouldCav  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"mouldCav"`
 		// has many
 		Processes []Process `gorm:"many2many:parts_processes" json:"processes,omitempty"`
 		Colors    []Color   `gorm:"many2many:parts_colors" json:"colors,omitempty"`
 		// has many back-to-back
-		Sourcings   []*Partner `gorm:"many2many:parts_sourcings" json:"sourcings,omitempty"`
-		MouldMakers []*Partner `gorm:"many2many:parts_mould_makers" json:"mouldMakers,omitempty"`
+		Sourcings   []*Partner `gorm:"many2many:parts_sourcings;foreignKey:ID;joinForeignKey:PartID;References:ID;JoinReferences:SourcingID" json:"sourcings,omitempty"`
+		MouldMakers []*Partner `gorm:"many2many:parts_mould_makers;foreignKey:ID;joinForeignKey:PartID;References:ID;JoinReferences:MouldMakerID" json:"mouldMakers,omitempty"`
 		// timestamp
 		CreatedAt time.Time      `gorm:"column:created_at" json:"createdAt"`
 		UpdatedAt time.Time      `gorm:"column:updated_at" json:"updatedAt"`
