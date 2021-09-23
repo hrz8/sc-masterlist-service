@@ -2,10 +2,12 @@ package helpers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"reflect"
 	"strconv"
 
+	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 )
 
@@ -83,4 +85,9 @@ func SliceOfStructContainsFieldValue(slice interface{}, fieldName string, fieldV
 		}
 	}
 	return false
+}
+
+func IsEmptyUUID(id *uuid.UUID) bool {
+	stringID := fmt.Sprintf("%v", *id)
+	return stringID != "00000000-0000-0000-0000-000000000000"
 }

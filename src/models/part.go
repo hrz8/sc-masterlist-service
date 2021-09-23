@@ -52,8 +52,8 @@ type (
 
 	// PartPayloadCreate represents payload to create part
 	PartPayloadCreate struct {
-		Number           string `json:"number" validate:"required,max=100"`
-		Name             string `json:"name" validate:"required,max=50"`
+		Number           string `json:"number" validate:"required,max=140"`
+		Name             string `json:"name" validate:"required,max=140"`
 		Image            string `json:"image"`
 		QtyPerUnit       uint   `json:"qtyPerUnit"`
 		QtyPerMonth      uint   `json:"qtyPerMonth"`
@@ -73,11 +73,11 @@ type (
 		MouldTon  uuid.UUID `json:"mouldTon"`
 		MouldCav  uuid.UUID `json:"mouldCav"`
 		// many2many relation
-		Processes   []uuid.UUID `json:"processes" validate:"required"`
-		Colors      []uuid.UUID `json:"colors" validate:"required"`
-		Childs      []uuid.UUID `json:"partnerTypes" validate:"required"`
-		Sourcings   []uuid.UUID `json:"sourcings" validate:"required"`
-		MouldMakers []uuid.UUID `json:"mouldMakers" validate:"required"`
+		Processes   []uuid.UUID `json:"processes"`
+		Colors      []uuid.UUID `json:"colors"`
+		Childs      []uuid.UUID `json:"partnerTypes"`
+		Sourcings   []uuid.UUID `json:"sourcings"`
+		MouldMakers []uuid.UUID `json:"mouldMakers"`
 	}
 
 	// PartPayloadGetAll represents payload to fetch all parts

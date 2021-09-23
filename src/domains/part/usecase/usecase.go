@@ -20,6 +20,7 @@ import (
 	ProcessRepository "github.com/hrz8/sc-masterlist-service/src/domains/process/repository"
 	ProjectError "github.com/hrz8/sc-masterlist-service/src/domains/project/error"
 	ProjectRepository "github.com/hrz8/sc-masterlist-service/src/domains/project/repository"
+	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
 )
@@ -46,49 +47,14 @@ func (i *impl) Create(ctx *utils.CustomContext, part *models.PartPayloadCreate) 
 	trx := ctx.MysqlSess.Begin()
 	id, _ := uuid.NewV4()
 
-	// #region FOREIGN KEY CHECKING
-	// get Project by its uuid to check if its available
-	parentInstance, err := i.repository.GetById(trx, &part.Project)
-	if err != nil {
-		trx.Rollback()
-		return nil, PartError.GetById.Err
-	}
-
+	// required relation
 	projectInstance, err := i.projectRepository.GetById(trx, &part.Project)
 	if err != nil {
 		trx.Rollback()
 		return nil, ProjectError.GetById.Err
 	}
 
-	// get Material by its uuid to check if its available
-	materialInstance, err := i.materialRepository.GetById(trx, &part.Material)
-	if err != nil {
-		trx.Rollback()
-		return nil, MaterialError.GetById.Err
-	}
-
-	// get GrainType by its uuid to check if its available
-	grainTypeInstance, err := i.grainTypeRepository.GetById(trx, &part.GrainType)
-	if err != nil {
-		trx.Rollback()
-		return nil, GrainTypeError.GetById.Err
-	}
-
-	// get GrainType by its uuid to check if its available
-	mouldTonInstance, err := i.mouldTonRepository.GetById(trx, &part.GrainType)
-	if err != nil {
-		trx.Rollback()
-		return nil, MouldTonError.GetById.Err
-	}
-
-	// get GrainType by its uuid to check if its available
-	mouldCavInstance, err := i.mouldCavRepository.GetById(trx, &part.GrainType)
-	if err != nil {
-		trx.Rollback()
-		return nil, MouldCavError.GetById.Err
-	}
-	// #endregion
-
+	// payload
 	payload := &models.Part{
 		ID:               id,
 		Number:           part.Number,
@@ -104,14 +70,60 @@ func (i *impl) Create(ctx *utils.CustomContext, part *models.PartPayloadCreate) 
 		Remarks:          part.Remarks,
 		SourcingRemarks:  part.SourcingRemarks,
 		ProcessRouting:   part.ProcessRouting,
-		// has one
-		ParentID:    parentInstance.ID,
-		ProjectID:   projectInstance.ID,
-		MaterialID:  materialInstance.ID,
-		GrainTypeID: grainTypeInstance.ID,
-		MouldTonID:  mouldTonInstance.ID,
-		MouldCavID:  mouldCavInstance.ID,
+		// has one - required
+		ProjectID: projectInstance.ID,
 	}
+
+	// get Parent Part by its uuid to check if its available
+	if !helpers.IsEmptyUUID(&part.Parent) {
+		parentInstance, err := i.repository.GetById(trx, &part.Parent)
+		if err != nil {
+			trx.Rollback()
+			return nil, PartError.GetById.Err
+		}
+		payload.ParentID = parentInstance.ID
+	}
+
+	// get Material by its uuid to check if its available
+	if !helpers.IsEmptyUUID(&part.Material) {
+		materialInstance, err := i.materialRepository.GetById(trx, &part.Material)
+		if err != nil {
+			trx.Rollback()
+			return nil, MaterialError.GetById.Err
+		}
+		payload.MaterialID = materialInstance.ID
+	}
+
+	// get GrainType by its uuid to check if its available
+	if !helpers.IsEmptyUUID(&part.GrainType) {
+		grainTypeInstance, err := i.grainTypeRepository.GetById(trx, &part.GrainType)
+		if err != nil {
+			trx.Rollback()
+			return nil, GrainTypeError.GetById.Err
+		}
+		payload.GrainTypeID = grainTypeInstance.ID
+	}
+
+	// get MouldTon by its uuid to check if its available
+	if !helpers.IsEmptyUUID(&part.MouldTon) {
+		mouldTonInstance, err := i.mouldTonRepository.GetById(trx, &part.MouldTon)
+		if err != nil {
+			trx.Rollback()
+			return nil, MouldTonError.GetById.Err
+		}
+		payload.MouldTonID = mouldTonInstance.ID
+	}
+
+	// get MouldCav by its uuid to check if its available
+	if !helpers.IsEmptyUUID(&part.MouldCav) {
+		mouldCavInstance, err := i.mouldCavRepository.GetById(trx, &part.MouldCav)
+		if err != nil {
+			trx.Rollback()
+			return nil, MouldCavError.GetById.Err
+		}
+		payload.MouldCavID = mouldCavInstance.ID
+	}
+
 	partCreated, err := i.repository.Create(trx, payload)
 	if err != nil {
 		trx.Rollback()
