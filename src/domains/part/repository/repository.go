@@ -6,12 +6,28 @@ import (
 )
 
 type (
-	RepositoryInterface interface{}
+	RepositoryInterface interface {
+		CountAll(trx *gorm.DB) (*int64, error)
+	}
 
 	impl struct {
 		db *gorm.DB
 	}
 )
+
+func (i *impl) CountAll(trx *gorm.DB) (*int64, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	var total int64 = 0
+	if err := trx.Model(&models.Part{}).Count(&total).Error; err != nil {
+		return nil, err
+	}
+	return &total, nil
+}
 
 func NewRepository(db *gorm.DB) RepositoryInterface {
 	db.AutoMigrate(&models.Part{})
