@@ -25,6 +25,8 @@ type (
 		SourcingRemarks  string    `gorm:"column:sourcing_remarks" json:"sourcing_remarks"`
 		ProcessRouting   string    `gorm:"column:process_routing" json:"process_routing"`
 		// has one
+		ParentID    uuid.UUID `gorm:"size:40"`
+		Parent      *Part     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"parent"`
 		ProjectID   uuid.UUID `gorm:"size:40"`
 		Project     Project   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"project"`
 		MaterialID  uuid.UUID `gorm:"size:40"`
@@ -39,6 +41,7 @@ type (
 		Processes []Process `gorm:"many2many:parts_processes" json:"processes,omitempty"`
 		Colors    []Color   `gorm:"many2many:parts_colors" json:"colors,omitempty"`
 		// has many back-to-back
+		Childs      []*Part    `gorm:"many2many:parts_childs;foreignKey:ID;joinForeignKey:ParentID;References:ID;JoinReferences:ChildID" json:"childs,omitempty"`
 		Sourcings   []*Partner `gorm:"many2many:parts_sourcings;foreignKey:ID;joinForeignKey:PartID;References:ID;JoinReferences:SourcingID" json:"sourcings,omitempty"`
 		MouldMakers []*Partner `gorm:"many2many:parts_mould_makers;foreignKey:ID;joinForeignKey:PartID;References:ID;JoinReferences:MouldMakerID" json:"mouldMakers,omitempty"`
 		// timestamp
@@ -49,8 +52,32 @@ type (
 
 	// PartPayloadCreate represents payload to create part
 	PartPayloadCreate struct {
-		Name        string `json:"name" validate:"required,max=50"`
-		Description string `json:"description" validate:"max=140"`
+		Number           string `json:"number" validate:"required,max=100"`
+		Name             string `json:"name" validate:"required,max=50"`
+		Image            string `json:"image"`
+		QtyPerUnit       uint   `json:"qtyPerUnit"`
+		QtyPerMonth      uint   `json:"qtyPerMonth"`
+		DwgWeight        uint   `json:"dwgWeight"`
+		ActualWeightPart uint   `json:"actualWeightPart"`
+		ActualWeightRun  uint   `json:"actualWeightRun"`
+		PaintColor       string `json:"paint_color"`
+		PaintCode        string `json:"paint_code"`
+		Remarks          string `json:"remarks"`
+		SourcingRemarks  string `json:"sourcing_remarks"`
+		ProcessRouting   string `json:"process_routing"`
+		// 1to1 relation
+		Parent    uuid.UUID `json:"parent"`
+		Project   uuid.UUID `json:"project" validate:"required"`
+		Material  uuid.UUID `json:"material"`
+		GrainType uuid.UUID `json:"grainType"`
+		MouldTon  uuid.UUID `json:"mouldTon"`
+		MouldCav  uuid.UUID `json:"mouldCav"`
+		// many2many relation
+		Processes   []uuid.UUID `json:"processes" validate:"required"`
+		Colors      []uuid.UUID `json:"colors" validate:"required"`
+		Childs      []uuid.UUID `json:"partnerTypes" validate:"required"`
+		Sourcings   []uuid.UUID `json:"sourcings" validate:"required"`
+		MouldMakers []uuid.UUID `json:"mouldMakers" validate:"required"`
 	}
 
 	// PartPayloadGetAll represents payload to fetch all parts
@@ -100,6 +127,14 @@ type (
 		DeletedAt gorm.DeletedAt `gorm:"index"`
 	}
 
+	// PartsChilds represents join table schema for part -> parts
+	PartsChilds struct {
+		ParentID  uuid.UUID
+		ChildID   uuid.UUID
+		CreatedAt time.Time
+		DeletedAt gorm.DeletedAt `gorm:"index"`
+	}
+
 	// PartsSourcings represents join table schema for part -> partner -> partner_type (sourcing)
 	PartsSourcings struct {
 		PartID     uuid.UUID
@@ -124,6 +159,11 @@ func (partProcess *PartsProcesses) BeforeCreate(tx *gorm.DB) error {
 
 func (partColor *PartsColors) BeforeCreate(tx *gorm.DB) error {
 	partColor.CreatedAt = time.Now()
+	return nil
+}
+
+func (partSourcing *PartsChilds) BeforeCreate(tx *gorm.DB) error {
+	partSourcing.CreatedAt = time.Now()
 	return nil
 }
 
