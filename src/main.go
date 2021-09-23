@@ -74,7 +74,9 @@ import (
 	// #endregion
 
 	// #region domain material
+	PartRest "github.com/hrz8/sc-masterlist-service/src/domains/part/delivery/rest"
 	PartRepository "github.com/hrz8/sc-masterlist-service/src/domains/part/repository"
+	PartUsecase "github.com/hrz8/sc-masterlist-service/src/domains/part/usecase"
 
 	// #endregion
 
@@ -117,43 +119,53 @@ func main() {
 	processUsecase := ProcessUsecase.NewUsecase(processRepo)
 	processRest := ProcessRest.NewRest(processUsecase)
 	// - domain partner_type
-	partnerTypeRepository := PartnerTypeRepository.NewRepository(mysqlSess)
-	partnerTypeUsecase := PartnerTypeUsecase.NewUsecase(partnerTypeRepository)
+	partnerTypeRepo := PartnerTypeRepository.NewRepository(mysqlSess)
+	partnerTypeUsecase := PartnerTypeUsecase.NewUsecase(partnerTypeRepo)
 	partnerTypeRest := PartnerTypeRest.NewRest(partnerTypeUsecase)
 	// - domain partner
-	partnerRepository := PartnerRepository.NewRepository(mysqlSess)
-	partnerUsecase := PartnerUsecase.NewUsecase(partnerRepository, partnerTypeRepository)
+	partnerRepo := PartnerRepository.NewRepository(mysqlSess)
+	partnerUsecase := PartnerUsecase.NewUsecase(partnerRepo, partnerTypeRepo)
 	partnerRest := PartnerRest.NewRest(partnerUsecase)
 	// - domain grain_type
-	grainTypeRepository := GrainTypeRepository.NewRepository(mysqlSess)
-	grainTypeUsecase := GrainTypeUsecase.NewUsecase(grainTypeRepository)
+	grainTypeRepo := GrainTypeRepository.NewRepository(mysqlSess)
+	grainTypeUsecase := GrainTypeUsecase.NewUsecase(grainTypeRepo)
 	grainTypeRest := GrainTypeRest.NewRest(grainTypeUsecase)
 	// - domain mould_cav
-	mouldCavRepository := MouldCavRepository.NewRepository(mysqlSess)
-	mouldCavUsecase := MouldCavUsecase.NewUsecase(mouldCavRepository)
+	mouldCavRepo := MouldCavRepository.NewRepository(mysqlSess)
+	mouldCavUsecase := MouldCavUsecase.NewUsecase(mouldCavRepo)
 	mouldCavRest := MouldCavRest.NewRest(mouldCavUsecase)
 	// - domain mould_ton
-	mouldTonRepository := MouldTonRepository.NewRepository(mysqlSess)
-	mouldTonUsecase := MouldTonUsecase.NewUsecase(mouldTonRepository)
+	mouldTonRepo := MouldTonRepository.NewRepository(mysqlSess)
+	mouldTonUsecase := MouldTonUsecase.NewUsecase(mouldTonRepo)
 	mouldTonRest := MouldTonRest.NewRest(mouldTonUsecase)
 	// - domain material_grade
-	materialGradeRepository := MaterialGradeRepository.NewRepository(mysqlSess)
-	materialGradeUsecase := MaterialGradeUsecase.NewUsecase(materialGradeRepository)
+	materialGradeRepo := MaterialGradeRepository.NewRepository(mysqlSess)
+	materialGradeUsecase := MaterialGradeUsecase.NewUsecase(materialGradeRepo)
 	materialGradeRest := MaterialGradeRest.NewRest(materialGradeUsecase)
 	// - domain color
-	colorRepository := ColorRepository.NewRepository(mysqlSess)
-	colorUsecase := ColorUsecase.NewUsecase(colorRepository)
+	colorRepo := ColorRepository.NewRepository(mysqlSess)
+	colorUsecase := ColorUsecase.NewUsecase(colorRepo)
 	colorRest := ColorRest.NewRest(colorUsecase)
 	// - domain material
-	materialRepository := MaterialRepository.NewRepository(mysqlSess)
+	materialRepo := MaterialRepository.NewRepository(mysqlSess)
 	materialUsecase := MaterialUsecase.NewUsecase(
-		materialRepository,
-		materialGradeRepository,
-		partnerRepository,
+		materialRepo,
+		materialGradeRepo,
+		partnerRepo,
 	)
 	materialRest := MaterialRest.NewRest(materialUsecase)
 	// - domain part
-	PartRepository.NewRepository(mysqlSess)
+	partRepo := PartRepository.NewRepository(mysqlSess)
+	partUsecase := PartUsecase.NewUsecase(
+		partRepo,
+		projectRepo,
+		materialRepo,
+		grainTypeRepo,
+		mouldTonRepo,
+		mouldCavRepo,
+		processRepo,
+	)
+	partRest := PartRest.NewRest(partUsecase)
 	// #endregion
 
 	// #region delivery endpoint implementation
@@ -177,6 +189,8 @@ func main() {
 	ColorRest.AddColorEndpoints(e, colorRest)
 	// - domain color
 	MaterialRest.AddMaterialEndpoints(e, materialRest)
+	// - domain part
+	PartRest.AddPartEndpoints(e, partRest)
 	// #endregion
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", appConfig.SERVICE.PORT)))
