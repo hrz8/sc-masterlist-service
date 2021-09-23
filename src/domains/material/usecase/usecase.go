@@ -31,29 +31,30 @@ type (
 // Create is a facade function to implemented model creation
 func (i *impl) Create(ctx *utils.CustomContext, material *models.MaterialPayloadCreate) (*models.Material, error) {
 	trx := ctx.MysqlSess.Begin()
-
 	id, _ := uuid.NewV4()
 
+	// #region FOREIGN KEY CHECKING
 	// get MaterialGrade by its uuid to check if its available
-	materialGrade, err := i.materialGradeRepository.GetById(trx, &material.MaterialGrade)
+	materialGradeInstance, err := i.materialGradeRepository.GetById(trx, &material.MaterialGrade)
 	if err != nil {
 		trx.Rollback()
 		return nil, MaterialGradeError.GetById.Err
 	}
 
 	// get Maker by its uuid to check if its available
-	maker, err := i.makerRepository.GetById(trx, &material.Maker)
+	makerInstance, err := i.makerRepository.GetById(trx, &material.Maker)
 	if err != nil {
 		trx.Rollback()
 		return nil, MakerError.GetById.Err
 	}
+	// #endregion
 
 	payload := &models.Material{
 		ID:              id,
 		Tsm:             material.Tsm,
 		Description:     material.Description,
-		MaterialGradeID: materialGrade.ID,
-		MakerID:         maker.ID,
+		MaterialGradeID: materialGradeInstance.ID,
+		MakerID:         makerInstance.ID,
 	}
 	materialCreated, err := i.repository.Create(trx, payload)
 	if err != nil {
@@ -62,6 +63,8 @@ func (i *impl) Create(ctx *utils.CustomContext, material *models.MaterialPayload
 			trx.Rollback()
 			return nil, err
 		}
+
+		// handling restore if new payload is use previoous deleted
 		if me.Number != 1062 {
 			trx.Rollback()
 			return nil, err
@@ -81,8 +84,8 @@ func (i *impl) Create(ctx *utils.CustomContext, material *models.MaterialPayload
 	}
 
 	trx.Commit()
-	materialCreated.MaterialGrade = *materialGrade
-	materialCreated.Maker = *maker
+	materialCreated.MaterialGrade = *materialGradeInstance
+	materialCreated.Maker = *makerInstance
 	materialCreated.Maker.PartnerTypes = nil
 	return materialCreated, err
 }

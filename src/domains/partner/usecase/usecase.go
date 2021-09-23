@@ -62,6 +62,7 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 
 	// check if partner_types payload not empty
 	if len(partner.PartnerTypes) <= 0 {
+		trx.Rollback()
 		return nil, PartnerError.CreateWithEmptyPartnerTypes.Err
 	}
 

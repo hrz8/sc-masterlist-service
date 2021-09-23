@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
 )
@@ -8,6 +9,8 @@ import (
 type (
 	RepositoryInterface interface {
 		CountAll(trx *gorm.DB) (*int64, error)
+		Create(trx *gorm.DB, part *models.Part) (*models.Part, error)
+		GetById(trx *gorm.DB, id *uuid.UUID) (*models.Part, error)
 	}
 
 	impl struct {
@@ -27,6 +30,33 @@ func (i *impl) CountAll(trx *gorm.DB) (*int64, error) {
 		return nil, err
 	}
 	return &total, nil
+}
+
+func (i *impl) Create(trx *gorm.DB, part *models.Part) (*models.Part, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	if err := trx.Debug().Create(&part).Error; err != nil {
+		return nil, err
+	}
+	return part, nil
+}
+
+func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.Part, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	result := models.Part{}
+	if err := trx.Debug().First(&result, id).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
 
 func NewRepository(db *gorm.DB) RepositoryInterface {
