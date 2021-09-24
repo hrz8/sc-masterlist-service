@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
@@ -89,5 +91,13 @@ func SliceOfStructContainsFieldValue(slice interface{}, fieldName string, fieldV
 
 func IsEmptyUUID(id *uuid.UUID) bool {
 	stringID := fmt.Sprintf("%v", *id)
-	return stringID != "00000000-0000-0000-0000-000000000000"
+	return stringID == "00000000-0000-0000-0000-000000000000"
+}
+
+func ToSnakeCase(str string) string {
+	var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+	var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
+	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
 }

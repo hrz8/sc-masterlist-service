@@ -25,17 +25,17 @@ type (
 		SourcingRemarks  string    `gorm:"column:sourcing_remarks" json:"sourcing_remarks"`
 		ProcessRouting   string    `gorm:"column:process_routing" json:"process_routing"`
 		// has one
-		ParentID    uuid.UUID `gorm:"size:40"`
+		ParentID    uuid.UUID `gorm:"size:40" json:"-"`
 		Parent      *Part     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"parent"`
-		ProjectID   uuid.UUID `gorm:"size:40"`
+		ProjectID   uuid.UUID `gorm:"size:40" json:"-"`
 		Project     Project   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"project"`
-		MaterialID  uuid.UUID `gorm:"size:40"`
+		MaterialID  uuid.UUID `gorm:"size:40" json:"-"`
 		Material    Material  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"material"`
-		GrainTypeID uuid.UUID `gorm:"size:40"`
+		GrainTypeID uuid.UUID `gorm:"size:40" json:"-"`
 		GrainType   GrainType `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"grainType"`
-		MouldTonID  uuid.UUID `gorm:"size:40"`
+		MouldTonID  uuid.UUID `gorm:"size:40" json:"-"`
 		MouldTon    MouldTon  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"mouldTon"`
-		MouldCavID  uuid.UUID `gorm:"size:40"`
+		MouldCavID  uuid.UUID `gorm:"size:40" json:"-"`
 		MouldCav    MouldCav  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"mouldCav"`
 		// has many
 		Processes []Process `gorm:"many2many:parts_processes" json:"processes,omitempty"`
@@ -66,8 +66,8 @@ type (
 		SourcingRemarks  string `json:"sourcing_remarks"`
 		ProcessRouting   string `json:"process_routing"`
 		// 1to1 relation
-		Parent    uuid.UUID `json:"parent"`
 		Project   uuid.UUID `json:"project" validate:"required"`
+		Parent    uuid.UUID `json:"parent"`
 		Material  uuid.UUID `json:"material"`
 		GrainType uuid.UUID `json:"grainType"`
 		MouldTon  uuid.UUID `json:"mouldTon"`
