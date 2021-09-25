@@ -24,19 +24,20 @@ type (
 		Remarks          string    `gorm:"column:remarks" json:"remarks"`
 		SourcingRemarks  string    `gorm:"column:sourcing_remarks" json:"sourcing_remarks"`
 		ProcessRouting   string    `gorm:"column:process_routing" json:"process_routing"`
-		// has one
-		ParentID    uuid.UUID `gorm:"size:40" json:"-"`
-		Parent      *Part     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"parent"`
-		ProjectID   uuid.UUID `gorm:"size:40" json:"-"`
-		Project     Project   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"project"`
-		MaterialID  uuid.UUID `gorm:"size:40" json:"-"`
-		Material    Material  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"material"`
-		GrainTypeID uuid.UUID `gorm:"size:40" json:"-"`
-		GrainType   GrainType `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"grainType"`
-		MouldTonID  uuid.UUID `gorm:"size:40" json:"-"`
-		MouldTon    MouldTon  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"mouldTon"`
-		MouldCavID  uuid.UUID `gorm:"size:40" json:"-"`
-		MouldCav    MouldCav  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"mouldCav"`
+		// has one - required
+		ProjectID uuid.UUID `gorm:"size:40" json:"-"`
+		Project   Project   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"project,omitempty"`
+		// has one - optional
+		ParentID    *uuid.UUID `gorm:"size:40" json:"-"`
+		Parent      *Part      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"parent,omitempty"`
+		MaterialID  *uuid.UUID `gorm:"size:40" json:"-"`
+		Material    *Material  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"material,omitempty"`
+		GrainTypeID *uuid.UUID `gorm:"size:40" json:"-"`
+		GrainType   *GrainType `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"grainType,omitempty"`
+		MouldTonID  *uuid.UUID `gorm:"size:40" json:"-"`
+		MouldTon    *MouldTon  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"mouldTon,omitempty"`
+		MouldCavID  *uuid.UUID `gorm:"size:40" json:"-"`
+		MouldCav    *MouldCav  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"mouldCav,omitempty"`
 		// has many
 		Processes []Process `gorm:"many2many:parts_processes" json:"processes,omitempty"`
 		Colors    []Color   `gorm:"many2many:parts_colors" json:"colors,omitempty"`

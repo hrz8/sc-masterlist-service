@@ -74,54 +74,61 @@ func (i *impl) Create(ctx *utils.CustomContext, part *models.PartPayloadCreate) 
 		ProjectID: projectInstance.ID,
 	}
 
+	// optional foreign key definition
+	var parentInstance *models.Part
+	var materialInstance *models.Material
+	var grainTypeInstance *models.GrainType
+	var mouldTonInstance *models.MouldTon
+	var mouldCavInstance *models.MouldCav
+
 	// get Parent Part by its uuid to check if its available
 	if !helpers.IsEmptyUUID(&part.Parent) {
-		parentInstance, err := i.repository.GetById(trx, &part.Parent)
+		parentInstance, err = i.repository.GetById(trx, &part.Parent)
 		if err != nil {
 			trx.Rollback()
 			return nil, PartError.GetById.Err
 		}
-		payload.ParentID = parentInstance.ID
+		payload.ParentID = &parentInstance.ID
 	}
 
 	// get Material by its uuid to check if its available
 	if !helpers.IsEmptyUUID(&part.Material) {
-		materialInstance, err := i.materialRepository.GetById(trx, &part.Material)
+		materialInstance, err = i.materialRepository.GetById(trx, &part.Material)
 		if err != nil {
 			trx.Rollback()
 			return nil, MaterialError.GetById.Err
 		}
-		payload.MaterialID = materialInstance.ID
+		payload.MaterialID = &materialInstance.ID
 	}
 
 	// get GrainType by its uuid to check if its available
 	if !helpers.IsEmptyUUID(&part.GrainType) {
-		grainTypeInstance, err := i.grainTypeRepository.GetById(trx, &part.GrainType)
+		grainTypeInstance, err = i.grainTypeRepository.GetById(trx, &part.GrainType)
 		if err != nil {
 			trx.Rollback()
 			return nil, GrainTypeError.GetById.Err
 		}
-		payload.GrainTypeID = grainTypeInstance.ID
+		payload.GrainTypeID = &grainTypeInstance.ID
 	}
 
 	// get MouldTon by its uuid to check if its available
 	if !helpers.IsEmptyUUID(&part.MouldTon) {
-		mouldTonInstance, err := i.mouldTonRepository.GetById(trx, &part.MouldTon)
+		mouldTonInstance, err = i.mouldTonRepository.GetById(trx, &part.MouldTon)
 		if err != nil {
 			trx.Rollback()
 			return nil, MouldTonError.GetById.Err
 		}
-		payload.MouldTonID = mouldTonInstance.ID
+		payload.MouldTonID = &mouldTonInstance.ID
 	}
 
 	// get MouldCav by its uuid to check if its available
 	if !helpers.IsEmptyUUID(&part.MouldCav) {
-		mouldCavInstance, err := i.mouldCavRepository.GetById(trx, &part.MouldCav)
+		mouldCavInstance, err = i.mouldCavRepository.GetById(trx, &part.MouldCav)
 		if err != nil {
 			trx.Rollback()
 			return nil, MouldCavError.GetById.Err
 		}
-		payload.MouldCavID = mouldCavInstance.ID
+		payload.MouldCavID = &mouldCavInstance.ID
 	}
 
 	partCreated, err := i.repository.Create(trx, payload)
@@ -215,6 +222,14 @@ func (i *impl) Create(ctx *utils.CustomContext, part *models.PartPayloadCreate) 
 	}
 
 	trx.Commit()
+	// required
+	partCreated.Project = *projectInstance
+	// optional
+	partCreated.Parent = parentInstance
+	partCreated.Material = materialInstance
+	partCreated.GrainType = grainTypeInstance
+	partCreated.MouldTon = mouldTonInstance
+	partCreated.MouldCav = mouldCavInstance
 	return partCreated, err
 }
 
