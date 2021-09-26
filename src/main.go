@@ -99,6 +99,10 @@ func main() {
 	e := echo.New()
 	e.Validator = utils.NewValidator()
 	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			cc := &utils.CustomContext{

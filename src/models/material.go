@@ -13,10 +13,10 @@ type (
 		ID              uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
 		Tsm             string         `gorm:"column:tsm;index:idx_tsm;unique;not null" json:"tsm" validate:"required"`
 		Description     string         `gorm:"column:description" json:"description"`
-		MaterialGradeID uuid.UUID      `gorm:"size:40" json:"-"`
+		MaterialGradeID uuid.UUID      `gorm:"size:40;not null" json:"-"`
 		MaterialGrade   MaterialGrade  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"materialGrade"`
-		MakerID         uuid.UUID      `gorm:"size:40" json:"-"`
-		Maker           Partner        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"maker"`
+		MakerID         uuid.UUID      `gorm:"size:40;not null" json:"-"`
+		Maker           *Partner       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"maker,omitempty"`
 		CreatedAt       time.Time      `gorm:"column:created_at" json:"createdAt"`
 		UpdatedAt       time.Time      `gorm:"column:updated_at" json:"updatedAt"`
 		DeletedAt       gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`

@@ -7,7 +7,6 @@ import (
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type (
@@ -131,7 +130,10 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerPayloadGetAll) (*[
 	}
 
 	// select executor
-	if err := executor.Debug().Preload(clause.Associations).Find(&result).Error; err != nil {
+	if err := executor.Debug().
+		Preload("Materials.MaterialGrade").
+		Preload("PartnerTypes").
+		Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil

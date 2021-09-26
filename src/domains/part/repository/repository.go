@@ -38,23 +38,6 @@ func (i *impl) Create(trx *gorm.DB, part *models.Part) (*models.Part, error) {
 		trx = i.db
 	}
 
-	// var payloadMapInterfaceTemp map[string]interface{}
-	// payloadMapInterface := map[string]interface{}{}
-	// inrec, _ := json.Marshal(part)
-	// json.Unmarshal(inrec, &payloadMapInterfaceTemp)
-
-	// notRequiredForeignerIDs := []string{"ParentID", "ProjectID", "MaterialID", "GrainTypeID", "MouldTonID", "MouldCavID"}
-	// notRequiredForeigners := []string{"parent", "project", "material", "grainType", "mouldTon", "mouldCav", "createdAt", "updatedAt"}
-	// for field, val := range payloadMapInterfaceTemp {
-	// 	_, isForeignIDKey := helpers.SliceContains(notRequiredForeignerIDs, field)
-	// 	_, isForeignKey := helpers.SliceContains(notRequiredForeigners, field)
-	// 	if isForeignIDKey && val == "00000000-0000-0000-0000-000000000000" {
-	// 		payloadMapInterface[helpers.ToSnakeCase(field)] = nil
-	// 	} else if !isForeignKey {
-	// 		payloadMapInterface[helpers.ToSnakeCase(field)] = val
-	// 	}
-	// }
-
 	// execution
 	if err := trx.Debug().Create(&part).Error; err != nil {
 		return nil, err

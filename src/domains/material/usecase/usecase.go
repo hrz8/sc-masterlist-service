@@ -85,7 +85,7 @@ func (i *impl) Create(ctx *utils.CustomContext, material *models.MaterialPayload
 
 	trx.Commit()
 	materialCreated.MaterialGrade = *materialGradeInstance
-	materialCreated.Maker = *makerInstance
+	materialCreated.Maker = makerInstance
 	materialCreated.Maker.PartnerTypes = nil
 	return materialCreated, err
 }

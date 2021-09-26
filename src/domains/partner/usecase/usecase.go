@@ -96,6 +96,11 @@ func (i *impl) GetAll(_ *utils.CustomContext, conditions *models.PartnerPayloadG
 	if err != nil {
 		return nil, nil, err
 	}
+	for _, partner := range *result {
+		for _, material := range partner.Materials {
+			material.Maker = nil
+		}
+	}
 	return result, total, err
 }
 
