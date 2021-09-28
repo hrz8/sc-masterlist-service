@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"github.com/gofrs/uuid"
+	MaterialGradeError "github.com/hrz8/sc-masterlist-service/src/domains/material_grade/error"
 	"github.com/hrz8/sc-masterlist-service/src/domains/material_grade/repository"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"github.com/hrz8/sc-masterlist-service/src/utils"
@@ -50,9 +51,12 @@ func (i *impl) GetById(_ *utils.CustomContext, id *uuid.UUID) (*models.MaterialG
 }
 
 func (i *impl) DeleteById(_ *utils.CustomContext, id *uuid.UUID) (*models.MaterialGrade, error) {
-	instance, err := i.repository.GetById(nil, id)
+	instance, err := i.repository.GetByIdWithPreload(nil, id)
 	if err != nil {
 		return nil, err
+	}
+	if len(instance.Materials) > 0 {
+		return nil, MaterialGradeError.DeleteByIdHasMaterial.Err
 	}
 	if err := i.repository.DeleteById(nil, id); err != nil {
 		return nil, err

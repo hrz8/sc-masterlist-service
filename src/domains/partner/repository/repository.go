@@ -7,7 +7,6 @@ import (
 	"github.com/hrz8/sc-masterlist-service/src/helpers"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type (
@@ -16,6 +15,7 @@ type (
 		Create(trx *gorm.DB, partner *models.Partner) (*models.Partner, error)
 		GetAll(trx *gorm.DB, conditions *models.PartnerPayloadGetAll) (*[]models.Partner, error)
 		GetById(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error)
+		GetByIdWithPreloadForDelete(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error)
 		DeleteById(trx *gorm.DB, id *uuid.UUID) error
 		Update(
 			trx *gorm.DB,
@@ -130,7 +130,10 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerPayloadGetAll) (*[
 	}
 
 	// select executor
-	if err := executor.Debug().Preload(clause.Associations).Find(&result).Error; err != nil {
+	if err := executor.Debug().
+		Preload("Materials.MaterialGrade").
+		Preload("PartnerTypes").
+		Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil
@@ -144,7 +147,24 @@ func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error) {
 
 	// execution
 	result := models.Partner{}
-	if err := trx.Debug().Preload("PartnerTypes").First(&result, id).Error; err != nil {
+	if err := trx.Debug().
+		Preload("Materials.MaterialGrade").
+		Preload("PartnerTypes").
+		First(&result, id).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (i *impl) GetByIdWithPreloadForDelete(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error) {
+	// transaction check
+	if trx == nil {
+		trx = i.db
+	}
+
+	// execution
+	result := models.Partner{}
+	if err := trx.Debug().Preload("Materials").First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil

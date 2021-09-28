@@ -10,15 +10,20 @@ import (
 type (
 	// Partner represents Partner object for DB
 	Partner struct {
-		ID           uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
-		Name         string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
-		Address      string         `gorm:"column:address" json:"address"`
-		Contact      string         `gorm:"column:contact" json:"contact"`
-		Description  string         `gorm:"column:description" json:"description"`
-		PartnerTypes []*PartnerType `gorm:"many2many:partners_partner_types" json:"partnerTypes,omitempty"`
-		CreatedAt    time.Time      `gorm:"column:created_at" json:"createdAt"`
-		UpdatedAt    time.Time      `gorm:"column:updated_at" json:"updatedAt"`
-		DeletedAt    gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
+		ID              uuid.UUID      `gorm:"column:id;primaryKey" json:"id"`
+		Name            string         `gorm:"column:name;index:idx_name;unique;not null" json:"name" validate:"required"`
+		Address         string         `gorm:"column:address" json:"address"`
+		Contact         string         `gorm:"column:contact" json:"contact"`
+		Description     string         `gorm:"column:description" json:"description"`
+		PartnerTypes    []*PartnerType `gorm:"many2many:partners_partner_types" json:"partnerTypes,omitempty"`
+		SourcedParts    []*Part        `gorm:"many2many:parts_sourcings;foreignKey:ID;joinForeignKey:SourcingID;References:ID;JoinReferences:PartID" json:"sourcedParts,omitempty"`
+		MouldMakedParts []*Part        `gorm:"many2many:parts_mould_makers;foreignKey:ID;joinForeignKey:MouldMakerID;References:ID;JoinReferences:PartID" json:"mouldMakedParts,omitempty"`
+		// additional assoc
+		Materials []Material `gorm:"foreignKey:MakerID" json:"materials,omitempty"`
+		// timestamp
+		CreatedAt time.Time      `gorm:"column:created_at" json:"createdAt"`
+		UpdatedAt time.Time      `gorm:"column:updated_at" json:"updatedAt"`
+		DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;index" json:"-"`
 	}
 
 	// PartnerPayloadCreate represents payload to create partner

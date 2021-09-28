@@ -62,6 +62,7 @@ func (i *impl) Create(ctx *utils.CustomContext, partner *models.PartnerPayloadCr
 
 	// check if partner_types payload not empty
 	if len(partner.PartnerTypes) <= 0 {
+		trx.Rollback()
 		return nil, PartnerError.CreateWithEmptyPartnerTypes.Err
 	}
 
@@ -95,6 +96,11 @@ func (i *impl) GetAll(_ *utils.CustomContext, conditions *models.PartnerPayloadG
 	if err != nil {
 		return nil, nil, err
 	}
+	for _, partner := range *result {
+		for _, material := range partner.Materials {
+			material.Maker = nil
+		}
+	}
 	return result, total, err
 }
 
@@ -104,9 +110,12 @@ func (i *impl) GetById(_ *utils.CustomContext, id *uuid.UUID) (*models.Partner, 
 }
 
 func (i *impl) DeleteById(_ *utils.CustomContext, id *uuid.UUID) (*models.Partner, error) {
-	instance, err := i.repository.GetById(nil, id)
+	instance, err := i.repository.GetByIdWithPreloadForDelete(nil, id)
 	if err != nil {
 		return nil, err
+	}
+	if len(instance.Materials) > 0 {
+		return nil, PartnerError.DeleteByIdHasMaterial.Err
 	}
 	if err := i.repository.DeleteById(nil, id); err != nil {
 		return nil, err
@@ -245,7 +254,10 @@ func (i *impl) DeletePartnerType(
 	return result, nil
 }
 
-func NewUsecase(repo repository.RepositoryInterface, ptRepo PartnerTypeRepository.RepositoryInterface) UsecaseInterface {
+func NewUsecase(
+	repo repository.RepositoryInterface,
+	ptRepo PartnerTypeRepository.RepositoryInterface,
+) UsecaseInterface {
 	return &impl{
 		repository:            repo,
 		partnerTypeRepository: ptRepo,
