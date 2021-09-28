@@ -147,7 +147,10 @@ func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.Partner, error) {
 
 	// execution
 	result := models.Partner{}
-	if err := trx.Debug().Preload("PartnerTypes").First(&result, id).Error; err != nil {
+	if err := trx.Debug().
+		Preload("Materials.MaterialGrade").
+		Preload("PartnerTypes").
+		First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil
