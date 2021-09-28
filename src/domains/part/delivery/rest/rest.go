@@ -11,6 +11,7 @@ import (
 type (
 	RestInterface interface {
 		Create(c echo.Context) error
+		GetById(c echo.Context) error
 	}
 
 	impl struct {
@@ -29,6 +30,20 @@ func (i *impl) Create(c echo.Context) error {
 	return ctx.SuccessResponse(
 		result,
 		"success create part",
+		nil,
+	)
+}
+
+func (i *impl) GetById(c echo.Context) error {
+	ctx := c.(*utils.CustomContext)
+	payload := ctx.Payload.(*models.PartPayloadGet)
+	result, err := i.usecase.GetById(ctx, &payload.ID)
+	if err != nil {
+		return i.errorLib.Throw(ctx, PartError.GetById.Err, err)
+	}
+	return ctx.SuccessResponse(
+		result,
+		"success get part",
 		nil,
 	)
 }

@@ -19,11 +19,11 @@ type (
 		DwgWeight        uint      `gorm:"column:dwg_weight" json:"dwgWeight"`
 		ActualWeightPart uint      `gorm:"column:actual_weight_part" json:"actualWeightPart"`
 		ActualWeightRun  uint      `gorm:"column:actual_weight_run" json:"actualWeightRun"`
-		PaintColor       string    `gorm:"column:paint_color" json:"paint_color"`
-		PaintCode        string    `gorm:"column:paint_code" json:"paint_code"`
+		PaintColor       string    `gorm:"column:paint_color" json:"paintColor"`
+		PaintCode        string    `gorm:"column:paint_code" json:"paintCode"`
 		Remarks          string    `gorm:"column:remarks" json:"remarks"`
-		SourcingRemarks  string    `gorm:"column:sourcing_remarks" json:"sourcing_remarks"`
-		ProcessRouting   string    `gorm:"column:process_routing" json:"process_routing"`
+		SourcingRemarks  string    `gorm:"column:sourcing_remarks" json:"sourcingRemarks"`
+		ProcessRouting   string    `gorm:"column:process_routing" json:"processRouting"`
 		// has one - required
 		ProjectID uuid.UUID `gorm:"size:40" json:"-"`
 		Project   Project   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"project,omitempty"`
@@ -61,10 +61,10 @@ type (
 		DwgWeight        uint   `json:"dwgWeight"`
 		ActualWeightPart uint   `json:"actualWeightPart"`
 		ActualWeightRun  uint   `json:"actualWeightRun"`
-		PaintColor       string `json:"paint_color"`
-		PaintCode        string `json:"paint_code"`
+		PaintColor       string `json:"paintColor"`
+		PaintCode        string `json:"paintCode"`
 		Remarks          string `json:"remarks"`
-		SourcingRemarks  string `json:"sourcing_remarks"`
+		SourcingRemarks  string `json:"sourcingRemarks"`
 		ProcessRouting   string `json:"process_routing"`
 		// 1to1 relation
 		Project   uuid.UUID `json:"project" validate:"required"`

@@ -4,6 +4,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/hrz8/sc-masterlist-service/src/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type (
@@ -53,7 +54,11 @@ func (i *impl) GetById(trx *gorm.DB, id *uuid.UUID) (*models.Part, error) {
 
 	// execution
 	result := models.Part{}
-	if err := trx.Debug().First(&result, id).Error; err != nil {
+	if err := trx.Debug().
+		Preload("Material.MaterialGrade").
+		Preload("Material.Maker").
+		Preload(clause.Associations).
+		First(&result, id).Error; err != nil {
 		return nil, err
 	}
 	return &result, nil

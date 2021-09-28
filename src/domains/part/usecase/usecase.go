@@ -28,6 +28,7 @@ import (
 type (
 	UsecaseInterface interface {
 		Create(ctx *utils.CustomContext, part *models.PartPayloadCreate) (*models.Part, error)
+		GetById(ctx *utils.CustomContext, id *uuid.UUID) (*models.Part, error)
 	}
 
 	impl struct {
@@ -231,6 +232,11 @@ func (i *impl) Create(ctx *utils.CustomContext, part *models.PartPayloadCreate) 
 	partCreated.MouldTon = mouldTonInstance
 	partCreated.MouldCav = mouldCavInstance
 	return partCreated, err
+}
+
+func (i *impl) GetById(_ *utils.CustomContext, id *uuid.UUID) (*models.Part, error) {
+	result, err := i.repository.GetById(nil, id)
+	return result, err
 }
 
 func NewUsecase(

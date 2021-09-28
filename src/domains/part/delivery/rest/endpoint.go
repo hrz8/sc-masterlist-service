@@ -10,4 +10,5 @@ import (
 
 func AddPartEndpoints(e *echo.Echo, rest RestInterface) {
 	e.POST("/api/v1/part", rest.Create, Utils.ValidatorMiddleware(reflect.TypeOf(models.PartPayloadCreate{}), false))
+	e.GET("/api/v1/part/:id", rest.GetById, Utils.ValidatorMiddleware(reflect.TypeOf(models.PartPayloadGet{}), false))
 }
