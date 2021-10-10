@@ -72,7 +72,7 @@ func (i *impl) GetById(c echo.Context) error {
 
 func (i *impl) DeleteById(c echo.Context) error {
 	ctx := c.(*utils.CustomContext)
-	payload := ctx.Payload.(*models.PartnerTypePayloadDeleteById)
+	payload := ctx.Payload.(*models.PartnerPayloadDeleteById)
 	result, err := i.usecase.DeleteById(ctx, &payload.ID)
 	if err != nil {
 		return i.errorLib.Throw(ctx, PartnerError.DeleteById.Err, err)
