@@ -107,7 +107,8 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerPayloadGetAll) (*[
 		executor = executor.
 			Joins("JOIN partners_partner_types ON partners_partner_types.partner_id = partners.id").
 			Joins("JOIN partner_types ON partners_partner_types.partner_type_id = partner_types.id").
-			Where("partner_types.id IN ?", conditions.PartnerTypes.In)
+			Where("partner_types.id IN ?", conditions.PartnerTypes.In).
+			Where("partners_partner_types.deleted_at IS NULL")
 	}
 
 	// timestamp conditions
