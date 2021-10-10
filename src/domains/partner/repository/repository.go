@@ -120,7 +120,7 @@ func (i *impl) GetAll(trx *gorm.DB, conditions *models.PartnerPayloadGetAll) (*[
 
 	// sort and paging condition
 	if conditions.Sort.By != "" && conditions.Sort.Mode != "" {
-		executor = executor.Order(conditions.Sort.By + " " + conditions.Sort.Mode)
+		executor = executor.Order(helpers.ToSnakeCase(conditions.Sort.By) + " " + conditions.Sort.Mode)
 	}
 	if conditions.Pagination.Limit != nil {
 		executor = executor.Limit(conditions.Pagination.Limit.(int))
