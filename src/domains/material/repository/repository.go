@@ -157,8 +157,10 @@ func (i *impl) Update(
 
 	// execution
 	if err := trx.Debug().Model(materialInstance).Updates(models.Material{
-		Tsm:         (*payload).Tsm,
-		Description: (*payload).Description,
+		Tsm:             (*payload).Tsm,
+		Description:     (*payload).Description,
+		MakerID:         (*payload).Maker,
+		MaterialGradeID: (*payload).MaterialGrade,
 	}).Error; err != nil {
 		return nil, err
 	}
